@@ -1,0 +1,47 @@
+require('dotenv').config();
+const express =require('express')
+const path =require("path")
+const app=express();
+const db =require("./config/db");
+const passport = require("./config/passport.js")
+const userRouter = require("./routes/userRouter.js");
+const adminRouter = require("./routes/adminRouter.js")
+const session = require("express-session")
+const nocache=require("nocache")
+db()
+
+
+app.use(nocache())
+app.use(session({
+    secret:process.env.SESSION_SECRET,
+    resave:false,
+    saveUninitialized:true,
+    Cookie:{
+        secure:false,
+        httpOnly:true,
+        Maxage:72*60*60*1000
+    }
+}))
+app.use(passport.initialize());
+app.use(passport.session());
+
+
+app.use(express.json());
+app.use(express.urlencoded({extended:true}))
+app.use(express.static(path.join(__dirname,"public")));
+
+app.set("view engine","ejs");
+app.set("views",[path.join(__dirname,"views/user"),path.join(__dirname,"views/admin")])
+app.use((req, res, next) => {
+    res.locals.user = req.session.user ? true : false;
+    next();
+});
+
+app.use("/",userRouter);
+app.use("/admin",adminRouter)
+
+app.listen(process.env.PORT,()=>{
+    console.log("Server Running");
+     })
+
+     module.exports = app;

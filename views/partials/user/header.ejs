@@ -1,0 +1,58 @@
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+<!-- Fixed Header -->
+<header class="fixed top-0 left-0 w-full bg-white shadow-sm z-50">
+  <div class="container mx-auto px-4">
+    <div class="flex justify-between items-center py-4">
+      <!-- Logo -->
+      <div class="flex items-center">
+        <a href="/" class="flex items-center text-2xl font-bold">
+          <span class="text-blue-600">M</span>
+          <span class="bg-gradient-to-r from-blue-600 to-purple-600 text-transparent bg-clip-text">ambra</span>
+          <span class="text-purple-600">Ville</span>
+        </a>
+      </div>
+
+      <!-- Search Bar -->
+      <div class="hidden md:flex items-center flex-1 mx-6">
+        <div class="relative w-full">
+          <input type="text" placeholder="Search for products..." class="w-full border border-gray-300 rounded-md py-2 px-4 focus:outline-none focus:ring-2 focus:ring-blue-500">
+          <button class="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500">
+            <i class="fas fa-search"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Icons -->
+      <div class="flex items-center space-x-4">
+        <a href="#" class="text-gray-700 hover:text-blue-600">
+          <i class="fas fa-user"></i>
+        </a>
+        <a href="#" class="text-gray-700 hover:text-blue-600">
+          <i class="fas fa-heart"></i>
+        </a>
+        <a href="#" class="text-gray-700 hover:text-blue-600 relative">
+          <i class="fas fa-shopping-cart"></i>
+          <span class="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">3</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- Navigation Links -->
+    <nav class="flex justify-center space-x-6 py-2 border-t">
+      <a href="/" class="text-gray-700 hover:text-blue-600 font-medium">Home</a>
+      <a href="#" class="text-gray-700 hover:text-blue-600 font-medium">Products</a>
+      <a href="#" class="text-gray-700 hover:text-blue-600 font-medium">About us</a>
+      <a href="#" class="text-gray-700 hover:text-blue-600 font-medium">Help Center</a>
+      <a href="/login" class="text-gray-700 hover:text-blue-600 font-medium">Login</a>
+    </nav>
+  </div>
+</header>
+
+<!-- Content below navbar -->
+<main class="mt-32 px-4">
+  <div class="container mx-auto">
+    <h1 class="text-3xl font-bold mb-4">Welcome to Mambraville</h1>
+    <p>This space represents your page content. The fixed header stays on top when you scroll.</p>
+  </div>
+</main>

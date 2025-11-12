@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OTP Verification</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> <!-- SweetAlert for notifications -->
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center p-4">
+    <div class="bg-white rounded-lg shadow-lg p-8 max-w-md w-full">
+        <!-- Header -->
+        <div class="text-center mb-6">
+            <h1 class="text-2xl font-bold text-gray-800">Verification Code</h1>
+            <p class="text-gray-600 mt-2">We've sent a verification code to</p>
+            <p class="text-gray-800 font-medium"><%= email %></p>
+        </div>
+
+        <!-- OTP Input Field -->
+        <form id="otpForm" onsubmit="return validateOTPForm(event)">
+            <div class="flex justify-center mb-6">
+                <input type="text" id="otpInput" name="otp" maxlength="6"
+                    class="w-3/4 h-14 text-center text-2xl font-bold border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="Enter OTP">
+            </div>
+
+            <!-- Verify Button -->
+            <button type="submit" class="w-full bg-blue-600 text-white py-3 rounded-md font-medium hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors">
+                Verify
+            </button>
+        </form>
+
+        <!-- Resend Link -->
+        <div class="text-center mt-6">
+            <p class="text-gray-600">
+                Didn't receive the code? 
+                <a href="#" id="resendLink" class="text-gray-400 font-medium cursor-not-allowed">Resend</a>
+            </p>
+            <p class="text-gray-500 text-sm mt-2">
+                You can resend code in <span id="timer" class="font-medium">01:00</span>
+            </p>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let timerInterval = null;
+        let timerSeconds = 60; // 1 minute timer
+        let resendRequestInProgress = false;
+        
+        // DOM elements
+        const resendLink = document.getElementById("resendLink");
+        const timerDisplay = document.getElementById("timer");
+
+        // Format time as MM:SS
+        function formatTime(seconds) {
+            const mins = Math.floor(seconds / 60);
+            const secs = seconds % 60;
+            return `${mins < 10 ? "0" : ""}${mins}:${secs < 10 ? "0" : ""}${secs}`;
+        }
+
+        // Start or restart the timer
+        function startTimer() {
+            // Reset timer to 60 seconds (1 minute)
+            timerSeconds = 60;
+            timerDisplay.textContent = formatTime(timerSeconds);
+            
+            // Disable resend link
+            disableResendButton();
+            
+            // Clear any existing interval to avoid multiple timers
+            if (timerInterval) {
+                clearInterval(timerInterval);
+                timerInterval = null;
+            }
+            
+            // Start new countdown
+            timerInterval = setInterval(function () {
+                timerSeconds--;
+                timerDisplay.textContent = formatTime(timerSeconds);
+                
+                if (timerSeconds <= 0) {
+                    // Timer finished
+                    clearInterval(timerInterval);
+                    timerInterval = null;
+                    enableResendButton();
+                }
+            }, 1000);
+        }
+
+        // Disable resend button
+        function disableResendButton() {
+            resendLink.classList.remove("text-blue-600", "hover:text-blue-800");
+            resendLink.classList.add("text-gray-400", "cursor-not-allowed");
+            // Remove click handler by replacing it
+            resendLink.onclick = function(e) { 
+                e.preventDefault();
+                return false; 
+            };
+        }
+
+        // Enable the resend button when timer is complete
+        function enableResendButton() {
+            resendLink.classList.remove("text-gray-400", "cursor-not-allowed");
+            resendLink.classList.add("text-blue-600", "hover:text-blue-800");
+            // Add new click handler
+            resendLink.onclick = function(e) {
+                e.preventDefault();
+                if (!resendRequestInProgress) {
+                    resendOTP();
+                }
+                return false;
+            };
+        }
+
+        // OTP Validation and Submission
+        function validateOTPForm(event) {
+            event.preventDefault();
+            const otpInput = document.getElementById("otpInput").value.trim();
+
+            if (otpInput.length !== 6 || isNaN(otpInput)) {
+                Swal.fire({
+                    icon: "error",
+                    title: "Invalid OTP",
+                    text: "Please enter a valid 6-digit OTP."
+                });
+                return false;
+            }
+
+            // AJAX request for OTP verification
+            fetch("/verify-Otp", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ otp: otpInput })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    Swal.fire({
+                        icon: "success",
+                        title: "OTP Verified!",
+                        showConfirmButton: false,
+                        timer: 1500
+                    }).then(() => {
+                        window.location.href = data.redirectUrl;
+                    });
+                } else {
+                    Swal.fire({
+                        icon: "error",
+                        title: "Error",
+                        text: data.message || "Invalid OTP"
+                    });
+                }
+            })
+            .catch(() => {
+                Swal.fire({
+                    icon: "error",
+                    title: "Network Error",
+                    text: "Please try again."
+                });
+            });
+
+            return false;
+        }
+
+        // Resend OTP function
+        function resendOTP() {
+            // Prevent multiple simultaneous requests
+            if (resendRequestInProgress) {
+                return false;
+            }
+            
+            resendRequestInProgress = true;
+            disableResendButton();
+            
+            // Make AJAX request to resend OTP
+            fetch("/resend-otp", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" }
+            })
+            .then(response => response.json())
+            .then(data => {
+                resendRequestInProgress = false;
+                
+                if (data.success) {
+                    // Start the timer again only on success
+                    startTimer();
+                    
+                    Swal.fire({
+                        icon: "success",
+                        title: "OTP Resent Successfully",
+                        showConfirmButton: false,
+                        timer: 1500
+                    });
+                } else {
+                    // Re-enable the button if the request failed
+                    enableResendButton();
+                    
+                    Swal.fire({
+                        icon: "error",
+                        title: "Error",
+                        text: data.message || "An error occurred while resending OTP. Please try again."
+                    });
+                }
+            })
+            .catch(() => {
+                resendRequestInProgress = false;
+                enableResendButton();
+                
+                Swal.fire({
+                    icon: "error",
+                    title: "Network Error",
+                    text: "Please try again."
+                });
+            });
+            
+            return false;
+        }
+
+        // Prevent non-numeric input
+        document.getElementById("otpInput").addEventListener("input", function () {
+            this.value = this.value.replace(/\D/g, ""); // Remove non-numeric characters
+        });
+
+        // Initialize only once when document is fully loaded
+        document.addEventListener("DOMContentLoaded", function() {
+            // Set initial state
+            disableResendButton();
+            // Start the timer
+            startTimer();
+        });
+    </script>
+</body>
+</html>

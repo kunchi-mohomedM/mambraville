@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login - Mambraville</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        :root {
+            --primary-color: #1E3A8A;
+            --secondary-color: #9333EA;
+            --bg-color: #F3F4F6;
+        }
+    </style>
+</head>
+<body class="flex flex-col items-center justify-center min-h-screen bg-[var(--bg-color)]">
+    <!-- Header -->
+    <header class="w-full max-w-4xl p-4 text-center bg-white shadow-md rounded-t-2xl">
+        <h1 class="text-3xl font-bold text-[var(--primary-color)]">Mambraville Admin</h1>
+        <p class="text-gray-500">Manage your electronics & furniture store with ease</p>
+    </header>
+    
+    <!-- Admin Login Card -->
+    <div class="w-full max-w-md p-8 mt-6 bg-white shadow-lg rounded-2xl">
+        <div class="flex justify-center mb-4">
+            <img src="" alt="Mambraville Logo" class="w-20 h-20">
+        </div>
+        <h2 class="text-2xl font-semibold text-center text-[var(--primary-color)]">Admin Login</h2>
+        <form class="mt-6" id="adminloginform" action="/admin/login"  method="post">
+            <div class="mb-4">
+                <label class="block text-gray-600">Email</label>
+                <input type="email" id="email" name="email" placeholder="Enter Email" class="w-full px-4 py-2 mt-1 border rounded-lg focus:ring-2 focus:ring-[var(--secondary-color)]">
+            </div>
+            <div class="mb-4">
+                <label class="block text-gray-600">Password</label>
+                <input type="password" name="password" id="password" placeholder="Enter password" class="w-full px-4 py-2 mt-1 border rounded-lg focus:ring-2 focus:ring-[var(--secondary-color)]">
+            </div>
+            <button type="submit" class="w-full py-2 text-white bg-[var(--primary-color)] rounded-lg hover:bg-[var(--secondary-color)]">Login</button>
+        </form>
+        <p class="mt-4 text-sm text-center text-gray-500">Forgot password? <a href="#" class="text-[var(--secondary-color)]">Reset here</a></p>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.js"></script>
+    <script>
+        document.getElementById("adminloginform").addEventListener("submit",function(event){
+            event.preventDefault()
+            const form = document.getElementById("adminloginform")
+            const email=document.getElementById("email").value.trim()
+            const password=document.getElementById("password").value.trim()
+
+            const emailRegex=/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+            const passwordRegex=/^[A-Za-z0-9]{8,}$/;
+
+
+            if(!email){
+                swal({title:"Error",text:"email is required",icon:"error"})
+                return;
+            }else if(!emailRegex.test(email)){
+                Swal({title:"Error",text:"Enter a valid email address.",icon:"error"})
+                return;
+            }
+
+
+            if(!password){
+                Swal({title:"Error",text:"Password is required.",icon:"error"})
+                return;
+            }else if(!passwordRegex.test(password)){
+                Swal({title:"Error",text:"Password must be 8 characters long and contain only letters and numbers.",icon:"error"})
+                return;
+            }
+            
+            form.submit()
+        })
+    </script>
+</body>
+</html>

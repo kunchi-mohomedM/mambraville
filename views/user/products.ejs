@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-commerce Product Listing</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body class="bg-gray-100">
+    <!-- Header -->
+    <header class="bg-white shadow-sm">
+        <%-include("../../views/partials/user/header")-%>
+    </header>
+    <div class="bg-white pt-1 rounded-lg shadow mb-6">
+        <form id="sortForm">
+            <div class="flex items-center mb-2">
+                <label class="text-sm text-gray-600 mr-2">Sort by:</label>
+                <select name="sort" id="sortSelect"
+                    class="border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-600">
+                    <option value="newest" >Newest</option>
+                    <option value="oldest" >Oldest</option>
+                    <option value="priceasc">Price: Low to High</option>
+                    <option value="pricedesc">Price: High to Low</option>
+                    <option value="popular">Popular</option>
+                </select>
+            </div>
+        </form>
+    </div>
+
+    </div>
+    <!-- Breadcrumb -->
+    <div class="container mx-auto mt-4 px-4">
+        <nav class="text-sm">
+            <ol class="list-none p-0 flex">
+                <li class="flex items-center">
+                    <a href="#" class="text-gray-600">Home</a>
+                    <span class="mx-2 text-gray-500">/</span>
+                </li>
+                <li class="text-gray-800 font-medium">Products</li>
+            </ol>
+        </nav>
+    </div>
+
+
+
+    <!-- Main Content -->
+    <main class="container mx-auto mt-4 px-4">
+        <!-- Categories Banner -->
+        <div class="mb-6">
+            <h2 class="text-xl font-bold mb-4">Shop By</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <a href="#" class="relative overflow-hidden rounded-lg shadow-md hover:shadow-lg transition-all group">
+                    <img src="\images\pngtree-innovative-3d-mobile-mockup-paired-with-web-development-banner-and-laptop-picture-image_5592791.jpg"
+                        alt="Furniture" class="w-full h-32 object-cover">
+                    <div class="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 text-white p-2">
+                        <h3 class="text-center font-medium">Laptops</h3>
+                    </div>
+                </a>
+                <a href="#" class="relative overflow-hidden rounded-lg shadow-md hover:shadow-lg transition-all group">
+                    <img src="\images\f3832e180145769.6505ae76214ca.jpg" alt="Home Appliances"
+                        class="w-full h-32 object-cover">
+                    <div class="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 text-white p-2">
+                        <h3 class="text-center font-medium">Smart phones</h3>
+                    </div>
+                </a>
+                <a href="#" class="relative overflow-hidden rounded-lg shadow-md hover:shadow-lg transition-all group">
+                    <img src="\images\banner_new1-min.jpg" alt="Smart Phones" class="w-full h-32 object-cover">
+                    <div class="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 text-white p-2">
+                        <h3 class="text-center font-medium">Televisions</h3>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        <!-- Products Grid -->
+        <div class="mb-8">
+            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                <!-- Product 1 -->
+
+                <% products.forEach(product=>{ %>
+                    <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-all">
+                        <a href="#">
+                            <img onclick="window.location.href = '/productdetails/<%= product._id %>'"
+                                src="<%= product.productImage[0]%>" alt="Product" class="w-full h-40 object-fill p-2 px-4">
+                            <div class="p-4">
+                                <div class="flex items-center mb-2">
+                                    <div class="flex text-yellow-400">
+                                        <i class="fas fa-star text-xs"></i>
+                                        <i class="fas fa-star text-xs"></i>
+                                        <i class="fas fa-star text-xs"></i>
+                                        <i class="fas fa-star text-xs"></i>
+                                        <i class="fas fa-star text-xs"></i>
+                                    </div>
+                                    <span class="text-xs text-gray-500 ml-1">(5)</span>
+                                </div>
+                                <h3 class="font-medium text-sm mb-1 truncate">
+                                    <%= product.productName %>
+                                </h3>
+                                <p class="text-gray-900 font-bold text-sm">
+                                    <%=product.price%>
+                                </p>
+                                <button class="mt-2 w-full text-center bg-gray-200 rounded-full p-1">
+                                    <i class="fas fa-shopping-cart text-xs"></i>
+                                </button>
+                            </div>
+                        </a>
+                    </div>
+                    <% }) %>
+            </div>
+        </div>
+
+        <!-- Pagination -->
+        <div class="flex justify-center items-center my-6">
+            <nav class="flex items-center space-x-1">
+                <% if (currentPage > 1) { %>
+                    <a href="?<%= new URLSearchParams({ ...queryParams, page: currentPage - 1 }).toString() %>"
+                       class="px-3 py-1 rounded border border-gray-300 text-sm">
+                        <i class="fas fa-chevron-left text-xs"></i>
+                    </a>
+                <% } %>
+        
+                <% for (let i = 1; i <= totalPages; i++) { %>
+                    <a href="?<%= new URLSearchParams({ ...queryParams, page: i }).toString() %>"
+                       class="px-3 py-1 rounded border border-gray-300 text-sm <%= i === currentPage ? 'bg-blue-600 text-white' : '' %>">
+                        <%= i %>
+                    </a>
+                <% } %>
+        
+                <% if (currentPage < totalPages) { %>
+                    <a href="?<%= new URLSearchParams({ ...queryParams, page: currentPage + 1 }).toString() %>"
+                       class="px-3 py-1 rounded border border-gray-300 text-sm">
+                        <i class="fas fa-chevron-right text-xs"></i>
+                    </a>
+                <% } %>
+            </nav>
+        </div>
+        
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-indigo-900 text-white mt-12">
+        <%-include("../../views/partials/user/footer")-%>
+    </footer>
+
+   
+    <div class="fixed bottom-4 left-4 z-50">
+        <div class="bg-green-600 text-white rounded-lg p-2 shadow-lg">
+            <button class="flex items-center space-x-2">
+                <i class="fas fa-envelope"></i>
+                <span class="text-sm font-medium">Email subscription</span>
+            </button>
+        </div>
+    </div>
+
+
+    <script>
+        
+        const sortSelect = document.getElementById('sortSelect');
+
+        sortSelect.addEventListener('change', async function () {  
+            const selectedValue = sortSelect.value;
+
+            try {
+                const response = await fetch(`/products-user?sort=${selectedValue}&format=json`, {
+                    method: 'GET'   
+                });
+
+                if (response.ok) {   
+                    try {
+                        const data = await response.json();
+                        if (data.status === 'success' && data.products) {                          
+                            const productContainer = document.querySelector('.grid.grid-cols-2.md\\:grid-cols-3.lg\\:grid-cols-4.gap-4');                         
+                            productContainer.innerHTML = '';
+
+                            data.products.forEach(product => {
+                                const productCard = document.createElement('div');
+                                productCard.className = 'bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-all';
+                                productCard.innerHTML = `
+                            <a href="#">
+                                <img onclick="window.location.href = '/productdetails/${product._id}'" 
+                                    src="${product.productImage[0]}" 
+                                    alt="Product" 
+                                    class="w-full h-40 object-cover">
+                                <div class="p-4">
+                                    <div class="flex items-center mb-2">
+                                        <div class="flex text-yellow-400">
+                                            <i class="fas fa-star text-xs"></i>
+                                            <i class="fas fa-star text-xs"></i>
+                                            <i class="fas fa-star text-xs"></i>
+                                            <i class="fas fa-star text-xs"></i>
+                                            <i class="fas fa-star text-xs"></i>
+                                        </div>
+                                        <span class="text-xs text-gray-500 ml-1">(5)</span>
+                                    </div>
+                                    <h3 class="font-medium text-sm mb-1 truncate">${product.productName}</h3>
+                                    <p class="text-gray-900 font-bold text-sm">${product.price}</p>
+                                    <button class="mt-2 w-full text-center bg-gray-200 rounded-full p-1">
+                                        <i class="fas fa-shopping-cart text-xs"></i>
+                                    </button>
+                                </div>
+                            </a>
+                        `;
+                                productContainer.appendChild(productCard);
+                            });
+                        } else {
+                            console.error('Invalid data format from server');
+                        }
+                    } catch (parseError) {
+                       
+                        console.error('Error parsing response as JSON:', parseError);
+                       
+                        window.location.href = `/products-user?sort=${selectedValue}`;
+                    }
+                } else {
+                    console.error('Error with sorting request:', response.status);
+                    
+                    window.location.href = `/products-user?sort=${selectedValue}`;
+                }
+            } catch (error) {
+                console.error('Fetch error:', error);
+                
+                window.location.href = `/products-user?sort=${selectedValue}`;
+            }
+        });
+    </script>
+</body>
+
+</html>

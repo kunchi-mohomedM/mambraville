@@ -1,0 +1,48 @@
+const express =require("express");
+const router = express.Router();
+const adminController=require("../controller/admin/adminController")
+const {adminAuth,islogin}= require("../middleware/adminAuth")
+const categoryController = require("../controller/admin/categoryController")
+const brandController = require("../controller/admin/brandController")
+const productController= require("../controller/admin/productController")
+const dashboardController=require("../controller/admin/dashboardController")
+const upload=require("../config/multer");
+
+
+
+router.get("/login",islogin,adminController.loadlogin)
+router.post("/login",islogin,adminController.login)
+router.get("/users",adminAuth,adminController.loaduser)
+router.post('/users/block/:userId',adminAuth,adminController.toggleBlockUser);
+
+router.get("/dashboard",dashboardController.loaddashboard)
+
+
+router.get("/category",adminAuth,categoryController.categoryInfo);
+router.get("/addCategory",adminAuth,categoryController.loadaddCategory);
+router.post("/addCategory",adminAuth,categoryController.addCategory);
+router.get("/editCategory/:id",adminAuth,categoryController.loadeditcategory)
+router.post("/editCategory",adminAuth,categoryController.editCategory)
+
+
+router.get("/brands",adminAuth,brandController.brandInfo);
+router.get("/addBrands",adminAuth,brandController.loadaddBrands);
+router.post("/addBrands",adminAuth,brandController.addBrands);
+router.get("/editBrands/:id",adminAuth,brandController.loadeditBrands)
+router.post("/editBrands",adminAuth,brandController.editBrands)
+
+
+router.get("/products",adminAuth,productController.loadproductpage)
+router.get("/addproduct",adminAuth,productController.loadaddproduct)
+router.post("/addproduct",adminAuth,upload.array('productImages',4),productController.addproducts)
+router.get("/editproduct/:id",adminAuth,productController.loadeditproduct)
+
+router.post('/editproduct/:id', upload.array('productImages', 4),productController.editproduct);
+router.post('/delete-product-image/:productId/:imageIndex', productController.deleteProductImage);
+router.patch('/product/delete',adminAuth,productController.toggleDeletedproduct)
+
+
+
+
+
+module.exports = router;
