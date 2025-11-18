@@ -51,19 +51,19 @@
                     <div class="border-t border-gray-200 pt-4">
                         <ul class="space-y-4">
                             <li>
-                                <a href="#" class="flex items-center text-indigo-600 font-medium">
+                                <a href="/user-Profile" class="flex items-center text-indigo-600 font-medium">
                                     <i class="fas fa-user mr-3 w-5 text-gray-600"></i>
                                     <span>Profile Information</span>
                                 </a>
                             </li>
                             <li>
-                                <a href="#" class="flex items-center text-gray-700 hover:text-indigo-600">
+                                <a href="/order-summary" class="flex items-center text-gray-700 hover:text-indigo-600">
                                     <i class="fas fa-shopping-bag mr-3 w-5 text-gray-600"></i>
                                     <span>My Orders</span>
                                 </a>
                             </li>
                             <li>
-                                <a href="#" class="flex items-center text-gray-700 hover:text-indigo-600">
+                                <a href="/addressmanagement" class="flex items-center text-gray-700 hover:text-indigo-600">
                                     <i class="fas fa-home mr-3 w-5 text-gray-600"></i>
                                     <span>Manage Addresses</span>
                                 </a>
@@ -96,7 +96,7 @@
                     </div>
                     
                     <div class="border-t border-gray-200 mt-6 pt-4">
-                        <a href="#" class="flex items-center text-red-600 hover:text-red-700">
+                        <a href="/logout" class="flex items-center text-red-600 hover:text-red-700">
                             <i class="fas fa-sign-out-alt mr-3 w-5"></i>
                             <span>Log out</span>
                         </a>
@@ -109,8 +109,35 @@
                 <h2 class="text-2xl font-bold mb-4 text-center">Saved Addresses</h2>
                 
                 <div id="addressList" class="mb-4">
-                    <p class="text-center text-gray-500">No saved addresses found. Add a new address to proceed.</p>
+    <% if(addressList && addressList.length > 0){ %>
+        <div class="grid grid-cols-1 gap-4">
+            <% addressList.forEach(a => { %>
+                <div class="border rounded-lg p-4 shadow relative">
+
+                    <!-- Default badge -->
+                    <% if(a.isDefault){ %>
+                        <span class="absolute top-2 right-2 text-xs bg-green-500 text-white px-2 py-1 rounded">Default</span>
+                    <% } %>
+
+                    <p class="text-lg font-semibold"><%= a.fullname %></p>
+                    <p><%= a.house %>, <%= a.street %></p>
+                    <p><%= a.city %>, <%= a.state %> - <%= a.pincode %></p>
+                    <p>Phone: <%= a.phone %></p>
+
+                    <!-- Buttons -->
+                    <div class="flex gap-3 mt-3">
+                        <a href="/set-default-address/<%= a._id %>" class="text-blue-600">Set Default</a>
+                        <a href="/edit-address-page/<%= a._id %>" class="text-yellow-600">Edit</a>
+                        <a href="/delete-address/<%= a._id %>" class="text-red-600">Delete</a>
+                    </div>
                 </div>
+            <% }) %>
+        </div>
+    <% } else { %>
+        <p class="text-center text-gray-500">No saved addresses found. Add a new address to proceed.</p>
+    <% } %>
+</div>
+
                 
                 <div id="addAddressSection" class="mb-4">
                     <button id="toggleAddressForm" class="w-full border-2 border-dashed border-purple-500 text-purple-500 py-2 rounded-lg flex items-center justify-center hover:bg-purple-50 transition">
@@ -120,47 +147,47 @@
                         Add New Address
                     </button>
         
-                    <form id="addressForm" class="hidden mt-4 space-y-4">
+                    <form id="addressForm" method="POST" action="/add-address" class="hidden mt-4 space-y-4">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
                                 <label class="block text-sm font-medium text-gray-700">Full Name *</label>
-                                <input type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring focus:ring-purple-200" required>
+                                <input type="text" name="fullname" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring focus:ring-purple-200" required>
                             </div>
                             <div>
                                 <label class="block text-sm font-medium text-gray-700">Phone Number *</label>
-                                <input type="tel" pattern="[0-9]{10}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring focus:ring-purple-200" placeholder="10 digit mobile number" required>
+                                <input type="tel" pattern="[0-9]{10}" name="phone" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring focus:ring-purple-200" placeholder="10 digit mobile number" required>
                             </div>
                         </div>
         
                         <div>
                             <label class="block text-sm font-medium text-gray-700">Flat, House no., Building, Company *</label>
-                            <input type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring focus:ring-purple-200" required>
+                            <input type="text" name="house" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring focus:ring-purple-200" required>
                         </div>
         
                         <div>
                             <label class="block text-sm font-medium text-gray-700">Area, Street, Sector, Village *</label>
-                            <input type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring focus:ring-purple-200" required>
+                            <input type="text" name="street" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring focus:ring-purple-200" required>
                         </div>
         
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
                                 <label class="block text-sm font-medium text-gray-700">Pincode *</label>
-                                <input type="text" pattern="[0-9]{6}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring focus:ring-purple-200" placeholder="6 digits [0-9] PIN code" required>
+                                <input type="text" pattern="[0-9]{6}" name="pincode" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring focus:ring-purple-200" placeholder="6 digits [0-9] PIN code" required>
                             </div>
                             <div>
                                 <label class="block text-sm font-medium text-gray-700">Landmark (optional)</label>
-                                <input type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring focus:ring-purple-200" placeholder="near appolo hospital">
+                                <input type="text" name="landmark" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring focus:ring-purple-200" placeholder="near appolo hospital">
                             </div>
                         </div>
         
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
                                 <label class="block text-sm font-medium text-gray-700">City/Town *</label>
-                                <input type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring focus:ring-purple-200" required>
+                                <input type="text" name="city" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring focus:ring-purple-200" required>
                             </div>
-                            <div>
+                            <div> 
                                 <label class="block text-sm font-medium text-gray-700">State *</label>
-                                <select class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring focus:ring-purple-200" required>
+                                <select name="state" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring focus:ring-purple-200" required>
                                     <option value="">Select your state</option>
                                     <option>Maharashtra</option>
                                     <option>Delhi</option>
@@ -176,11 +203,11 @@
         
                         <div class="flex items-center space-x-4">
                             <div class="flex items-center">
-                                <input type="radio" name="addressType" id="homeAddress" class="focus:ring-purple-500 h-4 w-4 text-purple-600 border-gray-300" checked>
+                                <input type="radio" name="addressType" value="home" id="homeAddress" class="focus:ring-purple-500 h-4 w-4 text-purple-600 border-gray-300" checked>
                                 <label for="homeAddress" class="ml-2 block text-sm text-gray-900">Home</label>
                             </div>
                             <div class="flex items-center">
-                                <input type="radio" name="addressType" id="workAddress" class="focus:ring-purple-500 h-4 w-4 text-purple-600 border-gray-300">
+                                <input type="radio" name="addressType" value="work" id="workAddress" class="focus:ring-purple-500 h-4 w-4 text-purple-600 border-gray-300">
                                 <label for="workAddress" class="ml-2 block text-sm text-gray-900">Work</label>
                             </div>
                         </div>
@@ -200,7 +227,8 @@
         </div>
     </div>
     <script>
-         const toggleButton = document.getElementById('toggleAddressForm');
+       
+        const toggleButton = document.getElementById('toggleAddressForm');
         const addressForm = document.getElementById('addressForm');
         const cancelButton = document.getElementById('cancelAddressForm');
 
@@ -213,6 +241,7 @@
             addressForm.classList.add('hidden');
             toggleButton.classList.remove('hidden');
         });
+
     </script>
 </body>
 </html>

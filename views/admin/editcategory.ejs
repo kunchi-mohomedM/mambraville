@@ -6,6 +6,8 @@
     <title>Edit Category | Mambraville Admin</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 </head>
 <body class="bg-gray-100">
     <div class="flex h-screen">
@@ -87,29 +89,53 @@
         </div>
     </div>
     
-    <script>
-       const form= document.getElementById('categoryForm')
-        form.addEventListener('submit', async function (e) {
-            e.preventDefault(); // Prevent default form submission
-            const categoryName = document.getElementById('category-name').value.trim();
-            const categoryDesc = document.getElementById('category-desc').value.trim();
-            const nameError = document.getElementById('name-error');
+       <script>
+    const form = document.getElementById('categoryForm');
+    form.addEventListener('submit', async function (e) {
+        e.preventDefault(); // Prevent default form submission
+        const categoryName = document.getElementById('category-name').value.trim();
+        const categoryDesc = document.getElementById('category-desc').value.trim();
+        const nameError = document.getElementById('name-error');
 
-            // Client-side validation
-            if (!categoryName) {
-                nameError.classList.remove('hidden');
-                return;
-            } else {
-                nameError.classList.add('hidden');
-            }
+        // Client-side validation
+        if (!categoryName) {
+            nameError.classList.remove('hidden');
+            return;
+        } else {
+            nameError.classList.add('hidden');
+        }
 
-            form.submit()
-
+        // SweetAlert confirmation before editing
+        const result = await Swal.fire({
+            title: 'Are you sure?',
+            text: "Do you want to save the changes?",
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, save it!'
         });
 
-        function logout() {
-            window.location.href = '/admin/logout';
+        if (result.isConfirmed) {
+            form.submit(); // Proceed with form submission
         }
+    });
+
+    // Show success message if redirected with ?mssg=
+    const urlParams = new URLSearchParams(window.location.search);
+    const message = urlParams.get('mssg');
+    if (message) {
+        Swal.fire({
+            icon: 'success',
+            title: message,
+            showConfirmButton: false,
+            timer: 1800
+        });
+    }
+
+    function logout() {
+        window.location.href = '/admin/logout';
+    }
     </script>
 </body>
 </html>

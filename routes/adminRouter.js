@@ -6,6 +6,7 @@ const categoryController = require("../controller/admin/categoryController")
 const brandController = require("../controller/admin/brandController")
 const productController= require("../controller/admin/productController")
 const dashboardController=require("../controller/admin/dashboardController")
+const {deleteCategory}=require('../controller/admin/categoryController');
 const upload=require("../config/multer");
 
 
@@ -23,6 +24,7 @@ router.get("/addCategory",adminAuth,categoryController.loadaddCategory);
 router.post("/addCategory",adminAuth,categoryController.addCategory);
 router.get("/editCategory/:id",adminAuth,categoryController.loadeditcategory)
 router.post("/editCategory",adminAuth,categoryController.editCategory)
+router.get('/category/delete/:id',deleteCategory);
 
 
 router.get("/brands",adminAuth,brandController.brandInfo);

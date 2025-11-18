@@ -2,6 +2,9 @@ const express= require("express");
 const router = express.Router();
 const userController =require("../controller/user/userController")
 const userproductController=require("../controller/user/userproductController")
+const addressController=require("../controller/user/addressController")
+const ordersummaryController=require("../controller/user/ordersummaryController");
+const cartControler=require("../controller/user/cartController")
 const {userAuth,isLogin}= require('../middleware/userAuth');
 const passport = require("passport");
 
@@ -35,11 +38,24 @@ router.get('/auth/google/callback',passport.authenticate('google',{failureRedire
 
 
 router.get("/user-Profile",userAuth,userController.loaduserprofile)
+
 router.get("/addressmanagement",userAuth,userController.loadaddressmanagement)
 
+//address operations
+router.post("/add-address",userAuth,addressController.addAddress);
+router.post("/edit-address/:id",userAuth,addressController.editAddress);
+router.get("/delete-address/:id",userAuth,addressController.deleteAddress);
+router.get("/set-default-address/:id",userAuth,addressController.setDefaultAddress);
+
+router.get("/add-address-page",userAuth,addressController.loadAddAddressPage);
+router.get("/edit-address-page/:id",userAuth,addressController.loadEditAddressPage);
+
+
+router.get("/order-summary",userAuth,ordersummaryController.loadOrderSummary);
 
 
 
+router.get("/cart",userAuth,cartControler.loadCart)
 
 router.get("/",userController.loadHomepage);
 

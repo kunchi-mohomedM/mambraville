@@ -394,25 +394,58 @@ const forgotpassword = async(req,res)=>{
 
 const loaduserprofile=async(req,res)=>{
     try {
-       console.log(req.session.user)
-       const userId=req.session.user;
-       
-       const user = await User.findById(userId)
       
-        res.render("userprofile",{user})
+       const userId=req.session.user;
+       const user = await User.findById(userId).lean()
+
+       if(!user) return res.redirect("/login")
+
+        const addresses=user.address || []
+
+       const defaultAddress=addresses.find( a=> a.isDefault );
+      
+        res.render("userprofile",{
+            user,
+            addresses,
+            defaultAddress
+        });
+
+
     } catch (error) {
         console.log("Error occured while rendering userprofile page",error)
+        res.redirect("/pageNotFound");
     }
-}
+};
 
 
 const loadaddressmanagement=async(req,res)=>{
     try {
-        res.render("addressmanagement")
+        const userId=req.session.user;
+
+        if(!userId){
+            return res.redirect("/login");
+        }
+
+        const user=await User.findById(userId).lean();
+
+        if(!user){
+            return res.redirect("/login")
+        }
+
+        const addressList=Array.isArray(user.address) ? user.address : [];
+
+        const defaultAddress=addressList.find(a=>a.isDefault) || null;
+
+        res.render("addressmanagement",{
+            addressList,
+            defaultAddress
+        });
+
     } catch (error) {
-        console.log("Error occured while rendering addressmanagement page",error)
+        console.log("Error occured while rendering addressmanagement page",error);
+        res.redirect("/pageNotFound");
     }
-}
+};
 
 
 

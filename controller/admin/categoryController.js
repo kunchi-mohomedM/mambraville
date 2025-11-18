@@ -85,14 +85,24 @@ const editCategory = async(req,res)=>{
     try {
         const {categoryId,categoryname,categorydesc}=req.body;
        // console.log(req.body)
-        const updatedCategory=await Category.findByIdAndUpdate(categoryId , {categoryname , description:categorydesc})
-        console.log(updatedCategory)
-        res.redirect("/admin/category")
+        const updatedCategory=await Category.findByIdAndUpdate(categoryId , {categoryname , description:categorydesc});
+        res.redirect("/admin/category?mssg=Category edited successfully.");
     } catch (error) {
-        console.error("Error occured while redirect category page")
+        console.error("Error editing category: ",error);
         res.redirect('/admin/category?mssg=Entered Category name already exists.Try again.')
     }
 }
+
+const deleteCategory=async(req,res)=>{
+    try{
+        const categoryId=req.params.id;
+        await Category.findByIdAndDelete(categoryId);
+        res.redirect("/admin/category?mssg=Category deleted successfully.");
+    }catch(error){
+        console.error("Error deleting Category :",error);
+        res.redirect("/admin/category?mssg=Error deleting category.");
+    }
+};
 
 
 const loadeditcategory=async(req,res)=>{
@@ -114,6 +124,7 @@ module.exports={
     addCategory,
     loadaddCategory,
     loadeditcategory,
-    editCategory
+    editCategory,
+    deleteCategory
 
 }

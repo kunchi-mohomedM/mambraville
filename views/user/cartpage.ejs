@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Cart | Mambraville</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+    <div class="container mx-auto px-4 py-8">
+        <h1 class="text-3xl font-bold mb-6">Your Shopping Cart</h1>
+
+        <% if(cart.items.length === 0){ %>
+            <p class="text-gray-600 text-lg">Your cart is empty. <a href="/products-user" class="text-blue-500 underline">Shop now</a></p>
+        <% } else { %>
+
+        <div class="bg-white shadow-md rounded-lg p-4 mb-6">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="border-b">
+                        <th class="py-2">Product</th>
+                        <th class="py-2">Price</th>
+                        <th class="py-2">Discount</th>
+                        <th class="py-2">Quantity</th>
+                        <th class="py-2">Subtotal</th>
+                        <th class="py-2">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% cart.items.forEach(item => { %>
+                        <tr class="border-b">
+                            <td class="py-2 flex items-center gap-4">
+                                <img src="<%= item.image %>" alt="<%= item.name %>" class="w-16 h-16 object-cover rounded">
+                                <span><%= item.name %></span>
+                            </td>
+                            <td class="py-2">₹<%= item.price %></td>
+                            <td class="py-2"><%= item.discount %> %</td>
+                            <td class="py-2">
+                                <%= item.qty %>
+                                <!-- Later you can replace with +/- buttons to change qty -->
+                            </td>
+                            <td class="py-2">₹<%= item.subtotal.toFixed(2) %></td>
+                            <td class="py-2">
+                                <form action="/cart/remove/<%= item.productId %>" method="POST">
+                                    <button type="submit" class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600">Remove</button>
+                                </form>
+                            </td>
+                        </tr>
+                    <% }) %>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="flex justify-end items-center gap-6">
+            <span class="text-xl font-semibold">Total: ₹<%= cart.cartTotal.toFixed(2) %></span>
+            <a href="/checkout" class="bg-green-500 text-white px-6 py-2 rounded hover:bg-green-600">Proceed to Checkout</a>
+        </div>
+
+        <% } %>
+    </div>
+</body>
+</html>

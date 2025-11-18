@@ -64,7 +64,8 @@ const loadUserProducts = async (req, res) => {
             currentPage: page,
             totalPages: Math.ceil(totalProducts / limit),
             totalProducts,
-            queryParams: req.query 
+            queryParams: req.query,
+            searchQuery: req.query.search || ""
         });
 
     } catch (error) {
@@ -81,7 +82,9 @@ const loadUserProducts = async (req, res) => {
 const loadproductdetails=async(req,res)=>{
     try {
         const productId=req.params.id;
-        const product=await Products.findById(productId)
+        const product=await Products.findOne({_id:productId,isDeleted:false})
+        if(!product) return res.status(404).send("Product not found")
+
         const category = await Category.findById(product.category)
         const relatedProducts=await Products.find({isDeleted:false})
         .sort({categoryname:-1})
