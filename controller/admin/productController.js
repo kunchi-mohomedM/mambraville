@@ -1,7 +1,7 @@
 const Category = require("../../models/categorySchema")
-const Products = require("../../models/productSchema")
 const brand=require("../../models/brandSchema")
-
+const cloudinary = require('../../config/cloudinary');
+const Product = require("../../models/productSchema");
 
 const loadproductpage=async(req,res)=>{
 
@@ -38,7 +38,7 @@ const loadproductpage=async(req,res)=>{
 
 
 
-        const products=await Products.find(query)
+        const products=await Product.find(query)
         .populate('category')
         .populate('brand')
         .sort(sortOptions)
@@ -47,7 +47,7 @@ const loadproductpage=async(req,res)=>{
         .exec();
 
 
-        const totalProducts = await Products.countDocuments(query);
+        const totalProducts = await Product.countDocuments(query);
         const totalPages = Math.ceil(totalProducts/limit);
        // console.log(products)
         return res.render("productmanagement",{
@@ -76,52 +76,81 @@ const loadaddproduct=async(req,res)=>{
     }
 }
 
-const addproducts =async(req,res)=>{
-    console.log(req.body);
+// productController.addproducts - FIXED VERSION
+const addproducts = async (req, res) => {
     try {
         const {
             productName,
             description,
-            quantity,
             price,
+            discount = 0,
+            quantity,
             category,
             brand,
-            discount
-        }=req.body;
+        } = req.body;
 
-        const images=[];
-        // console.log(req.files);
-        if(req.files && req.files.length > 0){
-            req.files.forEach(file=>{
-                console.log(file)
-                images.push(file.path.replace('public\\','/'));
+        if (!req.files || req.files.length !== 4) {
+            return res.status(400).json({
+                success: false,
+                message: "Exactly 4 images are required."
             });
         }
 
+        // CORRECT WAY: Wrap upload_stream in a Promise
+        const uploadToCloudinary = (buffer) => {
+            return new Promise((resolve, reject) => {
+                const uploadStream = cloudinary.uploader.upload_stream(
+                    {
+                        folder: "mambraville/products",
+                        transformation: [
+                            { width: 1200, height: 1200, crop: "limit" },
+                            { quality: "auto", fetch_format: "auto" }
+                        ]
+                    },
+                    (error, result) => {
+                        if (error) return reject(error);
+                        resolve(result);
+                    }
+                );
+                uploadStream.end(buffer);
+            });
+        };
 
+        // Upload all 4 images
+        const uploadPromises = req.files.map(file => uploadToCloudinary(file.buffer));
 
-        //console.log(images)
-        const newProduct=new Products({
-            productName,
-            description,
-            quantity,
-            price,
+        const results = await Promise.all(uploadPromises); // Now this actually waits!
+
+        const uploadedImages = results.map(result => ({
+            url: result.secure_url,
+            public_id: result.public_id
+        }));
+
+        const newProduct = new Product({
+            productName: productName.trim(),
+            description: description.trim(),
+            price: Number(price),
+            discount: Number(discount || 0),
+            quantity: Number(quantity),
             category,
             brand,
-            discount,
-            productImage:images,
-        })
+            productImage: uploadedImages
+        });
 
-        
         await newProduct.save();
 
-        res.status(200).redirect("/admin/products")
+        return res.status(200).json({
+            success: true,
+            message: "Product added successfully",
+            redirect: "/admin/products"
+        });
+
     } catch (error) {
-        console.error("Error occured while adding products",error);
-        res.status(500).json({
-            success:false,
-            message:"Failed to add products",
-            error:error.message
+        console.error("Add product error:", error);
+        return res.status(500).json({
+            success: false,
+            message: "Server error",
+            error: error.message
         });
     }
 };
@@ -131,7 +160,7 @@ const loadeditproduct=async(req,res)=>{
         const productId=req.params.id;
         const categories=await Category.find({})
         const brands=await brand.find({})
-        const product = await Products.findById(productId)
+        const product = await Product.findById(productId)
         console.log(product)
         if(!product){
             return res.status(404).send("Product not found");
@@ -148,7 +177,7 @@ const editproduct = async(req, res) => {
         const { productName, description, price, discount, category, brand, quantity } = req.body;
         const existingImages = req.body.existingImages;
     
-        const product = await Products.findById(productId);
+        const product = await Product.findById(productId);
         
         if (!product) {
             return res.status(404).send("Product not found");
@@ -173,7 +202,7 @@ const editproduct = async(req, res) => {
             }
         }
         
-        const updatedProduct = await Products.findByIdAndUpdate(
+        const updatedProduct = await Product.findByIdAndUpdate(
             productId,
             {
                 productName,
@@ -200,7 +229,7 @@ const deleteProductImage = async(req, res) => {
         const productId = req.params.productId;
         const imageIndex = req.params.imageIndex;
         
-        const product = await Products.findById(productId);
+        const product = await Product.findById(productId);
         
         if (!product) {
             return res.status(404).send("Product not found");
@@ -233,7 +262,7 @@ const toggleDeletedproduct=async(req,res)=>{
     try {
         const {productId}=req.body
 
-        const product= await Products.findById(productId)
+        const product= await Product.findById(productId)
         if(!product){
             return res.status(404).json({error:'product not found'})
         }

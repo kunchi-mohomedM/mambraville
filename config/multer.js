@@ -1,34 +1,23 @@
+// upload.js  (Replace your current multer config with this)
+
 const multer = require('multer');
-const path = require('path');
 
-// Set storage engine
-const storage = multer.diskStorage({
-  destination: function(req, file, cb) {
-    cb(null, 'public/uploads/');
-  },
-  filename: function(req, file, cb) {
-    cb(null, `${Date.now()}-${file.originalname}`);
-  }
-});
+// Use memory storage instead of diskStorage
+const storage = multer.memoryStorage();  // This keeps files in RAM (buffer)
 
-// Check file type
 const fileFilter = (req, file, cb) => {
-
-  // Accept only image files
   const filetypes = /jpeg|jpg|png|webp/;
-  const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
   const mimetype = filetypes.test(file.mimetype);
+  const extname = filetypes.test(require('path').extname(file.originalname).toLowerCase());
 
   if (mimetype && extname) {
     return cb(null, true);
-  } else {
-    cb(new Error('Only image files are allowed!'), false);
   }
+  cb(new Error('Only image files (jpeg, jpg, png, webp) are allowed!'), false);
 };
 
-// Initialize upload
 const upload = multer({
-  storage: storage,
+  storage: storage,                    // In memory, no disk write
   limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
   fileFilter: fileFilter
 });

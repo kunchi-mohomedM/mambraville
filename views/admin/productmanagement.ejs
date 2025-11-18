@@ -118,7 +118,7 @@
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         <div class="flex items-center">
                                             <div class="h-10 w-10 flex-shrink-0">
-                                                <img class="h-10 w-10 rounded-md object-cover" src='<%= product.productImage[0]%>' alt="Product image">
+                                                <img class="h-10 w-10 rounded-md object-cover" src='<%= product.productImage[0]?.url%>' alt="Product image">
                                             </div>
                                             <div class="ml-4">
                                                 <div class="text-sm font-medium text-gray-900"><%= product.productName %></div>

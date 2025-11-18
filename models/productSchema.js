@@ -32,7 +32,12 @@ const productSchema = new Schema({
         type:Number,
         required:true,
     },
-    productImage:[String],
+    productImage: [
+        {
+            url: { type: String, required: true },
+            public_id: { type: String }
+        }
+    ],
     isDeleted:{
         type:Boolean,
         default:false

@@ -36,7 +36,7 @@ router.post("/editBrands",adminAuth,brandController.editBrands)
 
 router.get("/products",adminAuth,productController.loadproductpage)
 router.get("/addproduct",adminAuth,productController.loadaddproduct)
-router.post("/addproduct",adminAuth,upload.array('productImages',4),productController.addproducts)
+router.post("/addproduct", adminAuth, upload.array('productImages', 4), productController.addproducts);
 router.get("/editproduct/:id",adminAuth,productController.loadeditproduct)
 
 router.post('/editproduct/:id', upload.array('productImages', 4),productController.editproduct);

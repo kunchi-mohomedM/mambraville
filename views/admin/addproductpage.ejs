@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -15,19 +16,23 @@
             height: 128px;
             overflow: hidden;
         }
+
         .image-preview-container img {
             max-width: 100%;
             max-height: 100%;
             display: block;
         }
+
         .cropper-container {
             max-height: 400px;
         }
     </style>
 </head>
+
 <body class="bg-gray-100 min-h-screen">
     <!-- Crop Modal -->
-    <div id="cropModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50" style="display: none;">
+    <div id="cropModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50"
+        style="display: none;">
         <div class="bg-white rounded-lg p-6 max-w-2xl w-full mx-4">
             <div class="flex justify-between items-center mb-4">
                 <h3 class="text-xl font-bold">Crop Image</h3>
@@ -41,8 +46,10 @@
                 </div>
             </div>
             <div class="flex justify-end gap-3">
-                <button onclick="closeCropModal()" class="bg-gray-300 text-gray-800 py-2 px-4 rounded-lg hover:bg-gray-400">Cancel</button>
-                <button onclick="applyCrop()" class="bg-purple-600 text-white py-2 px-4 rounded-lg hover:bg-purple-700">Apply Crop</button>
+                <button onclick="closeCropModal()"
+                    class="bg-gray-300 text-gray-800 py-2 px-4 rounded-lg hover:bg-gray-400">Cancel</button>
+                <button onclick="applyCrop()"
+                    class="bg-purple-600 text-white py-2 px-4 rounded-lg hover:bg-purple-700">Apply Crop</button>
             </div>
         </div>
     </div>
@@ -50,7 +57,8 @@
     <!-- Main Content -->
     <div class="min-h-screen flex flex-col">
         <!-- Header -->
-        <header class="bg-gradient-to-r from-black to-purple-900 text-white p-4 w-full flex justify-between items-center shadow-md">
+        <header
+            class="bg-gradient-to-r from-black to-purple-900 text-white p-4 w-full flex justify-between items-center shadow-md">
             <h1 class="text-2xl font-bold">Add Product</h1>
             <div class="flex items-center">
                 <span class="mr-4">Admin User</span>
@@ -60,18 +68,23 @@
 
         <!-- Add Product Form -->
         <div class="flex-1 p-4 md:p-6 overflow-y-auto">
-            <form class="bg-white p-6 rounded-lg shadow-md w-full max-w-5xl mx-auto" id="productForm"  method="post" action="/admin/addproduct" enctype="multipart/form-data" >
+            <form class="bg-white p-6 rounded-lg shadow-md w-full max-w-5xl mx-auto" id="productForm" method="post"
+                action="/admin/addproduct" enctype="multipart/form-data">
                 <!-- Product Name -->
                 <div class="mb-6">
                     <label class="block text-gray-700 font-semibold mb-2" for="product-name">Product Name</label>
-                    <input type="text" name="productName" id="product-name" class="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-600 bg-gray-50" placeholder="Enter product name">
+                    <input type="text" name="productName" id="product-name"
+                        class="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-600 bg-gray-50"
+                        placeholder="Enter product name">
                     <p id="error-productName" class="text-red-500 text-sm mt-1"></p>
                 </div>
 
                 <!-- Description -->
                 <div class="mb-6">
                     <label class="block text-gray-700 font-semibold mb-2" for="description">Description</label>
-                    <textarea id="description" name="description" class="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-600 bg-gray-50" rows="4" placeholder="Enter product description"></textarea>
+                    <textarea id="description" name="description"
+                        class="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-600 bg-gray-50"
+                        rows="4" placeholder="Enter product description"></textarea>
                     <p id="error-description" class="text-red-500 text-sm mt-1"></p>
                 </div>
 
@@ -83,14 +96,18 @@
                             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                 <span class="text-gray-500">$</span>
                             </div>
-                            <input type="number" name="price" id="price" class="w-full p-3 pl-8 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-600 bg-gray-50" placeholder="0.00" step="0.01">
+                            <input type="number" name="price" id="price"
+                                class="w-full p-3 pl-8 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-600 bg-gray-50"
+                                placeholder="0.00" step="0.01">
                         </div>
                         <p id="error-price" class="text-red-500 text-sm mt-1"></p>
                     </div>
                     <div>
                         <label class="block text-gray-700 font-semibold mb-2" for="discount">Discount (%)</label>
                         <div class="relative">
-                            <input type="number" name="discount" id="discount" class="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-600 bg-gray-50" placeholder="0" min="0" max="100">
+                            <input type="number" name="discount" id="discount"
+                                class="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-600 bg-gray-50"
+                                placeholder="0" min="0" max="100">
                             <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
                                 <span class="text-gray-500">%</span>
                             </div>
@@ -100,33 +117,41 @@
                 </div>
 
                 <!-- Category and Brand -->
-<div>
-    <label class="block text-gray-700 font-semibold mb-2" for="category">Category</label>
-    <select id="category" name="category" class="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-600 bg-gray-50"  >
-        <p id="error-category" class="text-red-500 text-sm mt-1"></p>
-        <option value="" disabled selected>Select a category</option>
-        <% categories.forEach(category => { %>
-            <option value="<%= category._id %>"><%= category.categoryname %></option>
-        <% }); %>
-    </select>
-</div>
+                <div>
+                    <label class="block text-gray-700 font-semibold mb-2" for="category">Category</label>
+                    <select id="category" name="category"
+                        class="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-600 bg-gray-50">
+                        <p id="error-category" class="text-red-500 text-sm mt-1"></p>
+                        <option value="" disabled selected>Select a category</option>
+                        <% categories.forEach(category=> { %>
+                            <option value="<%= category._id %>">
+                                <%= category.categoryname %>
+                            </option>
+                            <% }); %>
+                    </select>
+                </div>
 
-<!-- Brand Dropdown -->
-<div>
-    <label class="block text-gray-700 font-semibold mb-2" for="brand">Brand</label>
-    <select id="brand" name="brand" class="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-600 bg-gray-50"  >
-        <p id="error-brand" class="text-red-500 text-sm mt-1"></p>
-        <option value="" disabled selected>Select a brand</option>
-        <% brands.forEach(brand => { %>
-            <option value="<%= brand._id %>"><%= brand.brandname %></option> <!-- Fixed here -->
-        <% }); %>
-    </select>
-</div>
+                <!-- Brand Dropdown -->
+                <div>
+                    <label class="block text-gray-700 font-semibold mb-2" for="brand">Brand</label>
+                    <select id="brand" name="brand"
+                        class="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-600 bg-gray-50">
+                        <p id="error-brand" class="text-red-500 text-sm mt-1"></p>
+                        <option value="" disabled selected>Select a brand</option>
+                        <% brands.forEach(brand=> { %>
+                            <option value="<%= brand._id %>">
+                                <%= brand.brandname %>
+                            </option> <!-- Fixed here -->
+                            <% }); %>
+                    </select>
+                </div>
 
                 <!-- Stock -->
                 <div class="mb-6">
                     <label class="block text-gray-700 font-semibold mb-2" for="stock">Stock Quantity</label>
-                    <input type="number" name="quantity" id="stock" class="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-600 bg-gray-50" placeholder="Enter stock quantity" min="0">
+                    <input type="number" name="quantity" id="stock"
+                        class="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-600 bg-gray-50"
+                        placeholder="Enter stock quantity" min="0">
                     <p id="error-quantity" class="text-red-500 text-sm mt-1"></p>
                 </div>
 
@@ -134,51 +159,70 @@
                 <div class="mb-6">
                     <label class="block text-gray-700 font-semibold mb-2">Product Images (4 required)</label>
                     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-                        <div class="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center relative" id="preview-container-1">
-                            <label for="image1" class="cursor-pointer flex flex-col items-center justify-center h-32" id="label-1">
+                        <div class="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center relative"
+                            id="preview-container-1">
+                            <label for="image1" class="cursor-pointer flex flex-col items-center justify-center h-32"
+                                id="label-1">
                                 <i class="fas fa-cloud-upload-alt text-3xl text-gray-400 mb-2"></i>
                                 <span class="text-sm text-gray-600">Image 1 (Main)</span>
                                 <span class="text-xs text-gray-500 mt-1">Click to upload</span>
                             </label>
                             <input type="file" id="image1" class="hidden image-input" accept="image/*" data-index="0">
-                            <button type="button" class="hidden absolute top-2 right-2 bg-red-500 text-white rounded-full w-6 h-6 text-xs hover:bg-red-600" onclick="removeImage(0)">×</button>
+                            <button type="button"
+                                class="hidden absolute top-2 right-2 bg-red-500 text-white rounded-full w-6 h-6 text-xs hover:bg-red-600"
+                                onclick="removeImage(0)">×</button>
                         </div>
-                        <div class="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center relative" id="preview-container-2">
-                            <label for="image2" class="cursor-pointer flex flex-col items-center justify-center h-32" id="label-2">
+                        <div class="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center relative"
+                            id="preview-container-2">
+                            <label for="image2" class="cursor-pointer flex flex-col items-center justify-center h-32"
+                                id="label-2">
                                 <i class="fas fa-cloud-upload-alt text-3xl text-gray-400 mb-2"></i>
                                 <span class="text-sm text-gray-600">Image 2</span>
                                 <span class="text-xs text-gray-500 mt-1">Click to upload</span>
                             </label>
                             <input type="file" id="image2" class="hidden image-input" accept="image/*" data-index="1">
-                            <button type="button" class="hidden absolute top-2 right-2 bg-red-500 text-white rounded-full w-6 h-6 text-xs hover:bg-red-600" onclick="removeImage(1)">×</button>
+                            <button type="button"
+                                class="hidden absolute top-2 right-2 bg-red-500 text-white rounded-full w-6 h-6 text-xs hover:bg-red-600"
+                                onclick="removeImage(1)">×</button>
                         </div>
-                        <div class="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center relative" id="preview-container-3">
-                            <label for="image3" class="cursor-pointer flex flex-col items-center justify-center h-32" id="label-3">
+                        <div class="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center relative"
+                            id="preview-container-3">
+                            <label for="image3" class="cursor-pointer flex flex-col items-center justify-center h-32"
+                                id="label-3">
                                 <i class="fas fa-cloud-upload-alt text-3xl text-gray-400 mb-2"></i>
                                 <span class="text-sm text-gray-600">Image 3</span>
                                 <span class="text-xs text-gray-500 mt-1">Click to upload</span>
                             </label>
                             <input type="file" id="image3" class="hidden image-input" accept="image/*" data-index="2">
-                            <button type="button" class="hidden absolute top-2 right-2 bg-red-500 text-white rounded-full w-6 h-6 text-xs hover:bg-red-600" onclick="removeImage(2)">×</button>
+                            <button type="button"
+                                class="hidden absolute top-2 right-2 bg-red-500 text-white rounded-full w-6 h-6 text-xs hover:bg-red-600"
+                                onclick="removeImage(2)">×</button>
                         </div>
-                        <div class="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center relative" id="preview-container-4">
-                            <label for="image4" class="cursor-pointer flex flex-col items-center justify-center h-32" id="label-4">
+                        <div class="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center relative"
+                            id="preview-container-4">
+                            <label for="image4" class="cursor-pointer flex flex-col items-center justify-center h-32"
+                                id="label-4">
                                 <i class="fas fa-cloud-upload-alt text-3xl text-gray-400 mb-2"></i>
                                 <span class="text-sm text-gray-600">Image 4</span>
                                 <span class="text-xs text-gray-500 mt-1">Click to upload</span>
                             </label>
                             <input type="file" id="image4" class="hidden image-input" accept="image/*" data-index="3">
-                            <button type="button" class="hidden absolute top-2 right-2 bg-red-500 text-white rounded-full w-6 h-6 text-xs hover:bg-red-600" onclick="removeImage(3)">×</button>
+                            <button type="button"
+                                class="hidden absolute top-2 right-2 bg-red-500 text-white rounded-full w-6 h-6 text-xs hover:bg-red-600"
+                                onclick="removeImage(3)">×</button>
                         </div>
                     </div>
-                    <p class="text-sm text-gray-500 mt-2">Upload exactly 4 images (max 5MB each). Supported formats: JPG, PNG, WebP</p>
+                    <p class="text-sm text-gray-500 mt-2">Upload exactly 4 images (max 5MB each). Supported formats:
+                        JPG, PNG, WebP</p>
                     <p id="error-images" class="text-red-500 text-sm mt-1"></p>
                 </div>
 
                 <!-- Submit Buttons -->
                 <div class="flex flex-col sm:flex-row justify-end gap-3 mt-8">
-                    <button type="button" onclick="window.location.reload()" class="bg-gray-300 text-gray-800 py-3 px-6 rounded-lg hover:bg-gray-400 transition duration-300">Cancel</button>
-                    <button type="submit" class="bg-purple-600 text-white py-3 px-6 rounded-lg hover:bg-purple-700 transition duration-300 flex items-center justify-center">
+                    <button type="button" onclick="window.location.reload()"
+                        class="bg-gray-300 text-gray-800 py-3 px-6 rounded-lg hover:bg-gray-400 transition duration-300">Cancel</button>
+                    <button type="submit"
+                        class="bg-purple-600 text-white py-3 px-6 rounded-lg hover:bg-purple-700 transition duration-300 flex items-center justify-center">
                         <i class="fas fa-plus-circle mr-2"></i> Add Product
                     </button>
                 </div>
@@ -191,240 +235,214 @@
         </footer>
     </div>
 
-    <script>
-        let cropper = null;
-        let currentImageIndex = -1;
-        const croppedImages = {}; // Store cropped blobs by index
+<script>
+    let cropper = null;
+    let currentImageIndex = -1;
+    let selectedFiles = {}; // Stores the original File objects (best practice)
 
-        document.addEventListener("DOMContentLoaded", function() {
-            const form = document.getElementById('productForm');
-            const imageInputs = document.querySelectorAll('.image-input');
+    document.addEventListener("DOMContentLoaded", function () {
+        const imageInputs = document.querySelectorAll('.image-input');
 
-            // Handle image file selection
-            imageInputs.forEach((input) => {
-                input.addEventListener('change', function(e) {
-                    const file = e.target.files[0];
-                    if (!file) return;
+        imageInputs.forEach(input => {
+            input.addEventListener('change', function (e) {
+                const file = e.target.files[0];
+                if (!file) return;
 
-                    const index = parseInt(this.dataset.index);
-                    const allowedFormats = ["image/jpeg", "image/png", "image/jpg", "image/webp"];
-                    const maxSize = 5 * 1024 * 1024;
+                const index = parseInt(this.dataset.index);
 
-                    if (!allowedFormats.includes(file.type)) {
-                        showError('error-images', "Invalid file type! Please upload PNG, JPG, or WebP.");
-                        this.value = "";
-                        return;
-                    }
-
-                    if (file.size > maxSize) {
-                        showError('error-images', "File size exceeds 5MB! Please upload a smaller file.");
-                        this.value = "";
-                        return;
-                    }
-
-                    clearError('error-images');
-                    openCropModal(file, index);
-                });
-            });
-
-            // Form submission
-            form.addEventListener('submit', function(e) {
-                e.preventDefault();
-                
-                // Clear all previous errors
-                document.querySelectorAll('p[id^="error-"]').forEach(p => p.textContent = "");
-
-                let isValid = true;
-
-                const productName = document.getElementById('product-name').value.trim();
-                const description = document.getElementById('description').value.trim();
-                const price = parseFloat(document.getElementById('price').value);
-                const discount = parseFloat(document.getElementById('discount').value) || 0;
-                const quantity = parseFloat(document.getElementById('stock').value);
-                const category = document.getElementById('category').value;
-                const brand = document.getElementById('brand').value;
-
-                // Validation checks
-                if (!productName) {
-                    showError('error-productName', "Product name is required.");
-                    isValid = false;
+                // Validate file type
+                const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+                if (!allowedTypes.includes(file.type)) {
+                    showError('error-images', 'Only JPG, PNG, or WebP images are allowed.');
+                    this.value = '';
+                    return;
                 }
 
-                if (!description) {
-                    showError('error-description', "Description is required.");
-                    isValid = false;
+                // Validate file size (5MB)
+                if (file.size > 5 * 1024 * 1024) {
+                    showError('error-images', 'Each image must be under 5MB.');
+                    this.value = '';
+                    return;
                 }
 
-                if (!category) {
-                    showError('error-category', "Please select a category.");
-                    isValid = false;
-                }
-
-                if (!brand) {
-                    showError('error-brand', "Please select a brand.");
-                    isValid = false;
-                }
-
-                if (isNaN(price) || price <= 0) {
-                    showError('error-price', "Price must be greater than 0.");
-                    isValid = false;
-                }
-
-                if (isNaN(discount) || discount < 0 || discount > 100) {
-                    showError('error-discount', "Discount must be between 0 and 100.");
-                    isValid = false;
-                }
-
-                if (isNaN(quantity) || quantity < 0) {
-                    showError('error-quantity', "Quantity cannot be negative.");
-                    isValid = false;
-                }
-
-                const uploadedImagesCount = Object.keys(croppedImages).length;
-                if (uploadedImagesCount !== 4) {
-                    showError('error-images', `Please upload exactly 4 images. Currently: ${uploadedImagesCount}/4`);
-                    isValid = false;
-                }
-
-                if (!isValid) return false;
-
-                // If validation passes, create FormData and submit
-                const formData = new FormData();
-                formData.append('productName', productName);
-                formData.append('description', description);
-                formData.append('price', price);
-                formData.append('discount', discount);
-                formData.append('quantity', quantity);
-                formData.append('category', category);
-                formData.append('brand', brand);
-                console.log("code running 1")
-                // Add cropped images
-                for (let i = 0; i < 4; i++) {
-                    console.log("code running 2")
-                    if (croppedImages[i]) {
-                        console.log("code running 3")
-                        formData.append('productImage', croppedImages[i], `images${i + 1}.jpg`);
-                    }
-                }
-
-                // Here you would normally send the formData to your server
-                console.log('Form submitted with data:', {
-                    productName, description, price, discount, quantity, category, brand,
-                    images: Object.keys(croppedImages).length
-                });
-                
-                
-                alert('Product added successfully! (In production, this would submit to the server)');
-                form.submit(); // Uncomment in production
+                clearError('error-images');
+                openCropModal(file, index);
             });
         });
 
-        function openCropModal(file, index) {
-            currentImageIndex = index;
-            const modal = document.getElementById('cropModal');
-            const cropImage = document.getElementById('cropImage');
+        // Form Submit
+        document.getElementById('productForm').addEventListener('submit', async function (e) {
+            e.preventDefault();
 
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                cropImage.src = e.target.result;
-                modal.style.display = 'flex';
+            // Clear previous errors
+            document.querySelectorAll('p[id^="error-"]').forEach(el => el.textContent = '');
 
-                if (cropper) {
-                    cropper.destroy();
+           
+            
+            // Check exactly 4 cropped images
+            const uploadedCount = Object.keys(selectedFiles).length;
+            console.log(uploadedCount);
+            if (uploadedCount !== 4) {
+                showError('error-images', `Please upload and crop exactly 4 images. Currently: ${uploadedCount}/4`);
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('productName', document.getElementById('product-name').value.trim());
+            formData.append('description', document.getElementById('description').value.trim());
+            formData.append('price', document.getElementById('price').value);
+            formData.append('discount', document.getElementById('discount').value || 0);
+            formData.append('quantity', document.getElementById('stock').value);
+            formData.append('category', document.getElementById('category').value);
+            formData.append('brand', document.getElementById('brand').value);
+
+            // Append all 4 cropped files properly
+            for (let i = 0; i < 4; i++) {
+                if (selectedFiles[i]) {
+                   formData.append('productImages', selectedFiles[i]);
                 }
+            }
 
-                cropper = new Cropper(cropImage, {
-                    aspectRatio: 1,
-                    viewMode: 1,
-                    autoCropArea: 1,
-                    responsive: true,
-                    background: false,
-                    modal: true,
-                    guides: true,
-                    highlight: true,
-                    cropBoxResizable: true,
-                    cropBoxMovable: true,
-                    minContainerWidth: 200,
-                    minContainerHeight: 200
+            try {
+                showLoading(true);
+
+                const response = await fetch('/admin/addproduct', {
+                    method: 'POST',
+                    body: formData
                 });
-            };
-            reader.readAsDataURL(file);
-        }
 
-        function closeCropModal() {
-            const modal = document.getElementById('cropModal');
-            modal.style.display = 'none';
-            
-            if (cropper) {
-                cropper.destroy();
-                cropper = null;
+                if (response.redirected) {
+                    window.location.href = response.url;
+                } else {
+                    const result = await response.json();
+                    alert(result.message || 'Product added failed!');
+                }
+            } catch (err) {
+                console.error(err);
+                alert('Network error. Please try again.');
+            } finally {
+                showLoading(false);
             }
-            
-            // Clear the file input if cropping was cancelled
-            if (currentImageIndex >= 0 && !croppedImages[currentImageIndex]) {
-                const input = document.querySelector(`[data-index="${currentImageIndex}"]`);
-                if (input) input.value = "";
-            }
-            
-            currentImageIndex = -1;
+        });
+    });
+
+    // Open Crop Modal
+    function openCropModal(file, index) {
+        currentImageIndex = index;
+
+        const modal = document.getElementById('cropModal');
+        const cropImage = document.getElementById('cropImage');
+
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            cropImage.src = e.target.result;
+            modal.style.display = 'flex';
+
+            if (cropper) cropper.destroy();
+
+            cropper = new Cropper(cropImage, {
+                aspectRatio: 1 / 1, // square crop
+                viewMode: 1,
+                autoCropArea: 1,
+                responsive: true,
+                background: false,
+                modal: true,
+                guides: true,
+                highlight: true,
+                cropBoxMovable: true,
+                cropBoxResizable: true,
+            });
+        };
+        reader.readAsDataURL(file);
+    }
+
+    // Close Modal
+    function closeCropModal() {
+        document.getElementById('cropModal').style.display = 'none';
+        if (cropper) {
+            cropper.destroy();
+            cropper = null;
         }
 
-        function applyCrop() {
-            if (!cropper || currentImageIndex < 0) return;
-
-            cropper.getCroppedCanvas({
-                width: 800,
-                height: 800,
-                imageSmoothingQuality: 'high'
-            }).toBlob(function(blob) {
-                croppedImages[currentImageIndex] = blob;
-                
-                // Show preview
-                const previewContainer = document.getElementById(`preview-container-${currentImageIndex + 1}`);
-                const label = document.getElementById(`label-${currentImageIndex + 1}`);
-                const removeBtn = previewContainer.querySelector('button');
-                
-                label.innerHTML = '';
-                const img = document.createElement('img');
-                img.src = URL.createObjectURL(blob);
-                img.className = 'w-full h-32 object-cover rounded';
-                label.appendChild(img);
-                
-                removeBtn.classList.remove('hidden');
-                
-                closeCropModal();
-            }, 'image/jpeg', 0.9);
+        // If user cancelled, remove the selected file
+        if (currentImageIndex >= 0 && !selectedFiles[currentImageIndex]) {
+            const input = document.querySelector(`[data-index="${currentImageIndex}"]`);
+            if (input) input.value = '';
         }
+        currentImageIndex = -1;
+    }
 
-        function removeImage(index) {
-            delete croppedImages[index];
-            
-            const previewContainer = document.getElementById(`preview-container-${index + 1}`);
-            const label = document.getElementById(`label-${index + 1}`);
-            const input = document.querySelector(`[data-index="${index}"]`);
+    // Apply Crop → Save cropped image as File with original name
+    function applyCrop() {
+        if (!cropper || currentImageIndex < 0) return;
+
+        cropper.getCroppedCanvas({
+            width: 1000,
+            height: 1000,
+            imageSmoothingQuality: 'high'
+        }).toBlob(blob => {
+            // Keep original filename but change extension to .jpeg for consistency
+            const originalName = document.querySelector(`#image${currentImageIndex + 1}`).files[0]?.name || 'image.jpg';
+            const fileName = originalName.split('.').slice(0, -1).join('.') + '.jpg';
+            const croppedFile = new File([blob], fileName, { type: 'image/jpeg' });
+
+            selectedFiles[currentImageIndex] = croppedFile;
+
+            // Update Preview
+            const previewContainer = document.getElementById(`preview-container-${currentImageIndex + 1}`);
+            const label = document.getElementById(`label-${currentImageIndex + 1}`);
             const removeBtn = previewContainer.querySelector('button');
-            
-            input.value = "";
-            removeBtn.classList.add('hidden');
-            
-            label.innerHTML = `
-                <i class="fas fa-cloud-upload-alt text-3xl text-gray-400 mb-2"></i>
-                <span class="text-sm text-gray-600">Image ${index + 1}${index === 0 ? ' (Main)' : ''}</span>
-                <span class="text-xs text-gray-500 mt-1">Click to upload</span>
-            `;
-            
-            clearError('error-images');
-        }
 
-        function showError(id, message) {
-            const el = document.getElementById(id);
-            if (el) el.textContent = message;
-        }
+            label.innerHTML = `<img src="${URL.createObjectURL(blob)}" class="w-full h-32 object-contain rounded-lg">`;
+            removeBtn.classList.remove('hidden');
 
-        function clearError(id) {
-            const el = document.getElementById(id);
-            if (el) el.textContent = "";
+            closeCropModal();
+        }, 'image/jpeg', 0.92);
+    }
+
+    // Remove Image
+    function removeImage(index) {
+        delete selectedFiles[index];
+
+        const previewContainer = document.getElementById(`preview-container-${index + 1}`);
+        const label = document.getElementById(`label-${index + 1}`);
+        const input = document.querySelector(`[data-index="${index}"]`);
+        const removeBtn = previewContainer.querySelector('button');
+
+        input.value = '';
+        removeBtn.classList.add('hidden');
+
+        label.innerHTML = `
+            <i class="fas fa-cloud-upload-alt text-3xl text-gray-400 mb-2"></i>
+            <span class="text-sm text-gray-600">Image ${index + 1}${index === 0 ? ' (Main)' : ''}</span>
+            <span class="text-xs text-gray-500 mt-1">Click to upload</span>
+        `;
+
+        clearError('error-images');
+    }
+
+    // Helper functions
+    function showError(id, msg) {
+        const el = document.getElementById(id);
+        if (el) el.textContent = msg;
+    }
+
+    function clearError(id) {
+        const el = document.getElementById(id);
+        if (el) el.textContent = '';
+    }
+
+    function showLoading(show) {
+        const btn = document.querySelector('button[type="submit"]');
+        if (show) {
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Adding Product...';
+        } else {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-plus-circle mr-2"></i> Add Product';
         }
-    </script>
+    }
+</script>
 </body>
+
 </html>
