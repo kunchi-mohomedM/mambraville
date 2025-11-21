@@ -4,7 +4,8 @@ const userController =require("../controller/user/userController")
 const userproductController=require("../controller/user/userproductController")
 const addressController=require("../controller/user/addressController")
 const ordersummaryController=require("../controller/user/ordersummaryController");
-const cartControler=require("../controller/user/cartController")
+const cartController=require("../controller/user/cartController")
+const orderController =require("../controller/user/orderController");
 const {userAuth,isLogin}= require('../middleware/userAuth');
 const passport = require("passport");
 
@@ -55,7 +56,18 @@ router.get("/order-summary",userAuth,ordersummaryController.loadOrderSummary);
 
 
 
-router.get("/cart",userAuth,cartControler.loadCart)
+router.get("/cart",userAuth,cartController.loadCart)
+router.get("/add-to-cart/:id",userAuth,cartController.addTocart)
+router.post("/cart/remove/:id",userAuth,cartController.removeItem);
+router.get("/cart/increase/:id",userAuth,cartController.increaseQty);
+router.get("/cart/decrease/:id",userAuth,cartController.decreaseqty);
+
+
+router.get("/checkout",userAuth,orderController.loadCheckout);
+router.post("/order/place",userAuth,orderController.placeOrder);
+router.get("/order/success/:orderId",userAuth,orderController.loadOrderSuccess);
+router.get("/order/details/:id",userAuth,orderController.loadOrderDetails)
+
 
 router.get("/",userController.loadHomepage);
 

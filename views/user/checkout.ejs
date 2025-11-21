@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Checkout - MambraVille</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.5.2/flowbite.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" />
+</head>
+<body class="bg-gray-100 min-h-screen">
+
+  <header class="bg-white shadow-sm">
+        <%-include("../../views/partials/user/header")-%>
+    </header>
+
+
+  <main class="container mx-auto px-4 py-8 max-w-6xl">
+    <h1 class="text-3xl font-bold mb-8">Checkout</h1>
+
+    <div class="grid lg:grid-cols-3 gap-8">
+      <!-- Left Column: Order Items + Address -->
+      <div class="lg:col-span-2 space-y-8">
+
+        <!-- Cart Items -->
+        <div class="bg-white rounded-lg shadow-sm p-6">
+          <h2 class="text-xl font-semibold mb-4">Order Items</h2>
+          <% cartItems.forEach(item => { %>
+            <div class="flex items-center gap-4 py-4 border-b last:border-0">
+              <img src="<%= item.productImage[0] %>" alt="<%= item.productName %>" class="w-20 h-20 object-cover rounded">
+              <div class="flex-1">
+                <h4 class="font-medium"><%= item.productName %></h4>
+                <p class="text-sm text-gray-600">Qty: <%= item.quantity %></p>
+              </div>
+              <span class="font-semibold text-blue-600">₹<%= (item.price * item.quantity).toLocaleString() %></span>
+            </div>
+          <% }) %>
+        </div>
+
+        <!-- Shipping Address -->
+        <div class="bg-white rounded-lg shadow-sm p-6">
+          <div class="flex justify-between items-center mb-4">
+            <h2 class="text-xl font-semibold">Shipping Address</h2>
+            <button data-modal-target="addressModal" data-modal-toggle="addressModal" 
+                    class="text-blue-600 hover:text-blue-800 font-medium text-sm">
+              + Add New Address
+            </button>
+          </div>
+
+          <% if(addresses.length === 0) { %>
+            <p class="text-gray-500">No address added yet.</p>
+          <% } else { %>
+            <div class="space-y-3">
+              <% addresses.forEach(addr => { %>
+                <label class="flex items-start gap-4 p-4 border rounded-lg cursor-pointer hover:bg-gray-50
+                  <%= addr.isDefault ? 'border-blue-600 bg-blue-50' : 'border-gray-200' %>">
+                  <input type="radio" name="selectedAddress" value="<%= addr._id %>" 
+                         <%= addr.isDefault ? 'checked' : '' %> class="mt-1">
+                  <div class="flex-1">
+                    <div class="flex justify-between items-start">
+                      <div>
+                        <p class="font-medium"><%= addr.fullName %> <%= addr.isDefault ? '<span class="text-xs bg-blue-600 text-white px-2 py-1 rounded ml-2">Default</span>' : '' %></p>
+                        <p class="text-sm text-gray-600"><%= addr.street %>, <%= addr.city %>, <%= addr.state %> - <%= addr.pincode %></p>
+                        <p class="text-sm text-gray-600">Phone: <%= addr.phone %></p>
+                      </div>
+                      <div class="flex gap-2">
+                        <button onclick="editAddress('<%= addr._id %>')" class="text-blue-600 text-sm">Edit</button>
+                        <form action="/delete-address/<%= addr._id %>" method="GET" class="inline">
+                          <button type="submit" class="text-red-600 text-sm">Delete</button>
+                        </form>
+                      </div>
+                    </div>
+                  </div>
+                </label>
+              <% }) %>
+            </div>
+          <% } %>
+        </div>
+
+        <!-- Payment Method -->
+        <div class="bg-white rounded-lg shadow-sm p-6">
+          <h2 class="text-xl font-semibold mb-4">Payment Method</h2>
+          <label class="flex items-center gap-3 p-4 border-2 border-blue-600 rounded-lg bg-blue-50">
+            <input type="radio" name="payment" value="cod" checked class="w-5 h-5">
+            <span class="font-medium">Cash on Delivery (COD)</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Right Column: Price Summary -->
+      <div class="lg:col-span-1">
+        <div class="bg-white rounded-lg shadow-sm p-6 sticky top-6">
+          <h2 class="text-xl font-semibold mb-4">Order Summary</h2>
+          <div class="space-y-3 text-sm">
+            <div class="flex justify-between">
+              <span>Subtotal (<%= cartItems.reduce((sum, i) => sum + i.quantity, 0) %> items)</span>
+              <span>₹<%= cartItems.reduce((sum, i) => sum + (i.price * i.quantity), 0).toLocaleString() %></span>
+            </div>
+            <div class="flex justify-between">
+           <span>Discount</span>
+          <span class="text-green-600">- ₹<%= cartItems.reduce((sum, i) => {
+              return sum + ((i.price * (i.quantity)) * (i.discount || 0) / 100)
+              }, 0).toLocaleString() %></span>
+            </div>
+
+            <div class="flex justify-between">
+              <span>Shipping</span>
+              <span class="text-green-600">Free</span>
+            </div>
+            <div class="flex justify-between">
+            <span>Tax (GST 5%)</span>
+             <span>₹<%=
+              Math.round(cartItems.reduce((sum, i) => sum + i.subtotal, 0) * 0.05)
+               %></span>
+              </div>
+
+            <div class="border-t pt-3 font-bold text-lg flex justify-between">
+              <span>Total</span>
+              <span class="text-blue-600">₹<%= cartItems.reduce((sum, i) => sum + (i.price * i.quantity), 0).toLocaleString() %></span>
+            </div>
+          </div>
+
+          <form action="/order/place" method="POST">
+            <input type="hidden" name="addressId" id="selectedAddressId">
+            <button type="submit" 
+                    class="w-full mt-6 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-bold py-4 rounded-lg hover:opacity-90 transition">
+              Place Order
+            </button>
+          </form>
+          <p class="text-xs text-gray-500 text-center mt-3">You will pay on delivery</p>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Address Modal -->
+  <div id="addressModal" tabindex="-1" aria-hidden="true" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+    <div class="relative bg-white rounded-lg shadow max-w-md w-full p-6">
+      <h3 class="text-xl font-semibold mb-4" id="modalTitle">Add New Address</h3>
+      <form action="/add-address" method="POST" id="addressForm">
+        <input type="hidden" name="addressId" id="editAddressId">
+        <div class="space-y-4">
+          <input type="text" name="fullName" required placeholder="Full Name" class="w-full border rounded-lg px-4 py-2">
+          <input type="text" name="phone" required placeholder="Phone Number" class="w-full border rounded-lg px-4 py-2">
+          <input type="text" name="street" required placeholder="Street Address" class="w-full border rounded-lg px-4 py-2">
+          <div class="grid grid-cols-2 gap-4">
+            <input type="text" name="city" required placeholder="City" class="w-full border rounded-lg px-4 py-2">
+            <input type="text" name="state" required placeholder="State" class="w-full border rounded-lg px-4 py-2">
+          </div>
+          <input type="text" name="pincode" required placeholder="PIN Code" class="w-full border rounded-lg px-4 py-2">
+          <label class="flex items-center gap-2">
+            <input type="checkbox" name="isDefault" value="true">
+            <span>Set as default address</span>
+          </label>
+        </div>
+        <div class="flex gap-3 mt-6">
+          <button type="submit" class="flex-1 bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700">Save Address</button>
+          <button type="button" data-modal-hide="addressModal" class="flex-1 border border-gray-300 py-2 rounded-lg">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    // Pass selected address to hidden field before placing order
+    document.querySelector('form[action="/order/place"]').addEventListener('submit', function(e) {
+      const selected = document.querySelector('input[name="selectedAddress"]:checked');
+      if (!selected) {
+        e.preventDefault();
+        alert('Please select a shipping address');
+        return;
+      }
+      document.getElementById('selectedAddressId').value = selected.value;
+    });
+
+    // Edit Address
+    function editAddress(id) {
+      fetch(`/address/${id}`)
+        .then(res => res.json())
+        .then(addr => {
+          document.getElementById('modalTitle').textContent = 'Edit Address';
+          document.getElementById('addressForm').action = `/edit-address/${id}`;
+          document.querySelector('[name="fullName"]').value = addr.fullName;
+          document.querySelector('[name="phone"]').value = addr.phone;
+          document.querySelector('[name="street"]').value = addr.street;
+          document.querySelector('[name="city"]').value = addr.city;
+          document.querySelector('[name="state"]').value = addr.state;
+          document.querySelector('[name="pincode"]').value = addr.pincode;
+          document.querySelector('[name="isDefault"]').checked = addr.isDefault;
+          document.getElementById('addressModal').classList.remove('hidden');
+        });
+    }
+  </script>
+</body>
+</html>

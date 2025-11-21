@@ -3,60 +3,124 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Your Cart | Mambraville</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Your Cart</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
 <body class="bg-gray-100">
-    <div class="container mx-auto px-4 py-8">
-        <h1 class="text-3xl font-bold mb-6">Your Shopping Cart</h1>
 
-        <% if(cart.items.length === 0){ %>
-            <p class="text-gray-600 text-lg">Your cart is empty. <a href="/products-user" class="text-blue-500 underline">Shop now</a></p>
-        <% } else { %>
+    <header class="bg-white shadow-sm">
+        <%-include("../../views/partials/user/header")-%>
+    </header>
 
-        <div class="bg-white shadow-md rounded-lg p-4 mb-6">
-            <table class="w-full text-left border-collapse">
+<div class="container mx-auto p-6">
+    <h1 class="text-3xl font-bold mb-6">Your Cart</h1>
+
+    <% if (cart && cart.items && cart.items.length > 0) { %>
+
+        <div class="bg-white shadow rounded-lg p-4">
+            <table class="min-w-full table-auto">
                 <thead>
                     <tr class="border-b">
-                        <th class="py-2">Product</th>
-                        <th class="py-2">Price</th>
-                        <th class="py-2">Discount</th>
-                        <th class="py-2">Quantity</th>
-                        <th class="py-2">Subtotal</th>
-                        <th class="py-2">Action</th>
+                        <th class="px-4 py-2 text-left">Image</th>
+                        <th class="px-4 py-2 text-left">Name</th>
+                        <th class="px-4 py-2 text-left">Quantity</th>
+                        <th class="px-4 py-2 text-left">Subtotal</th>
+                        <th class="px-4 py-2 text-left">Action</th>
                     </tr>
                 </thead>
+
                 <tbody>
-                    <% cart.items.forEach(item => { %>
-                        <tr class="border-b">
-                            <td class="py-2 flex items-center gap-4">
-                                <img src="<%= item.image %>" alt="<%= item.name %>" class="w-16 h-16 object-cover rounded">
-                                <span><%= item.name %></span>
-                            </td>
-                            <td class="py-2">₹<%= item.price %></td>
-                            <td class="py-2"><%= item.discount %> %</td>
-                            <td class="py-2">
-                                <%= item.qty %>
-                                <!-- Later you can replace with +/- buttons to change qty -->
-                            </td>
-                            <td class="py-2">₹<%= item.subtotal.toFixed(2) %></td>
-                            <td class="py-2">
-                                <form action="/cart/remove/<%= item.productId %>" method="POST">
-                                    <button type="submit" class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600">Remove</button>
-                                </form>
-                            </td>
-                        </tr>
-                    <% }) %>
+                <% cart.items.forEach(item => { %>
+                    <tr class="border-b">
+
+                        <!-- Product Image -->
+                        <td class="py-2 px-4">
+                            <img src="<%= item.image ? '/uploads/' + item.image : '/img/no-image.png' %>"
+                                 class="w-16 h-16 object-cover rounded">
+                        </td>
+
+                        <!-- Product Name -->
+                        <td class="py-2 px-4">
+                            <%= item.name %>
+                        </td>
+
+                        <!-- QUANTITY SECTION -->
+                        <td class="py-2 px-4">
+                            <div class="flex items-center gap-2">
+
+                                <!-- Decrease -->
+                                <a href="/cart/decrease/<%= item.productId._id ? item.productId._id : item.productId %>"
+                                   class="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300">-</a>
+
+                                <span class="px-3 font-semibold"><%= item.qty %></span>
+
+                                <% 
+                                    const currentStock = item.currentStock != null 
+                                        ? item.currentStock 
+                                        : (item.productId && item.productId.quantity ? item.productId.quantity : 0);
+
+                                    const reachedStockLimit = currentStock && item.qty >= currentStock;
+                                    const reachedMax = item.qty >= 5; // MAX_QTY
+                                %>
+
+                                <% if (reachedStockLimit || reachedMax) { %>
+                                    <button disabled class="px-2 py-1 bg-gray-300 text-gray-600 rounded">+</button>
+                                <% } else { %>
+                                    <a href="/cart/increase/<%= item.productId._id ? item.productId._id : item.productId %>"
+                                       class="px-2 py-1 bg-blue-500 text-white rounded hover:bg-blue-600">+</a>
+                                <% } %>
+
+                            </div>
+                        </td>
+
+                        <!-- Subtotal -->
+                        <td class="py-2 px-4 font-semibold">
+                          ₹ <%= item.subtotal.toFixed(2) %>
+                        </td>
+
+                        <!-- Remove -->
+                        <td class="py-2 px-4">
+                            <form action="/cart/remove/<%= item.productId._id ? item.productId._id : item.productId %>" method="POST">
+                                <button type="submit"
+                                        class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600">
+                                    Remove
+                                </button>
+                            </form>
+                        </td>
+
+                    </tr>
+                <% }) %>
                 </tbody>
+
             </table>
         </div>
 
-        <div class="flex justify-end items-center gap-6">
-            <span class="text-xl font-semibold">Total: ₹<%= cart.cartTotal.toFixed(2) %></span>
-            <a href="/checkout" class="bg-green-500 text-white px-6 py-2 rounded hover:bg-green-600">Proceed to Checkout</a>
+        <!-- CART TOTAL -->
+        <div class="bg-white shadow rounded-lg p-4 mt-6">
+            <h2 class="text-xl font-semibold">Cart Total: ₹ <%= cart.cartTotal.toFixed(2) %></h2>
+
+            <div class="mt-4">
+                <a href="/checkout"
+                   class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
+                    Proceed to Checkout
+                </a>
+            </div>
         </div>
 
-        <% } %>
-    </div>
+    <% } else { %>
+
+        <!-- EMPTY CART -->
+        <div class="bg-white p-6 shadow rounded-lg text-center">
+            <h2 class="text-xl font-semibold mb-4">Your cart is empty</h2>
+            <a href="/products-user"
+               class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+                Continue Shopping
+            </a>
+        </div>
+
+    <% } %>
+
+</div>
+
 </body>
 </html>

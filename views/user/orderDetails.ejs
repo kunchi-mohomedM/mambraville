@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"><title>Order Details</title><script src="https://cdn.tailwindcss.com"></script></head>
+<body class="bg-gray-100">
+  <div class="container mx-auto py-10 max-w-4xl">
+    <div class="bg-white p-6 rounded shadow">
+      <h2 class="text-2xl font-bold mb-4">Order Details - <%= order._id %></h2>
+      <p class="mb-4">Status: <strong><%= order.status %></strong></p>
+
+      <h3 class="font-semibold mt-4">Shipping Address</h3>
+      <p><%= order.address.fullname %></p>
+      <p><%= order.address.street %>, <%= order.address.city %>, <%= order.address.state %> - <%= order.address.pincode %></p>
+
+      <h3 class="font-semibold mt-4">Items</h3>
+      <ul class="divide-y">
+        <% order.items.forEach(it => { %>
+          <li class="py-3 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <img src="<%= it.image %>" class="w-14 h-14 object-cover rounded" />
+              <div>
+                <div class="font-medium"><%= it.name %></div>
+                <div class="text-sm text-gray-500">Qty: <%= it.qty %></div>
+              </div>
+            </div>
+            <div class="font-semibold">₹ <%= (it.price - (it.price*(it.discount||0)/100))*it.qty %></div>
+          </li>
+        <% }) %>
+      </ul>
+
+      <div class="mt-6 flex justify-between font-bold">
+        <span>Total</span>
+        <span>₹ <%= order.totalAmount %></span>
+      </div>
+
+      <div class="mt-6">
+        <a href="/products-user" class="px-4 py-2 bg-blue-600 text-white rounded">Continue Shopping</a>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

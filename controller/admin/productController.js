@@ -171,58 +171,68 @@ const loadeditproduct=async(req,res)=>{
     }
 }
 
-const editproduct = async(req, res) => {
+
+const editproduct = async (req, res) => {
     try {
         const productId = req.params.id;
-        const { productName, description, price, discount, category, brand, quantity } = req.body;
-        const existingImages = req.body.existingImages;
-    
+        const { productName, description, price, discount = 0, quantity, category, brand, keepPublicIds } = req.body;
+
         const product = await Product.findById(productId);
-        
-        if (!product) {
-            return res.status(404).send("Product not found");
+        if (!product) return res.status(404).json({ success: false, message: "Product not found" });
+
+        const keepIds = Array.isArray(keepPublicIds) ? keepPublicIds : keepPublicIds ? [keepPublicIds] : [];
+
+        // Delete replaced images from Cloudinary
+        const currentIds = product.productImage.map(img => img.public_id);
+        const idsToDelete = currentIds.filter(id => !keepIds.includes(id));
+        for (const id of idsToDelete) {
+            await cloudinary.uploader.destroy(id);
         }
-        
-        let updatedImages = [];
-        
-        const existingImagesArray = Array.isArray(existingImages) ? existingImages : existingImages ? [existingImages] : [];
-        
-    
-        const newImages = req.files ? req.files.map(file => `/uploads/${file.filename}`) : [];
-        
-        for (let i = 0; i < 4; i++) {
-            if (req.files && req.files[i]) {
-                // If there's a new upload for this position, use it
-                updatedImages[i] = newImages[i];
-            } else if (existingImagesArray[i]) {
-                
-                updatedImages[i] = existingImagesArray[i];
-            } else if (product.productImage && product.productImage[i]) {
-                updatedImages[i] = product.productImage[i];
-            }
+
+        // Upload new images
+        let newUploaded = [];
+        if (req.files?.length > 0) {
+            const uploadToCloudinary = (buffer) => new Promise((resolve, reject) => {
+                cloudinary.uploader.upload_stream(
+                    {
+                        folder: "mambraville/products",
+                        transformation: [
+                            { width: 1200, height: 1200, crop: "limit" },
+                            { quality: "auto", fetch_format: "auto" }
+                        ]
+                    },
+                    (error, result) => error ? reject(error) : resolve(result)
+                ).end(buffer);
+            });
+
+            const results = await Promise.all(req.files.map(file => uploadToCloudinary(file.buffer)));
+            newUploaded = results.map(r => ({
+                url: r.secure_url,
+                public_id: r.public_id
+            }));
         }
-        
-        const updatedProduct = await Product.findByIdAndUpdate(
-            productId,
-            {
-                productName,
-                description,
-                price,
-                discount,
-                category,
-                brand,
-                quantity,
-                productImage: updatedImages
-            },
-            { new: true }
-        );
-        
-        res.redirect('/admin/products'); 
+
+        // Build final images: new ones first, then kept old ones
+        const keptImages = product.productImage.filter(img => keepIds.includes(img.public_id));
+        const finalImages = [...newUploaded, ...keptImages].slice(0, 4);
+
+        await Product.findByIdAndUpdate(productId, {
+            productName: productName.trim(),
+            description: description.trim(),
+            price: Number(price),
+            discount: Number(discount),
+            quantity: Number(quantity),
+            category,
+            brand,
+            productImage: finalImages
+        });
+
+        res.json({ success: true });
     } catch (error) {
-        console.error("Error occurred while updating product:", error);
-        res.status(500).send("Server error occurred");
+        console.error(error);
+        res.status(500).json({ success: false, message: "Server error" });
     }
-}
+};
 
 const deleteProductImage = async(req, res) => {
     try {

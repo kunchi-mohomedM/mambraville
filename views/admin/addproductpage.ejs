@@ -311,12 +311,10 @@
                     body: formData
                 });
 
-                if (response.redirected) {
-                    window.location.href = response.url;
-                } else {
+            
                     const result = await response.json();
-                    alert(result.message || 'Product added failed!');
-                }
+                    window.location.href='/admin/products'
+                
             } catch (err) {
                 console.error(err);
                 alert('Network error. Please try again.');
