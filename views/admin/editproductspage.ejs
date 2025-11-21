@@ -146,8 +146,9 @@
 
                 <!-- Submit Buttons -->
                 <div class="flex flex-col sm:flex-row justify-end gap-3 mt-8">
-                    <button type="button"
-                        class="bg-gray-300 text-gray-800 py-3 px-6 rounded-lg hover:bg-gray-400 transition duration-300">Cancel</button>
+                  
+                    <a href="/admin/products">  <button type="button"
+                        class="bg-gray-300 text-gray-800 py-3 px-6 rounded-lg hover:bg-gray-400 transition duration-300">Cancel</button></a>
                     <button type="submit"
                         class="bg-purple-600 text-white py-3 px-6 rounded-lg hover:bg-purple-700 transition duration-300 flex items-center justify-center">
                         <i class="fas fa-plus-circle mr-2"></i> Edit Product
@@ -193,12 +194,15 @@
 <script>
     let cropper = null;
     let currentImageIndex = -1;
-    let selectedFiles = {};
-    let existingImages = [];
+    let selectedFiles = {}; // { 0: File, 2: File, ... }
 
-    // Load existing public_ids
-    document.querySelectorAll('input[name="keepPublicIds"]').forEach(el => {
-        existingImages.push(el.value);
+    // Track which slots have existing images (by index)
+    const existingPublicIds = new Array(4).fill(null);
+    document.querySelectorAll('input[name="keepPublicIds"]').forEach(input => {
+        // Find which preview container this hidden input belongs to
+        const container = input.closest('[id^="preview-container-"]');
+        const index = parseInt(container.id.match(/\d+/)[0]) - 1;
+        existingPublicIds[index] = input.value;
     });
 
     document.addEventListener("DOMContentLoaded", () => {
@@ -206,6 +210,7 @@
             input.addEventListener('change', function (e) {
                 const file = e.target.files[0];
                 if (!file) return;
+
                 const index = parseInt(this.dataset.index);
 
                 if (!['image/jpeg', 'image/jpg', 'image/png', 'image/webp'].includes(file.type)) {
@@ -219,29 +224,45 @@
             });
         });
 
-        // FORM SUBMIT - NOW MATCHES ADD PRODUCT EXACTLY
+        // FORM SUBMIT
         document.getElementById('productForm').addEventListener('submit', async function (e) {
             e.preventDefault();
 
-            const totalImages = Object.keys(selectedFiles).length + existingImages.filter(Boolean).length;
-            if (totalImages !== 4) {
-                return alert(`Exactly 4 images required. You have ${totalImages}`);
+            // Count total valid images
+            const newImagesCount = Object.keys(selectedFiles).length;
+            const keptImagesCount = existingPublicIds.filter(id => id !== null && id !== undefined).length;
+            if (newImagesCount + keptImagesCount !== 4) {
+                return alert(`Exactly 4 images required. Currently: ${newImagesCount + keptImagesCount}`);
             }
 
-            const formData = new FormData(this); // this automatically includes keepPublicIds
+            const formData = new FormData();
 
-            // Add cropped files as productImages[] - same name as Add Product
-            for (let i = 0; i < 4; i++) {
-                if (selectedFiles[i]) {
-                    formData.append('productImages', selectedFiles[i]);
+            // Append text fields
+            new URLSearchParams(new FormData(this)).forEach((value, key) => {
+                if (key !== 'keepPublicIds' && key !== 'productImages') {
+                    formData.append(key, value);
                 }
-            }
+            });
+
+// Append new cropped images using the SAME field name as Add Product
+Object.keys(selectedFiles).forEach(index => {
+    formData.append('productImages', selectedFiles[index]);  // ← Changed back to 'productImages'
+    formData.append('imageIndices', index);
+});
+
+            // Append kept public_ids with their original index
+            existingPublicIds.forEach((publicId, index) => {
+                if (publicId) {
+                    formData.append('keepPublicIds', publicId);
+                    formData.append('keepIndices', index);
+                }
+            });
+
+            const btn = this.querySelector('button[type="submit"]');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Updating...';
 
             try {
-                const btn = this.querySelector('button[type="submit"]');
-                btn.disabled = true;
-                btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Updating...';
-
                 const res = await fetch(this.action, {
                     method: 'POST',
                     body: formData
@@ -253,9 +274,10 @@
                     alert('Product updated successfully!');
                     location.href = '/admin/products';
                 } else {
-                    alert(data.message || 'Failed to update');
+                    alert(data.message || 'Failed to update product');
                 }
             } catch (err) {
+                console.error(err);
                 alert('Network error');
             } finally {
                 btn.disabled = false;
@@ -298,15 +320,18 @@
             height: 1000,
             imageSmoothingQuality: 'high'
         }).toBlob(blob => {
-            const croppedFile = new File([blob], `image_${currentImageIndex}.jpg`, { type: 'image/jpeg' });
+            const croppedFile = new File([blob], `cropped_${currentImageIndex}.jpg`, { type: 'image/jpeg' });
             selectedFiles[currentImageIndex] = croppedFile;
 
             // Update preview
-            const label = document.getElementById(`label-${currentImageIndex + 1}`);
+            const previewContainer = document.getElementById(`preview-container-${currentImageIndex + 1}`);
+            const label = previewContainer.querySelector('label');
             label.innerHTML = `<img src="${URL.createObjectURL(blob)}" class="w-full h-32 object-contain rounded-lg">`;
 
-            // Mark old image for deletion
-            existingImages[currentImageIndex] = null;
+            // Remove the old hidden keepPublicId input and mark as replaced
+            const oldInput = previewContainer.querySelector('input[name="keepPublicIds"]');
+            if (oldInput) oldInput.remove();
+            existingPublicIds[currentImageIndex] = null; // mark as replaced
 
             closeCropModal();
         }, 'image/jpeg', 0.92);

@@ -175,23 +175,37 @@ const loadeditproduct=async(req,res)=>{
 const editproduct = async (req, res) => {
     try {
         const productId = req.params.id;
-        const { productName, description, price, discount = 0, quantity, category, brand, keepPublicIds } = req.body;
+        const { productName, description, price, discount = 0, quantity, category, brand } = req.body;
+
+        // Parse incoming indices
+        const imageIndices = Array.isArray(req.body.imageIndices)
+            ? req.body.imageIndices.map(Number)
+            : req.body.imageIndices ? [Number(req.body.imageIndices)] : [];
+
+        const keepIndices = Array.isArray(req.body.keepIndices)
+            ? req.body.keepIndices.map(Number)
+            : req.body.keepIndices ? [Number(req.body.keepIndices)] : [];
+
+        const keepPublicIds = Array.isArray(req.body.keepPublicIds)
+            ? req.body.keepPublicIds
+            : req.body.keepPublicIds ? [req.body.keepPublicIds] : [];
 
         const product = await Product.findById(productId);
         if (!product) return res.status(404).json({ success: false, message: "Product not found" });
 
-        const keepIds = Array.isArray(keepPublicIds) ? keepPublicIds : keepPublicIds ? [keepPublicIds] : [];
+        // Start with current images (preserve order)
+        let finalImages = [...product.productImage];
 
-        // Delete replaced images from Cloudinary
+        // Step 1: Delete images that are NOT in keepPublicIds
         const currentIds = product.productImage.map(img => img.public_id);
-        const idsToDelete = currentIds.filter(id => !keepIds.includes(id));
+        const idsToDelete = currentIds.filter(id => !keepPublicIds.includes(id));
+
         for (const id of idsToDelete) {
             await cloudinary.uploader.destroy(id);
         }
 
-        // Upload new images
-        let newUploaded = [];
-        if (req.files?.length > 0) {
+        // Step 2: Upload new images and place them in correct index
+        if (req.files && req.files.length > 0) {
             const uploadToCloudinary = (buffer) => new Promise((resolve, reject) => {
                 cloudinary.uploader.upload_stream(
                     {
@@ -205,17 +219,27 @@ const editproduct = async (req, res) => {
                 ).end(buffer);
             });
 
-            const results = await Promise.all(req.files.map(file => uploadToCloudinary(file.buffer)));
-            newUploaded = results.map(r => ({
-                url: r.secure_url,
-                public_id: r.public_id
-            }));
+            const uploadPromises = req.files.map(file => uploadToCloudinary(file.buffer));
+            const results = await Promise.all(uploadPromises);
+
+            results.forEach((result, i) => {
+                const index = imageIndices[i];
+                if (index >= 0 && index < 4) {
+                    finalImages[index] = {
+                        url: result.secure_url,
+                        public_id: result.public_id
+                    };
+                }
+            });
         }
 
-        // Build final images: new ones first, then kept old ones
-        const keptImages = product.productImage.filter(img => keepIds.includes(img.public_id));
-        const finalImages = [...newUploaded, ...keptImages].slice(0, 4);
+        // Final check: must have exactly 4 images
+        finalImages = finalImages.filter(img => img && img.url);
+        if (finalImages.length !== 4) {
+            return res.status(400).json({ success: false, message: "Exactly 4 images are required" });
+        }
 
+        // Update product
         await Product.findByIdAndUpdate(productId, {
             productName: productName.trim(),
             description: description.trim(),
@@ -229,7 +253,7 @@ const editproduct = async (req, res) => {
 
         res.json({ success: true });
     } catch (error) {
-        console.error(error);
+        console.error("Edit Product Error:", error);
         res.status(500).json({ success: false, message: "Server error" });
     }
 };
