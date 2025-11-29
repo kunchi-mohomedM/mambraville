@@ -99,17 +99,27 @@ const placeOrder = async(req,res) => {
       totalAmount += subtotal;
     }
 
-    // create Order document (matches your orderSchema fields)
+   const uniqueOrderId="MAM"+Date.now();
+
     const newOrder = new Order({
+      orderId:uniqueOrderId,
       userId,
       items: orderItems.map(oi => ({
+
         productId: oi.productId,
+
         name: oi.name,
+
         image: oi.image,
+
         qty: oi.qty,
+
         price: oi.price,
+
         discount: oi.discount
+
       })),
+
       address: {
         fullname: addressObj.fullname,
         street: addressObj.addressLine,
@@ -144,7 +154,7 @@ const placeOrder = async(req,res) => {
     await cart.save();
 
     // redirect to success page
-    return res.redirect(`/order/success/${newOrder._id}`);
+    return res.redirect(`/order/success/${newOrder.orderId}`);
   } catch (err) {
     console.error("placeOrder error:", err);
     return res.status(500).send("Internal server error");
@@ -190,9 +200,103 @@ const loadOrderDetails = async (req, res) => {
   }
 };
 
+const cancelOrder=async (req,res)=>{
+  try {
+    const userId = req.session.user;
+    const {orderId} = req.params;
+
+    const order = await Order.findOne({orderId,userId})
+    if(!order) return res.redirect("/order-summary");
+
+    if(order.status === "Delivered"){
+      return res.send("Cannot cancel delivered order");
+    }
+
+    for(let item of order.items){
+      await Product.findByIdAndUpdate(item.productId,{
+        $inc:{quantity:item.qty}
+      });
+    }
+
+    order.status = "Cancelled";
+    await order.save();
+
+    return res.redirect("/order-summary");
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Something went wrong");
+  }
+};
+
+const returnOrder = async(req,res)=>{
+  try {
+    const userId = req.session.user;
+    const {orderId} = req.params;
+
+    const order = await Order.findOne({ orderId,userId });
+    if(!order) return res.redirect("/order-summary");
+
+    if(order.status !== "Delivered"){
+      return res.send("Only delivered orders can be returned");
+    }
+
+    order.status = "Returned";
+    await order.save();
+
+    for(let item of order.items){
+      await Product.findByIdAndUpdate(item.productId,{
+        $inc:{quantity:item.qty}
+      })
+    }
+    res.redirect("/order-summary");
+  } catch (error) {
+    console.log(error);
+    res.status(500).send("Error")
+  }
+} ;
+
+
+const loadOrderSummary = async (req, res) => {
+    try {
+        
+        const userId = req.session.user;
+        if (!userId) {
+            return res.redirect("/login");
+        }
+
+        // Fetch user
+        const user = await User.findById(userId).lean();
+        if (!user) {
+            return res.status(404).send("User not found");
+        }
+
+        // Fetch orders for this user
+        const orders = await Order.find({ userId })
+            .sort({ orderedAt: -1 }) // latest first
+            .lean();
+
+        // Render the EJS page
+        return res.render("ordersummary", {
+            user,
+            orders,
+        });
+
+    } catch (err) {
+        console.error("Error loading order summary:", err);
+        return res.status(500).send("Internal Server Error");
+    }
+};
+
+
+
 module.exports = {
   loadCheckout,
   placeOrder,
   loadOrderSuccess,
-  loadOrderDetails
+  loadOrderDetails,
+  cancelOrder,
+  returnOrder,
+  loadOrderSummary
 };
+

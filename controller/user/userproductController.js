@@ -11,9 +11,15 @@ const loadUserProducts = async (req, res) => {
         let limit = parseInt(req.query.limit) || 4;
         let skip = (page - 1) * limit;
 
+        let categoryDoc=null;
         // Filtering by category
         if (req.query.category) {
-            query.category = req.query.category;
+             categoryDoc = await Category.findOne({ categoryname:req.query.category });
+            if(categoryDoc){
+                query.category = categoryDoc._id;
+            }else{
+                query.category = null;
+            }
         }
 
         // Filtering by price range
@@ -61,6 +67,7 @@ const loadUserProducts = async (req, res) => {
 
         res.render('products', {
             products,
+            categoryDoc,
             currentPage: page,
             totalPages: Math.ceil(totalProducts / limit),
             totalProducts,
@@ -73,7 +80,7 @@ const loadUserProducts = async (req, res) => {
         if (req.xhr || req.headers['x-requested-with'] === 'XMLHttpRequest' || req.query.format === 'json') {
             return res.status(500).json({ status: 'error', message: "An error occurred while loading products." });
         }
-        res.status(500).send("An error occurred while loading products.");
+        res.status(500).send("An error occurred while loading products..");
     }
 };
 

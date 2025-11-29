@@ -19,7 +19,7 @@
         <div class="flex items-center text-sm text-gray-500 mb-6">
             <a href="/" class="hover:text-gray-700">products</a>
             <span class="mx-2">/</span>
-            <a href="/home-appliances" class="hover:text-gray-700"><%=category.categoryname%></a>
+            <a href="/products-user/" class="hover:text-gray-700"><%=category.categoryname%></a>
             <span class="mx-2">/</span>
             <span class="text-gray-700"><%= product.productName %></span>
         </div>
@@ -84,20 +84,12 @@
                     </div>
                 </div>
                 
-                <!-- Quantity -->
-                <div class="flex items-center mb-6">
-                    <button class="w-8 h-8 flex items-center justify-center border border-gray-300 rounded-l-md bg-gray-100 hover:bg-gray-200">
-                        <i class="fas fa-minus text-sm"></i>
-                    </button>
-                    <input type="text" value="2" class="w-12 h-8 text-center border-t border-b border-gray-300 focus:outline-none">
-                    <button class="w-8 h-8 flex items-center justify-center border border-gray-300 rounded-r-md bg-yellow-500 hover:bg-yellow-600 text-white">
-                        <i class="fas fa-plus text-sm"></i>
-                    </button>
                     
                     <!-- Add to Cart Button -->
-                    <button class="ml-4 bg-blue-600 hover:bg-blue-700 text-white py-2 px-6 rounded">
+                    <a href="/add-to-cart/<%=product._id%>"
+                        class="ml-4 bg-blue-600 hover:bg-blue-700 text-white py-2 px-6 rounded">
                         Add to cart
-                    </button>
+                    </a>
                     
                     <!-- Wishlist Button -->
                     <button class="ml-3 w-10 h-10 flex items-center justify-center border border-gray-300 rounded-md hover:bg-gray-100">
@@ -164,7 +156,6 @@
                     </div>
                 </div>
                 <%}%>
-                <!-- Related Product 2 -->
                
             </div>
         </div>

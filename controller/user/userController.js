@@ -447,6 +447,43 @@ const loadaddressmanagement=async(req,res)=>{
     }
 };
 
+const loadChangePassword = async (req,res) =>{
+    try {
+        res.render("changepassword2",{error:null,success:null});
+    } catch (error) {
+        console.log("Load Change page Error :",error);
+        res.redirect("/pageNotFound");
+    }
+};
+
+
+const changePassword = async (req,res) => {
+    try {
+        const userId = req.session.user;
+        const {currentPassword , newPassword ,confirmPassword} = req.body;
+
+        if(newPassword !== confirmPassword){
+            return res.render("changepassword2",{error:"Password do not match!",success:null});
+        }
+        const user = await User.findById(userId);
+
+        const isMatch = await bcrypt.compare(currentPassword,user.password);
+
+        if(!isMatch){
+            return res.render("changepassword2",{error:"Current password is incorrect!",success:null});
+        }
+
+        const hashedPassword = await bcrypt.hash(newPassword,10);
+
+        await User.findByIdAndUpdate(userId,{password:hashedPassword});
+
+        return res.render("changepassword2",{error:null,success:"Password updated successfully!"});
+    } catch (error) {
+        console.log("Change Password Error : ",error);
+        res.redirect("/pageNotFound")
+    }
+}
+
 
 
 
@@ -465,5 +502,7 @@ module.exports = {
     forgotpassword,
     resetpasswordverification,
     loaduserprofile,
-    loadaddressmanagement
+    loadaddressmanagement,
+    loadChangePassword,
+    changePassword
 };

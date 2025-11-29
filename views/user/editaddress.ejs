@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Edit Address</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 p-6">
+
+    <div class="max-w-lg mx-auto bg-white p-6 shadow rounded">
+        <h2 class="text-xl font-semibold text-center mb-4">Edit Address</h2>
+
+        <form method="POST" action="/edit-address/<%= address._id %>" class="space-y-4">
+            
+            <div>
+                <label class="block font-medium">Full Name *</label>
+                <input type="text" name="fullname" value="<%= address.fullname %>" required class="w-full border p-2 rounded">
+            </div>
+
+            <div>
+                <label class="block font-medium">Phone *</label>
+                <input type="text" name="phone" value="<%= address.phone %>" required class="w-full border p-2 rounded">
+            </div>
+
+            <div>
+                <label class="block font-medium">House *</label>
+                <input type="text" name="house" value="<%= address.house %>" required class="w-full border p-2 rounded">
+            </div>
+
+            <div>
+                <label class="block font-medium">Street *</label>
+                <input type="text" name="street" value="<%= address.street %>" required class="w-full border p-2 rounded">
+            </div>
+
+            <div class="flex gap-3">
+                <div class="flex-1">
+                    <label class="block font-medium">Pincode *</label>
+                    <input type="text" name="pincode" value="<%= address.pincode %>" required class="w-full border p-2 rounded">
+                </div>
+                <div class="flex-1">
+                    <label class="block font-medium">City *</label>
+                    <input type="text" name="city" value="<%= address.city %>" required class="w-full border p-2 rounded">
+                </div>
+            </div>
+
+            <div>
+                <label class="block font-medium">State *</label>
+                <select name="state" required class="w-full border p-2 rounded">
+                    <option><%= address.state %></option>
+                    <option>Kerala</option>
+                    <option>Tamilnadu</option>
+                    <option>Karnataka</option>
+                    <option>Delhi</option>
+                </select>
+            </div>
+
+            <button type="submit" class="w-full bg-purple-600 text-white py-2 rounded mt-4">
+                Update Address
+            </button>
+
+        </form>
+    </div>
+
+</body>
+</html>

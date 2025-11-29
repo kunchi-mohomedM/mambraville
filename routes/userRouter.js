@@ -3,7 +3,6 @@ const router = express.Router();
 const userController =require("../controller/user/userController")
 const userproductController=require("../controller/user/userproductController")
 const addressController=require("../controller/user/addressController")
-const ordersummaryController=require("../controller/user/ordersummaryController");
 const cartController=require("../controller/user/cartController")
 const orderController =require("../controller/user/orderController");
 const {userAuth,isLogin}= require('../middleware/userAuth');
@@ -39,6 +38,8 @@ router.get('/auth/google/callback',passport.authenticate('google',{failureRedire
 
 
 router.get("/user-Profile",userAuth,userController.loaduserprofile)
+router.get("/change-password",userAuth,userController.loadChangePassword);
+router.post("/change-password",userAuth,userController.changePassword);
 
 router.get("/addressmanagement",userAuth,userController.loadaddressmanagement)
 
@@ -52,7 +53,7 @@ router.get("/add-address-page",userAuth,addressController.loadAddAddressPage);
 router.get("/edit-address-page/:id",userAuth,addressController.loadEditAddressPage);
 
 
-router.get("/order-summary",userAuth,ordersummaryController.loadOrderSummary);
+router.get("/order-summary",userAuth,orderController.loadOrderSummary);
 
 
 
@@ -67,6 +68,8 @@ router.get("/checkout",userAuth,orderController.loadCheckout);
 router.post("/order/place",userAuth,orderController.placeOrder);
 router.get("/order/success/:orderId",userAuth,orderController.loadOrderSuccess);
 router.get("/order/details/:id",userAuth,orderController.loadOrderDetails)
+router.post("/order/cancel/:orderId",userAuth,orderController.cancelOrder);
+router.post("/order/return/:orderId",userAuth,orderController.returnOrder);
 
 
 router.get("/",userController.loadHomepage);

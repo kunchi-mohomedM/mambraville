@@ -40,9 +40,9 @@
       <select id="categorySelect" name="category"
         class="border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 text-gray-700">
         <option value="">All</option>
-        <option value="laptops" <%= queryParams.category === 'laptops' ? 'selected' : '' %>>Laptops</option>
-        <option value="smartphones" <%= queryParams.category === 'smartphones' ? 'selected' : '' %>>Smartphones</option>
-        <option value="televisions" <%= queryParams.category === 'televisions' ? 'selected' : '' %>>Televisions</option>
+        <option value="Laptops" <%= queryParams.category === 'Laptops' ? 'selected' : '' %>>Laptops</option>
+        <option value="Mobiles" <%= queryParams.category === 'Mobiles' ? 'selected' : '' %>>Mobiles</option>
+        <option value="Televisions" <%= queryParams.category === 'Televisions' ? 'selected' : '' %>>Televisions</option>
       </select>
     </div>
 
@@ -115,7 +115,7 @@
                                     <%= product.productName %>
                                 </h3>
                                 <p class="text-gray-900 font-bold text-sm">
-                                    <%=product.price%>
+                                    $<%=product.price%>
                                 </p>
                                 <a href="/add-to-cart/<%= product._id %>" 
                                     class="mt-2 w-full text-center bg-purple-600 text-white rounded-full p-2 block">
