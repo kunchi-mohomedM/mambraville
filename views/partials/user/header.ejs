@@ -7,7 +7,7 @@
   <div class="container mx-auto px-6">
     <!-- Top Section: Logo + Icons -->
     <div class="flex justify-between items-center py-4">
-      
+
       <!-- Logo -->
       <a href="/" class="flex items-center text-2xl font-bold tracking-tight">
         <span class="text-blue-600">M</span>
@@ -17,7 +17,7 @@
 
       <!-- Right Icons -->
       <div class="flex items-center space-x-5 text-gray-700">
-        <a href="#" class="hover:text-blue-600 transition">
+        <a href="/user-profile" class="hover:text-blue-600 transition">
           <i class="fas fa-user text-lg"></i>
         </a>
         <a href="#" class="hover:text-blue-600 transition">
@@ -25,9 +25,7 @@
         </a>
         <a href="/cart" class="hover:text-blue-600 relative transition">
           <i class="fas fa-shopping-cart text-lg"></i>
-          <span
-            class="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-semibold rounded-full w-4 h-4 flex items-center justify-center">3</span>
-        </a>
+          </a>
       </div>
     </div>
 
@@ -37,7 +35,11 @@
       <a href="/products-user" class="hover:text-blue-600 transition">Products</a>
       <a href="#" class="hover:text-blue-600 transition">About Us</a>
       <a href="#" class="hover:text-blue-600 transition">Help Center</a>
-      <a href="/login" class="hover:text-blue-600 transition">Login</a>
+      <% if(!user) { %>
+        <a href="/login" class="text-gray-700 hover:text-blue-600 font-medium">Login</a>
+        <% }else{%>
+          <a href="/logout" class="text-gray-700 hover:text-blue-600 font-medium">Logout</a>
+          <% } %>
     </nav>
   </div>
 </header>

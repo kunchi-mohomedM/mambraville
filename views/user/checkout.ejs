@@ -59,7 +59,7 @@
                   <div class="flex-1">
                     <div class="flex justify-between items-start">
                       <div>
-                        <p class="font-medium"><%= addr.fullName %> <%= addr.isDefault ? '<span class="text-xs bg-blue-600 text-white px-2 py-1 rounded ml-2">Default</span>' : '' %></p>
+                        <%= addr.fullName %> <%= addr.isDefault ? 'Default' : '' %>
                         <p class="text-sm text-gray-600"><%= addr.street %>, <%= addr.city %>, <%= addr.state %> - <%= addr.pincode %></p>
                         <p class="text-sm text-gray-600">Phone: <%= addr.phone %></p>
                       </div>

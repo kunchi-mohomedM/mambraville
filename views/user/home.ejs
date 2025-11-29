@@ -1,117 +1,90 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>E-commerce Store</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.5.2/flowbite.js" integrity="sha512-LThUFuq6Y8DTeSxG7VgJQu+3slKAhZ1u3z1EJdZESaVuQIEJ7TXC/DV8xNNEDFW01iWF4tUuzeC4RdiyrRPdRw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.5.2/flowbite.js"
+        integrity="sha512-LThUFuq6Y8DTeSxG7VgJQu+3slKAhZ1u3z1EJdZESaVuQIEJ7TXC/DV8xNNEDFW01iWF4tUuzeC4RdiyrRPdRw=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 </head>
- 
-                     <body class="bg-gray-100">
-  
-                        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-                        <!-- Header -->
-                         <header class="bg-white shadow-sm">
-                            <div class="container mx-auto px-4">
-                                <div class="flex justify-between items-center py-4">
-                                    <div class="flex items-center">
-                                        <!-- Logo with gradient effect -->
-                                        <a href="#" class="flex items-center text-2xl font-bold">
-                                            <span class="text-blue-600">M</span>
-                                            <span class="bg-gradient-to-r from-blue-600 to-purple-600 text-transparent bg-clip-text">ambra</span>
-                                            <span class="text-purple-600">Ville</span>
-                                        </a>
-                                    </div>
-                                    
-                                    <!-- Search Bar -->
-                                    <div class="hidden md:flex items-center flex-1 mx-6">
-                                        <div class="relative w-full">
-                                            <input type="text" placeholder="Search for products..." class="w-full border border-gray-300 rounded-md py-2 px-4 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                            <button class="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500">
-                                                <i class="fas fa-search"></i>
-                                            </button>
-                                        </div>
-                                    </div>
-                                    
-                                    <!-- Navigation Icons -->
-                                    <div class="flex items-center space-x-4">
-                                        <a href="/user-Profile" class="text-gray-700 hover:text-blue-600">
-                                            <i class="fas fa-user"></i>
-                                        </a>
-                                        <a href="#" class="text-gray-700 hover:text-blue-600">
-                                            <i class="fas fa-heart"></i>
-                                        </a>
-                                        <a href="/cart" class="text-gray-700 hover:text-blue-600 relative">
-                                            <i class="fas fa-shopping-cart"></i>
-                                            <span class="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">3</span>
-                                        </a>
-                                    </div>
-                                </div>
-                                
-                                <!-- Navigation Buttons -->
-                                <nav class="flex justify-center space-x-6 py-2 border-t">
-                                    <a href="#" class="text-gray-700 hover:text-blue-600 font-medium">Home</a>
-                                    <a href="/products-user" class="text-gray-700 hover:text-blue-600 font-medium">Products</a>
-                                    <a href="#" class="text-gray-700 hover:text-blue-600 font-medium">About us</a>
-                                    <a href="#" class="text-gray-700 hover:text-blue-600 font-medium">Help Center</a>
-                                    <% if(!user) { %>
-                                    <a href="/login" class="text-gray-700 hover:text-blue-600 font-medium">Login</a>
-                                    <% }else{%>
-                                        <a href="/logout" class="text-gray-700 hover:text-blue-600 font-medium">Logout</a>
-                                        <% } %>
-                                </nav>
-                            </div>
-                        </header>
-    
+
+<body class="bg-gray-100">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+        integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <header class="bg-white shadow-sm">
+        <%-include("../../views/partials/user/header")-%>
+    </header>
+
     <!-- Main Content -->
     <main class="container mx-auto px-4 py-8">
         <!-- Hero Carousel -->
-      
 
-<div id="default-carousel" class="relative w-full" data-carousel="slide">
-    <!-- Carousel wrapper -->
-    <div class="relative h-56 overflow-hidden rounded-lg md:h-96">
-         <!-- Item 1 -->
-        <div class="hidden duration-700 ease-in-out" data-carousel-item>
-            <img src="\images\pngtree-innovative-3d-mobile-mockup-paired-with-web-development-banner-and-laptop-picture-image_5592791.jpg" class="absolute block w-full -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2" alt="...">
-        </div>
-        <!-- Item 2 -->
-        <div class="hidden duration-700 ease-in-out" data-carousel-item>
-            <img src="\images\f3832e180145769.6505ae76214ca.jpg" class="absolute block w-full -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2" alt="...">
-        </div>
-        <!-- Item 3 -->
-        <div class="hidden duration-700 ease-in-out" data-carousel-item>
-            <img src="\images\banner_new1-min.jpg" class="absolute block w-full -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2" alt="...">
-        </div>
-    </div>
-    <!-- Slider indicators -->
-    <div class="absolute z-30 flex -translate-x-1/2 bottom-5 left-1/2 space-x-3 rtl:space-x-reverse">
-        <button type="button" class="w-3 h-3 rounded-full" aria-current="true" aria-label="Slide 1" data-carousel-slide-to="0"></button>
-        <button type="button" class="w-3 h-3 rounded-full" aria-current="false" aria-label="Slide 2" data-carousel-slide-to="1"></button>
-        <button type="button" class="w-3 h-3 rounded-full" aria-current="false" aria-label="Slide 3" data-carousel-slide-to="2"></button>
-    </div>
-    <!-- Slider controls -->
-    <button type="button" class="absolute top-0 start-0 z-30 flex items-center justify-center h-full px-4 cursor-pointer group focus:outline-none" data-carousel-prev>
-        <span class="inline-flex items-center justify-center w-10 h-10 rounded-full bg-white/30 dark:bg-gray-800/30 group-hover:bg-white/50 dark:group-hover:bg-gray-800/60 group-focus:ring-4 group-focus:ring-white dark:group-focus:ring-gray-800/70 group-focus:outline-none">
-            <svg class="w-4 h-4 text-white dark:text-gray-800 rtl:rotate-180" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
-                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 1 1 5l4 4"/>
-            </svg>
-            <span class="sr-only">Previous</span>
-        </span>
-    </button>
-    <button type="button" class="absolute top-0 end-0 z-30 flex items-center justify-center h-full px-4 cursor-pointer group focus:outline-none" data-carousel-next>
-        <span class="inline-flex items-center justify-center w-10 h-10 rounded-full bg-white/30 dark:bg-gray-800/30 group-hover:bg-white/50 dark:group-hover:bg-gray-800/60 group-focus:ring-4 group-focus:ring-white dark:group-focus:ring-gray-800/70 group-focus:outline-none">
-            <svg class="w-4 h-4 text-white dark:text-gray-800 rtl:rotate-180" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
-                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 9 4-4-4-4"/>
-            </svg>
-            <span class="sr-only">Next</span>
-        </span>
-    </button>
-</div>
 
-        
+        <div id="default-carousel" class="relative w-full" data-carousel="slide">
+            <!-- Carousel wrapper -->
+            <div class="relative h-56 overflow-hidden rounded-lg md:h-96">
+                <!-- Item 1 -->
+                <div class="hidden duration-700 ease-in-out" data-carousel-item>
+                    <img src="\images\pngtree-innovative-3d-mobile-mockup-paired-with-web-development-banner-and-laptop-picture-image_5592791.jpg"
+                        class="absolute block w-full -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2" alt="...">
+                </div>
+                <!-- Item 2 -->
+                <div class="hidden duration-700 ease-in-out" data-carousel-item>
+                    <img src="\images\f3832e180145769.6505ae76214ca.jpg"
+                        class="absolute block w-full -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2" alt="...">
+                </div>
+                <!-- Item 3 -->
+                <div class="hidden duration-700 ease-in-out" data-carousel-item>
+                    <img src="\images\banner_new1-min.jpg"
+                        class="absolute block w-full -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2" alt="...">
+                </div>
+            </div>
+            <!-- Slider indicators -->
+            <div class="absolute z-30 flex -translate-x-1/2 bottom-5 left-1/2 space-x-3 rtl:space-x-reverse">
+                <button type="button" class="w-3 h-3 rounded-full" aria-current="true" aria-label="Slide 1"
+                    data-carousel-slide-to="0"></button>
+                <button type="button" class="w-3 h-3 rounded-full" aria-current="false" aria-label="Slide 2"
+                    data-carousel-slide-to="1"></button>
+                <button type="button" class="w-3 h-3 rounded-full" aria-current="false" aria-label="Slide 3"
+                    data-carousel-slide-to="2"></button>
+            </div>
+            <!-- Slider controls -->
+            <button type="button"
+                class="absolute top-0 start-0 z-30 flex items-center justify-center h-full px-4 cursor-pointer group focus:outline-none"
+                data-carousel-prev>
+                <span
+                    class="inline-flex items-center justify-center w-10 h-10 rounded-full bg-white/30 dark:bg-gray-800/30 group-hover:bg-white/50 dark:group-hover:bg-gray-800/60 group-focus:ring-4 group-focus:ring-white dark:group-focus:ring-gray-800/70 group-focus:outline-none">
+                    <svg class="w-4 h-4 text-white dark:text-gray-800 rtl:rotate-180" aria-hidden="true"
+                        xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M5 1 1 5l4 4" />
+                    </svg>
+                    <span class="sr-only">Previous</span>
+                </span>
+            </button>
+            <button type="button"
+                class="absolute top-0 end-0 z-30 flex items-center justify-center h-full px-4 cursor-pointer group focus:outline-none"
+                data-carousel-next>
+                <span
+                    class="inline-flex items-center justify-center w-10 h-10 rounded-full bg-white/30 dark:bg-gray-800/30 group-hover:bg-white/50 dark:group-hover:bg-gray-800/60 group-focus:ring-4 group-focus:ring-white dark:group-focus:ring-gray-800/70 group-focus:outline-none">
+                    <svg class="w-4 h-4 text-white dark:text-gray-800 rtl:rotate-180" aria-hidden="true"
+                        xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="m1 9 4-4-4-4" />
+                    </svg>
+                    <span class="sr-only">Next</span>
+                </span>
+            </button>
+        </div>
+
+
         <!-- Features Section -->
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8 p-4">
             <div class="flex flex-col items-center bg-white rounded-lg p-4 shadow-sm">
@@ -139,101 +112,117 @@
                 <h3 class="text-sm font-medium text-center">Secure Payment</h3>
             </div>
         </div>
-        
+
         <!-- New Arrivals Section -->
         <div class="mb-8">
             <div class="flex justify-between items-center mb-4">
                 <h2 class="text-xl font-bold">New arrivals</h2>
                 <a href="#" class="text-blue-600 text-sm font-medium">View all</a>
             </div>
-            
+
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 <% newArrivals.forEach(product=>{ %>
-                <!-- Product Card 1 -->
-                <div class="bg-white rounded-lg shadow-sm overflow-hidden">
-                    <a href="productdetails/<%= product._id %>">
-                    <div class="bg-purple-900 h-48 relative">
-                        <img src="<%=  product.productImage[0]?.url%>"  onclick="window.location.href = '/productdetails/<%= product._id %>'" alt="Product" class="pointer w-full h-full object-cover">
-                        <div class="absolute  flex items-center justify-center">
-                            
-                        </div>
-                    </div>
-                </a>
-                    <div class="p-4">
-                        <div class="flex justify-between items-center mb-2">
-                            <span class="text-sm text-gray-600"><%= product.categoryname %></span>
-                            <div class="flex">
-                                <i class="fas fa-star text-yellow-400 text-xs"></i>
-                                <i class="fas fa-star text-yellow-400 text-xs"></i>
-                                <i class="fas fa-star text-yellow-400 text-xs"></i>
-                                <i class="fas fa-star text-yellow-400 text-xs"></i>
-                                <i class="fas fa-star text-gray-300 text-xs"></i>
+                    <!-- Product Card 1 -->
+                    <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+                        <a href="productdetails/<%= product._id %>">
+                            <div class="bg-purple-900 h-48 relative">
+                                <img src="<%=  product.productImage[0]?.url%>"
+                                    onclick="window.location.href = '/productdetails/<%= product._id %>'" alt="Product"
+                                    class="pointer w-full h-full object-cover">
+                                <div class="absolute  flex items-center justify-center">
+
+                                </div>
+                            </div>
+                        </a>
+                        <div class="p-4">
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="text-sm text-gray-600">
+                                    <%= product.categoryname %>
+                                </span>
+                                <div class="flex">
+                                    <i class="fas fa-star text-yellow-400 text-xs"></i>
+                                    <i class="fas fa-star text-yellow-400 text-xs"></i>
+                                    <i class="fas fa-star text-yellow-400 text-xs"></i>
+                                    <i class="fas fa-star text-yellow-400 text-xs"></i>
+                                    <i class="fas fa-star text-gray-300 text-xs"></i>
+                                </div>
+                            </div>
+                            <h4 class="font-medium mb-2">
+                                <%=product.productName%>
+                            </h4>
+                            <div class="flex justify-between items-center">
+                                <div>
+                                    <span class="text-lg font-bold text-blue-600">
+                                        <%= product.price%>
+                                    </span>
+                                    <span class="text-sm text-gray-500 line-through ml-2">$999.99</span>
+                                </div>
+                                <button
+                                    class="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center">
+                                    <i class="fas fa-plus"></i>
+                                </button>
                             </div>
                         </div>
-                        <h4 class="font-medium mb-2"><%=product.productName%></h4>
-                        <div class="flex justify-between items-center">
-                            <div>
-                                <span class="text-lg font-bold text-blue-600"><%= product.price%></span>
-                                <span class="text-sm text-gray-500 line-through ml-2">$999.99</span>
-                            </div>
-                            <button class="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center">
-                                <i class="fas fa-plus"></i>
-                            </button>
-                        </div>
                     </div>
-                </div>
-                <%})%>
-                
-                <!-- Product Card 2 -->
-               
+                    <%})%>
+
+                        <!-- Product Card 2 -->
+
             </div>
         </div>
-        
+
         <!-- Trending Products Section -->
         <div class="mb-8">
             <div class="flex justify-between items-center mb-4">
                 <h2 class="text-xl font-bold">Trending products</h2>
                 <a href="#" class="text-blue-600 text-sm font-medium">View all</a>
             </div>
-            
+
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <%trendingProducts.forEach(product=>{%>
-                <!-- Trending Product 1 -->
-                <div class="bg-white rounded-lg shadow-sm overflow-hidden">
-                    <a href="productdetails/<%= product._id %>">
-                    <div class="h-32">
-                        <img src="<%=product.productImage[0]?.url%>" alt="Product" class="w-full h-full object-cover">
-                    </div>
-                </a>
-                    <div class="p-3">
-                        <h4 class="font-medium text-sm mb-1"><%=product.productName%></h4>
-                        <div class="flex justify-between items-center">
-                            <span class="text-sm font-bold text-blue-600"><%=product.price%></span>
-                            <div class="flex items-center">
-                                <i class="fas fa-star text-yellow-400 text-xs"></i>
-                                <span class="text-xs text-gray-600 ml-1">4.8</span>
+                    <!-- Trending Product 1 -->
+                    <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+                        <a href="productdetails/<%= product._id %>">
+                            <div class="h-32">
+                                <img src="<%=product.productImage[0]?.url%>" alt="Product"
+                                    class="w-full h-full object-cover">
+                            </div>
+                        </a>
+                        <div class="p-3">
+                            <h4 class="font-medium text-sm mb-1">
+                                <%=product.productName%>
+                            </h4>
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm font-bold text-blue-600">
+                                    <%=product.price%>
+                                </span>
+                                <div class="flex items-center">
+                                    <i class="fas fa-star text-yellow-400 text-xs"></i>
+                                    <span class="text-xs text-gray-600 ml-1">4.8</span>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                <% })%>
-                
+                    <% })%>
+
             </div>
         </div>
-        
+
         <!-- Weekly Sale Banner -->
         <div class="bg-blue-100 rounded-lg p-6 mb-8 flex items-center justify-between">
             <div>
                 <h3 class="text-2xl font-bold text-blue-900 mb-2">SEASONAL WEEKLY SALE 2024</h3>
                 <p class="text-blue-800 mb-4">Get up to 20% off on selected items</p>
-                <button class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-6 rounded-md">Shop Now</button>
+                <button class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-6 rounded-md">Shop
+                    Now</button>
             </div>
-        
+
             <div class="hidden md:block">
-                <img src="https://images.unsplash.com/photo-1555041469-a586c61ea9bc?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=300&q=80" alt="Sale" class="h-24 w-32 object-cover rounded-md">
+                <img src="https://images.unsplash.com/photo-1555041469-a586c61ea9bc?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=300&q=80"
+                    alt="Sale" class="h-24 w-32 object-cover rounded-md">
             </div>
         </div>
-        
+
         <!-- Special Offers Section -->
         <div class="mb-8">
             <div class="flex justify-between items-center mb-4">
@@ -244,43 +233,44 @@
                     <button class="w-6 h-6 rounded-full bg-green-500"></button>
                 </div>
             </div>
-            
+
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 <% specialOffers.forEach(product=>{%>
-                <!-- Special Offer 1 -->
-                <div class="bg-white rounded-lg shadow-sm overflow-hidden">
-                    <a href="productdetails/<%= product._id %>">
-                    <div class="h-40">
-                        <img src="<%= product.productImage[0]?.url%>" alt="Product" class="w-full h-full object-cover">
-                    </div>
-                </a>
-                    <div class="p-4">
-                        <div class="flex justify-between items-center mb-2">
-                            <span class="text-xs bg-red-100 text-red-600 px-2 py-1 rounded-full font-medium">50% OFF</span>
-                            <div class="flex">
-                                <i class="fas fa-star text-yellow-400 text-xs"></i>
-                                <span class="text-xs text-gray-600 ml-1">4.9</span>
+                    <!-- Special Offer 1 -->
+                    <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+                        <a href="productdetails/<%= product._id %>">
+                            <div class="h-40">
+                                <img src="<%= product.productImage[0]?.url%>" alt="Product"
+                                    class="w-full h-full object-cover">
+                            </div>
+                        </a>
+                        <div class="p-4">
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="text-xs bg-red-100 text-red-600 px-2 py-1 rounded-full font-medium">50%
+                                    OFF</span>
+                                <div class="flex">
+                                    <i class="fas fa-star text-yellow-400 text-xs"></i>
+                                    <span class="text-xs text-gray-600 ml-1">4.9</span>
+                                </div>
+                            </div>
+                            <h4 class="font-medium mb-2">Stylish Desk Lamp</h4>
+                            <div class="flex justify-between items-center">
+                                <div>
+                                    <span class="text-sm font-bold text-blue-600">$24.99</span>
+                                    <span class="text-xs text-gray-500 line-through ml-2">$49.99</span>
+                                </div>
+                                <button
+                                    class="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center">
+                                    <i class="fas fa-plus"></i>
+                                </button>
                             </div>
                         </div>
-                        <h4 class="font-medium mb-2">Stylish Desk Lamp</h4>
-                        <div class="flex justify-between items-center">
-                            <div>
-                                <span class="text-sm font-bold text-blue-600">$24.99</span>
-                                <span class="text-xs text-gray-500 line-through ml-2">$49.99</span>
-                            </div>
-                            <button class="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center">
-                                <i class="fas fa-plus"></i>
-                            </button>
-                        </div>
                     </div>
-                </div>
-                <%}) %>
-                </div>
-                
-                <!-- Special Offer 2 -->
-                
+                    <%}) %>
+            </div>
 
-                </main>
+            <!-- Special Offer 2 -->
+
+
+    </main>
     <%-include("../../views/partials/user/footer")-%>
-
-                       
