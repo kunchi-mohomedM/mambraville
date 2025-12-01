@@ -6,6 +6,7 @@ const categoryController = require("../controller/admin/categoryController")
 const brandController = require("../controller/admin/brandController")
 const productController= require("../controller/admin/productController")
 const dashboardController=require("../controller/admin/dashboardController")
+const adminOrderController = require("../controller/admin/adminOrderController");
 const {deleteCategory}=require('../controller/admin/categoryController');
 const upload=require("../config/multer");
 
@@ -42,6 +43,15 @@ router.get("/editproduct/:id",adminAuth,productController.loadeditproduct)
 router.post('/editproduct/:id', upload.array('productImages', 4),productController.editproduct);
 router.post('/delete-product-image/:productId/:imageIndex', productController.deleteProductImage);
 router.patch('/product/delete',adminAuth,productController.toggleDeletedproduct)
+
+
+
+
+router.get("/orders", adminAuth, adminOrderController.listOrders);
+router.get("/orders/:orderId", adminAuth, adminOrderController.viewOrder);
+router.post("/orders/:orderId/status", adminAuth, adminOrderController.updateOrderStatus);
+router.post("/orders/:orderId/verify-return/:itemId", adminAuth, adminOrderController.verifyReturn);
+router.post("/orders/:orderId/cancel", adminAuth, adminOrderController.cancelOrderByAdmin);
 
 
 

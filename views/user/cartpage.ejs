@@ -35,8 +35,10 @@
 
                         <!-- Product Image -->
                         <td class="py-2 px-4">
-                            <img src="<%= item.image ? '/uploads/' + item.image : '/img/no-image.png' %>"
-                                 class="w-16 h-16 object-cover rounded">
+                            <img src="<%= item.image %>" 
+     onerror="this.src='/img/no-image.png'"
+     class="w-16 h-16 object-cover rounded">
+
                         </td>
 
                         <!-- Product Name -->

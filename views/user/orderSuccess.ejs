@@ -10,10 +10,10 @@
     <div class="bg-white p-8 rounded-lg shadow">
       <h1 class="text-3xl font-bold mb-4 text-green-600">Thank you! 🎉</h1>
       <p class="text-gray-700 mb-4">Your order has been placed successfully.</p>
-      <p class="text-sm text-gray-500 mb-6">Order ID: <strong><%= order._id %></strong></p>
+      <p class="text-sm text-gray-500 mb-6">Order ID: <strong><%= order.orderId %></strong></p>
 
       <div class="flex justify-center gap-4">
-        <a href="/order/details/<%= order._id %>" class="px-6 py-2 bg-blue-600 text-white rounded">View Order</a>
+        <a href="/order-summary" class="px-6 py-2 bg-blue-600 text-white rounded">View Order</a>
         <a href="/products-user" class="px-6 py-2 border border-gray-300 rounded">Continue Shopping</a>
       </div>
     </div>

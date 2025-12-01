@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Management | Mambraville Admin</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body class="bg-gray-100">
+
+    <div class="flex h-screen">
+
+        <!-- Sidebar -->
+        <%- include('../partials/admin/sidebar') %>
+
+            <!-- Main content -->
+            <div class="flex-1 flex flex-col overflow-hidden">
+
+                <!-- Header -->
+                <header
+                    class="bg-gradient-to-r from-black to-purple-900 text-white p-4 flex justify-between items-center">
+                    <h1 class="text-2xl font-bold">Order Management</h1>
+
+                    <form method="GET" action="/admin/orders" class="flex items-center">
+                        <div class="relative">
+                            <input type="text" name="search" value="<%= queryParams.search || '' %>"
+                                placeholder="Search Order ID / User..."
+                                class="bg-white bg-opacity-20 rounded-full py-2 px-4 pl-10 text-white placeholder-gray-200 focus:outline-none focus:ring-2 focus:ring-white">
+                            <i class="fas fa-search absolute left-3 top-3 text-gray-200"></i>
+                        </div>
+
+                        <% if (queryParams.search) { %>
+                            <a href="/admin/orders" class="ml-3 px-4 py-2 bg-red-600 text-white rounded-full">
+                                Clear
+                            </a>
+                            <% } %>
+                    </form>
+                </header>
+
+                <main class="flex-1 overflow-y-auto p-6 bg-white m-4 rounded-lg shadow">
+
+                    <!-- Filter & Sort Section -->
+                    <div class="flex justify-between mb-5 flex-wrap gap-3">
+
+                        <!-- Status Filter -->
+                        <form method="GET" action="/admin/orders" class="flex items-center gap-3">
+                            <input type="text" name="search" value="<%= queryParams.search %>"
+                                placeholder="Search Order / User" class="...">
+
+                            <select name="status" class="border p-2 rounded">
+                                <option value="">All Status</option>
+                                <option value="Pending" <%=queryParams.status==='Pending' ? 'selected' : '' %>>Pending
+                                </option>
+                                <option value="Shipped" <%=queryParams.status==='Shipped' ? 'selected' : '' %>>Shipped
+                                </option>
+                                ...
+                            </select>
+
+                            <select name="sort" class="border p-2 rounded">
+                                <option value="latest" <%=queryParams.sort==='latest' ? 'selected' : '' %>>Latest First
+                                </option>
+                                <option value="oldest" <%=queryParams.sort==='oldest' ? 'selected' : '' %>>Oldest First
+                                </option>
+                                <option value="highAmount" <%=queryParams.sort==='highAmount' ? 'selected' : '' %>>High
+                                    Amount</option>
+                                <option value="lowAmount" <%=queryParams.sort==='lowAmount' ? 'selected' : '' %>>Low
+                                    Amount</option>
+                            </select>
+
+                            <button type="submit" class="px-4 py-2 bg-purple-700 text-white rounded">Apply</button>
+                        </form>
+
+                    </div>
+
+                    <!-- Orders Table -->
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full bg-white border">
+                            <thead class="bg-gray-100">
+                                <tr>
+                                    <th class="p-3 border">Order ID</th>
+                                    <th class="p-3 border">User</th>
+                                    <th class="p-3 border">Date</th>
+                                    <th class="p-3 border">Amount</th>
+                                    <th class="p-3 border">Status</th>
+                                    <th class="p-3 border">Action</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                <% orders.forEach(order=> { %>
+                                    <tr class="border-b hover:bg-gray-50">
+                                        <td class="p-3 border">
+                                            <%= order.orderId %>
+                                        </td>
+                                        <td class="p-3 border">
+                                            <%= order.userId.fullname %>
+                                        </td>
+                                        <td class="p-3 border">
+                                            <%= new Date(order.orderedAt).toLocaleDateString() %>
+                                        </td>
+                                        <td class="p-3 border">₹<%= order.totalAmount %>
+                                        </td>
+
+                                        <td class="p-3 border font-semibold text-purple-700">
+                                            <%= order.status %>
+                                        </td>
+                                        <td class="p-3 border flex gap-2">
+
+                                            <!-- View -->
+                                            <a href="/admin/order/<%= order._id %>"
+                                                class="px-3 py-1 bg-blue-600 text-white rounded">
+                                                View
+                                            </a>
+
+                                            <!-- Change Status -->
+                                            <button onclick="openStatusModal('<%= order._id %>', '<%= order.status %>')"
+                                                class="px-3 py-1 bg-green-600 text-white rounded">
+                                                Update
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <% }) %>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Pagination -->
+                    <div class="mt-6 flex justify-center gap-3">
+                        <% for(let i=1; i <=totalPages; i++) { %>
+                            <a href="/admin/orders?page=<%= i %>"
+                                class="px-4 py-2 rounded border <%= i === page ? 'bg-purple-800 text-white' : '' %>">
+                                <%= i %>
+                            </a>
+                            <% } %>
+                    </div>
+
+                </main>
+            </div>
+    </div>
+
+    <!-- Status Modal -->
+    <div id="statusModal" class="fixed inset-0 bg-black bg-opacity-40 hidden justify-center items-center">
+        <div class="bg-white p-6 rounded w-96 shadow-lg">
+            <h2 class="text-xl font-bold mb-4">Update Order Status</h2>
+
+            <form id="statusForm" method="POST">
+                <select name="status" id="statusSelect" class="w-full p-2 border rounded">
+                    <option value="Pending">Pending</option>
+                    <option value="Shipped">Shipped</option>
+                    <option value="Out for Delivery">Out for Delivery</option>
+                    <option value="Delivered">Delivered</option>
+                    <option value="Cancelled">Cancelled</option>
+                </select>
+
+                <div class="mt-4 flex justify-end gap-2">
+                    <button type="button" onclick="closeStatusModal()"
+                        class="px-4 py-2 bg-gray-400 text-white rounded">Close</button>
+                    <button class="px-4 py-2 bg-purple-700 text-white rounded">Update</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function openStatusModal(orderId, currentStatus) {
+            document.getElementById("statusForm").action = `/admin/order/status/${orderId}`;
+            document.getElementById("statusSelect").value = currentStatus;
+            document.getElementById("statusModal").classList.remove("hidden");
+        }
+
+        function closeStatusModal() {
+            document.getElementById("statusModal").classList.add("hidden");
+        }
+    </script>
+
+</body>
+
+</html>

@@ -117,10 +117,16 @@
                                 <p class="text-gray-900 font-bold text-sm">
                                     $<%=product.price%>
                                 </p>
-                                <a href="/add-to-cart/<%= product._id %>" 
-                                    class="mt-2 w-full text-center bg-purple-600 text-white rounded-full p-2 block">
-                                    <i class="fas fa-shopping-cart text-xs"></i> Add to Cart
-                                </a>
+                               <button 
+                                    class="toggle-cart-btn mt-2 w-full text-center bg-purple-600 text-white rounded-full p-2 block"
+                                    data-product-id="<%= product._id %>"
+                                    data-in-cart="<%= product.inCart %>"
+                                >
+                                     <i class="fas fa-shopping-cart text-xs"></i>
+                                     <span><%= product.inCart ? 'Go to Cart' : 'Add to Cart' %></span>
+                                </button>
+
+
 
                             </div>
                         </a>
@@ -306,6 +312,46 @@ categorySelect.addEventListener('change', async function () {
     window.location.href = `/products-user?category=${selectedCategory}&sort=${selectedSort}`;
   }
 });
+
+
+//toggle
+
+
+    const isLoggedIn =' <%= isLoggedIn ? "true" : "false" %>';
+
+    document.addEventListener("DOMContentLoaded", () => {
+        document.querySelectorAll(".toggle-cart-btn").forEach(button => {
+            button.addEventListener("click", async () => {
+                if (isLoggedIn === "false") {
+                    window.location.href = "/login";
+                    return;
+                }
+
+                const productId = button.dataset.productId;
+                const isInCart = button.dataset.inCart === "true";
+
+                if (isInCart) {
+                    window.location.href = "/cart";
+                    return;
+                }
+
+                try {
+                    const response = await fetch(`/add-to-cart/${productId}`, { method: "GET" });
+                    if (response.ok) {
+                        button.dataset.inCart = "true";
+                        button.classList.remove("bg-purple-600");
+                        button.classList.add("bg-green-600");
+                        button.querySelector("span").innerText = "Go to Cart";
+                    } else {
+                        alert("Failed to add item to cart.");
+                    }
+                } catch (error) {
+                    console.error(error);
+                    alert("Something went wrong.");
+                }
+            });
+        });
+    });
 
 
     </script>

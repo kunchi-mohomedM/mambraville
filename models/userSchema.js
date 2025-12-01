@@ -35,7 +35,8 @@ const userSchema = new Schema({
         default:false
     },
 
-    address:[addressSchema]
+    address:[addressSchema],
+    wallet:{type:Number , defualt:0}
     
 },{timestamps:true})
 

@@ -154,7 +154,7 @@ const placeOrder = async(req,res) => {
     await cart.save();
 
     // redirect to success page
-    return res.redirect(`/order/success/${newOrder.orderId}`);
+    return res.redirect(`/order/success/${newOrder._id}`);
   } catch (err) {
     console.error("placeOrder error:", err);
     return res.status(500).send("Internal server error");
@@ -167,9 +167,11 @@ const loadOrderSuccess = async (req, res) => {
     if (!userId) return res.redirect("/login");
 
     const orderId = req.params.orderId;
+    console.log(orderId)
     if (!orderId) return res.redirect("/");
 
     const order = await Order.findById(orderId).lean();
+    console.log(order)
     if (!order) return res.redirect("/");
 
     // ensure owner
@@ -178,17 +180,18 @@ const loadOrderSuccess = async (req, res) => {
     return res.render("orderSuccess", { order });
   } catch (err) {
     console.error("loadOrderSuccess error:", err);
-    return res.status(500).send("Internal server error");
+    return res.status(500).send("Internal server error when success page");
   }
 };
 
 const loadOrderDetails = async (req, res) => {
   try {
     const userId = req.session.user;
-    const orderId = req.params.id;
+    const orderId = req.params.orderId;
     if (!userId) return res.redirect("/login");
 
     const order = await Order.findById(orderId).lean();
+   
     if (!order) return res.redirect("/");
 
     if (order.userId.toString() !== userId.toString()) return res.redirect("/");
@@ -204,21 +207,25 @@ const cancelOrder=async (req,res)=>{
   try {
     const userId = req.session.user;
     const {orderId} = req.params;
+    const {reason}=req.body;
 
-    const order = await Order.findOne({orderId,userId})
+
+    const order = await Order.findOne({ _id: orderId, userId });
+    console.log(order)
     if(!order) return res.redirect("/order-summary");
 
-    if(order.status === "Delivered"){
-      return res.send("Cannot cancel delivered order");
-    }
+
+    order.cancelReason = reason;
+    order.status = "Cancelled";
 
     for(let item of order.items){
       await Product.findByIdAndUpdate(item.productId,{
         $inc:{quantity:item.qty}
       });
+       item.status = "Cancelled";
     }
 
-    order.status = "Cancelled";
+  
     await order.save();
 
     return res.redirect("/order-summary");
@@ -233,6 +240,7 @@ const returnOrder = async(req,res)=>{
   try {
     const userId = req.session.user;
     const {orderId} = req.params;
+    const {reason} = req.body;
 
     const order = await Order.findOne({ orderId,userId });
     if(!order) return res.redirect("/order-summary");
@@ -242,19 +250,102 @@ const returnOrder = async(req,res)=>{
     }
 
     order.status = "Returned";
-    await order.save();
+    order.returnReason = reason;
+    
 
     for(let item of order.items){
       await Product.findByIdAndUpdate(item.productId,{
         $inc:{quantity:item.qty}
       })
+      item.status = "Returned";
+      item.returnReason = reason;
+
     }
+
+    await order.save();
     res.redirect("/order-summary");
   } catch (error) {
     console.log(error);
     res.status(500).send("Error")
   }
 } ;
+
+const cancelItem = async (req, res) => {
+  try {
+    const userId = req.session.user;
+    const orderId = req.params.orderId;
+    const itemId = req.params.itemId;
+    const { reason } = req.body;
+
+    const order = await Order.findOne({ _id: orderId, userId });
+    if (!order) return res.redirect("/order-summary");
+
+    const item = order.items.id(itemId);
+    if (!item) return res.redirect("/order-summary");
+
+    item.status ="Cancelled";
+    item.cancelReason = reason;
+
+    await Product.findByIdAndUpdate(item.productId, {
+      $inc: { quantity: item.qty }
+    });
+
+   if(order.items.every(i=>i.status === "Cancelled")){
+    order.status = "Cancelled"
+   }
+
+    await order.save();
+
+    res.redirect(`/order-summary`);
+  } catch (err) {
+    console.log(err);
+    res.status(500).send("Error");
+  }
+};
+
+const returnItem = async (req, res) => {
+  try {
+    const { orderId, itemId } = req.params;
+    const { reason } = req.body;
+
+    const order = await Order.findById(orderId);
+    if (!order) return res.redirect("/order-summary");
+
+    const item = order.items.id(itemId);
+    if (!item) return res.redirect("/order-summary");
+
+    if (item.status !== "Delivered") {
+      return res.send("Only delivered items can be returned");
+    }
+
+    item.status = "Returned";
+    item.returnReason = reason;
+
+    await Product.findByIdAndUpdate(item.productId, {
+      $inc: { quantity: item.qty }
+    });
+
+    const refundAmount = item.price*item.qty;
+    await User.findByIdAndUpdate(order.userId,{
+      $inc:{wallet:refundAmount}
+    })
+
+    const allReturned = order.items.every(i=> i.status === "Returned");
+    const allDelivered = order.items.every(i=>i.status !== "Pending" && i.status !== "Cancelled");
+
+      if (allReturned) {
+      order.status = "Returned";
+    } else if (allDelivered) {
+      order.status = "Delivered";
+    }
+
+    await order.save();
+    res.redirect(`/order/details/${orderId}`);
+  } catch (err) {
+    console.log(err);
+    res.status(500).send("Error");
+  }
+};
 
 
 const loadOrderSummary = async (req, res) => {
@@ -271,15 +362,31 @@ const loadOrderSummary = async (req, res) => {
             return res.status(404).send("User not found");
         }
 
-        // Fetch orders for this user
-        const orders = await Order.find({ userId })
-            .sort({ orderedAt: -1 }) // latest first
-            .lean();
+        const search = req.query.search ? req.query.search.trim() : "";
+
+        let orders;
+
+        if(search){
+           orders = await Order.find({ 
+            userId,
+            $or:[
+              {orderId:{$regex : search ,$options:"i"}},
+              {"items.name":{$regex:search,$options:"i"}}
+            ]
+           }).sort({ orderedAt: -1 }).lean();
+        }else{
+          orders=await Order.find({userId})
+          .sort({orderedAt:-1})
+          .lean();
+        }
+       
+        
 
         // Render the EJS page
         return res.render("ordersummary", {
             user,
             orders,
+            search
         });
 
     } catch (err) {
@@ -297,6 +404,8 @@ module.exports = {
   loadOrderDetails,
   cancelOrder,
   returnOrder,
-  loadOrderSummary
+  loadOrderSummary,
+  cancelItem,
+  returnItem
 };
 

@@ -53,7 +53,7 @@ router.get("/add-address-page",userAuth,addressController.loadAddAddressPage);
 router.get("/edit-address-page/:id",userAuth,addressController.loadEditAddressPage);
 
 
-router.get("/order-summary",userAuth,orderController.loadOrderSummary);
+
 
 
 
@@ -63,13 +63,15 @@ router.post("/cart/remove/:id",userAuth,cartController.removeItem);
 router.get("/cart/increase/:id",userAuth,cartController.increaseQty);
 router.get("/cart/decrease/:id",userAuth,cartController.decreaseqty);
 
-
+router.get("/order-summary",userAuth,orderController.loadOrderSummary);
 router.get("/checkout",userAuth,orderController.loadCheckout);
 router.post("/order/place",userAuth,orderController.placeOrder);
 router.get("/order/success/:orderId",userAuth,orderController.loadOrderSuccess);
-router.get("/order/details/:id",userAuth,orderController.loadOrderDetails)
+router.get("/order/details/:orderId",userAuth,orderController.loadOrderDetails)
 router.post("/order/cancel/:orderId",userAuth,orderController.cancelOrder);
-router.post("/order/return/:orderId",userAuth,orderController.returnOrder);
+
+router.post("/order/cancel-item/:orderId/:itemId",userAuth,orderController.cancelItem);
+router.post("/order/return-item/:orderId/:itemId",userAuth,orderController.returnItem);
 
 
 router.get("/",userController.loadHomepage);

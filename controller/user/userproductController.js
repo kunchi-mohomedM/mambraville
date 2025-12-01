@@ -1,10 +1,11 @@
 const Category = require("../../models/categorySchema");
-const Products=require("../../models/productSchema")
+const Products=require("../../models/productSchema");
+const Cart = require("../../models/cartSchema");
+
 
 const loadUserProducts = async (req, res) => {
     try {
         let query = { isDeleted: false };
-        console.log(req.query);
 
         // Pagination variables
         let page = parseInt(req.query.page) || 1;
@@ -60,10 +61,24 @@ const loadUserProducts = async (req, res) => {
         const totalProducts = await Products.countDocuments(query);
 
         // Fetch filtered & paginated products
-        const products = await Products.find(query)
+        let products = await Products.find(query)
             .sort(sortOptions)
             .skip(skip)
             .limit(limit);
+
+
+            let cartItems = [];
+            if(req.session.user){
+                const cart = await Cart.findOne({userId:req.session.user});
+                cartItems = cart ? cart.items.map(i=>i.productId.toString()):[];
+            }
+
+            products = products.map(p=>{
+                return {
+                    ...p._doc,
+                    inCart:cartItems.includes(p._id.toString())
+                };
+            });
 
         res.render('products', {
             products,
@@ -72,7 +87,8 @@ const loadUserProducts = async (req, res) => {
             totalPages: Math.ceil(totalProducts / limit),
             totalProducts,
             queryParams: req.query,
-            searchQuery: req.query.search || ""
+            searchQuery: req.query.search || "",
+            isLoggedIn: !!req.session.user
         });
 
     } catch (error) {
@@ -89,12 +105,26 @@ const loadUserProducts = async (req, res) => {
 const loadproductdetails=async(req,res)=>{
     try {
         const productId=req.params.id;
-        const product=await Products.findOne({_id:productId,isDeleted:false})
+
+        let product=await Products.findOne({_id:productId,isDeleted:false})
         if(!product) return res.status(404).send("Product not found")
+
+            let inCart = false ;
+            if(req.session.user){
+                const cart = await Cart.findOne({userId:req.session.user});
+
+                if(cart){
+                    inCart = cart.items.some(
+                        item => item.productId.toString()===productId.toString()
+                    );
+                }
+            }
+
+            product = {...product._doc,inCart};
 
         const category = await Category.findById(product.category)
         const relatedProducts=await Products.find({isDeleted:false})
-        .sort({categoryname:-1})
+        .sort({createdAt:-1})
         .limit(4)
         console.log(category)
         res.render("productdetails",{product,category,relatedProducts})

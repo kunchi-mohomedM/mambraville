@@ -1,41 +1,126 @@
 <!DOCTYPE html>
-<html>
-<head><meta charset="utf-8"><title>Order Details</title><script src="https://cdn.tailwindcss.com"></script></head>
-<body class="bg-gray-100">
-  <div class="container mx-auto py-10 max-w-4xl">
-    <div class="bg-white p-6 rounded shadow">
-      <h2 class="text-2xl font-bold mb-4">Order Details - <%= order._id %></h2>
-      <p class="mb-4">Status: <strong><%= order.status %></strong></p>
+<html lang="en">
 
-      <h3 class="font-semibold mt-4">Shipping Address</h3>
-      <p><%= order.address.fullname %></p>
-      <p><%= order.address.street %>, <%= order.address.city %>, <%= order.address.state %> - <%= order.address.pincode %></p>
+<head>
+  <meta charset="UTF-8">
+  <title>Order Details</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
 
-      <h3 class="font-semibold mt-4">Items</h3>
-      <ul class="divide-y">
-        <% order.items.forEach(it => { %>
-          <li class="py-3 flex items-center justify-between">
-            <div class="flex items-center gap-3">
-              <img src="<%= it.image %>" class="w-14 h-14 object-cover rounded" />
-              <div>
-                <div class="font-medium"><%= it.name %></div>
-                <div class="text-sm text-gray-500">Qty: <%= it.qty %></div>
-              </div>
-            </div>
-            <div class="font-semibold">₹ <%= (it.price - (it.price*(it.discount||0)/100))*it.qty %></div>
-          </li>
-        <% }) %>
-      </ul>
+<body class="bg-gray-50 p-6">
 
-      <div class="mt-6 flex justify-between font-bold">
-        <span>Total</span>
-        <span>₹ <%= order.totalAmount %></span>
-      </div>
+  <h1 class="text-3xl font-bold mb-6">Order Details</h1>
 
-      <div class="mt-6">
-        <a href="/products-user" class="px-4 py-2 bg-blue-600 text-white rounded">Continue Shopping</a>
-      </div>
+  <div class="bg-white p-6 rounded shadow">
+    <p><strong>Order ID:</strong>
+      <%= order.orderId %>
+    </p>
+    <p><strong>Status:</strong>
+      <%= order.status %>
+    </p>
+    <p><strong>Ordered At:</strong>
+      <%= new Date(order.orderedAt).toLocaleDateString() %>
+    </p>
+    <p><strong>Delivered At:</strong>
+      <%= order.deliveredAt ? new Date(order.deliveredAt).toLocaleDateString() : '-' %>
+    </p>
+    <p><strong>Total Amount:</strong> ₹<%= order.totalAmount %>
+    </p>
+
+    <!-- Entire Order Actions -->
+    <div class="mt-4 flex gap-4">
+      <% if(order.status !=='Delivered' && order.status !=='Cancelled' ) { %>
+        <form action="/order/cancel/<%= order._id %>" method="POST">
+          <button type="button" onclick="openReasonModal('/order/cancel/<%= order._id %>', 'Cancel Entire Order')"
+            class="px-4 py-2 bg-red-600 text-white rounded">
+            Cancel Entire Order
+          </button>
+
+        </form>
+        <% } %>
+    </div>
+
+    <table class="min-w-full mt-6 border">
+      <thead class="bg-gray-100">
+        <tr>
+          <th class="p-2 border">Product</th>
+          <th class="p-2 border">Qty</th>
+          <th class="p-2 border">Price</th>
+          <th class="p-2 border">Status</th>
+          <th class="p-2 border">Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% order.items.forEach(item=> { %>
+          <tr class="border-b">
+            <td class="p-2 border flex items-center gap-2">
+              <img src="<%= item.image %>" class="w-12 h-12 object-cover rounded">
+              <%= item.name %>
+            </td>
+            <td class="p-2 border">
+              <%= item.qty %>
+            </td>
+            <td class="p-2 border">₹<%= item.price %>
+            </td>
+            <td class="p-2 border">
+              <%= item.status || order.status %>
+            </td>
+            <td class="p-2 border flex gap-2">
+              <% if(item.status !=='Delivered' && order.status !=='Cancelled' ) { %>
+                <form action="/order/cancel-item/<%= order._id %>/<%= item._id %>" method="POST">
+                 <% if(item.status !== "Cancelled"){ %>
+                   <button 
+                    type="button"
+                    onclick="openReasonModal('/order/cancel-item/<%= order._id %>/<%= item._id %>', 'Cancel Product')"
+                    class="px-2 py-1 bg-red-500 text-white rounded text-xs">
+                    Cancel
+                  </button>
+                  <% } %>
+                </form>
+                <% } %>
+                  <% if(item.status==='Delivered' && order.status !=='Returned' ) { %>
+                    <form action="/order/return-item/<%= order._id %>/<%= item._id %>" method="POST">
+                      <button class="px-2 py-1 bg-yellow-500 text-white rounded text-xs">Return</button>
+                    </form>
+                    <% } %>
+            </td>
+          </tr>
+          <% }) %>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Reason Modal -->
+  <div id="reasonModal" class="fixed inset-0 bg-black bg-opacity-40 hidden justify-center items-center">
+    <div class="bg-white p-6 rounded w-96">
+      <h2 id="modalTitle" class="text-xl font-bold mb-4"></h2>
+
+      <form id="reasonForm" method="POST">
+        <textarea name="reason" required class="w-full p-2 border rounded" placeholder="Enter reason..."></textarea>
+
+        <div class="mt-4 flex justify-end gap-2">
+          <button type="button" onclick="closeModal()" class="px-4 py-2 bg-gray-400 text-white rounded">Close</button>
+          <button class="px-4 py-2 bg-blue-600 text-white rounded">Submit</button>
+        </div>
+      </form>
     </div>
   </div>
+
+
 </body>
+<script>
+
+  function openReasonModal(actionUrl, title) {
+    document.getElementById("reasonForm").action = actionUrl;
+    document.getElementById("modalTitle").innerText = title;
+    document.getElementById("reasonModal").classList.remove("hidden");
+  }
+
+  function closeModal() {
+    document.getElementById("reasonModal").classList.add("hidden");
+  }
+
+
+</script>
+
 </html>

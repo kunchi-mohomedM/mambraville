@@ -12,6 +12,13 @@ const orderItemSchema = new mongoose.Schema({
     qty : { type : Number , required : true },
     price : { type : Number , required : true },
     discount : { type : Number , default : 0},
+    status:{
+        type:String,
+        enum:["Pending","Delivered","Cancelled","Returned"],
+        default:"Pending"
+    },
+    cancelReason:{ type:String,default:"" },
+    returnReason:{ type:String,default:"" }
 });
 
 const addressSchema = new mongoose.Schema({
@@ -40,7 +47,7 @@ const orderSchema = new mongoose.Schema({
 
     status: {
         type: String,
-        enum: ["Pending", "Confirmed", "Shipped", "Delivered", "Cancelled","Returned"],
+        enum: ["Pending", "Delivered", "Cancelled","Returned"],
         default: "Pending"
     },
 
@@ -57,7 +64,9 @@ const orderSchema = new mongoose.Schema({
     totalAmount: {
         type: Number,
         required: true
-    }
+    },
+    cancelReason:{ type:String,default:"" },
+    returnReason:{ type:String,default:"" }
 });
 
 module.exports=mongoose.model("Order",orderSchema);
