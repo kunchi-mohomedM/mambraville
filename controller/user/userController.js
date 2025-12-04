@@ -30,6 +30,7 @@ const loadSignup = async (req, res) => {
         if (req.session && req.session.userId) {
             return res.redirect('/');
         }
+      
         return res.render("signup", { 
             error: null, 
             oldInput: { fullname: '', email: '' } 
@@ -118,6 +119,7 @@ const signUp = async (req, res) => {
         }
 
         const otp = generateOtp();
+        console.log(otp)
         const emailSent = await sendVerificationEmail(email, otp);
         if (!emailSent) {
             return res.json("email-error");

@@ -34,17 +34,25 @@
       <i class="fa fa-search absolute left-3 top-2.5 text-gray-400"></i>
     </div>
 
-    <!-- 🏷️ Category -->
-    <div class="flex items-center space-x-2">
-      <label for="categorySelect" class="text-sm text-gray-600 font-medium">Category:</label>
-      <select id="categorySelect" name="category"
-        class="border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 text-gray-700">
-        <option value="">All</option>
-        <option value="Laptops" <%= queryParams.category === 'Laptops' ? 'selected' : '' %>>Laptops</option>
-        <option value="Mobiles" <%= queryParams.category === 'Mobiles' ? 'selected' : '' %>>Mobiles</option>
-        <option value="Televisions" <%= queryParams.category === 'Televisions' ? 'selected' : '' %>>Televisions</option>
-      </select>
-    </div>
+   <!-- 🏷️ Category -->
+<div class="flex items-center space-x-2">
+  <label for="categorySelect" class="text-sm text-gray-600 font-medium">Category:</label>
+  
+  <select id="categorySelect" name="category"
+    class="border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 text-gray-700">
+    
+    <option value="">All</option>
+
+    <% categories.forEach(cat => { %>
+      <option value="<%= cat.categoryname %>" 
+        <%= queryParams.category === cat.categoryname ? 'selected' : '' %>>
+          <%= cat.categoryname %>
+      </option>
+    <% }) %>
+
+  </select>
+</div>
+
 
     <!-- 🔽 Sort -->
     <div class="flex items-center space-x-2">

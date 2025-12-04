@@ -39,12 +39,10 @@ const addTocart=async(req,res)=>{
         const product = await Product.findById(productId)
         if(!product) return res.redirect("/products-user");
 
-        // Check if product is deleted
         if (product.isDeleted) {
         return res.status(400).send("This product is no longer available.");
         }
 
-// Check status: only "Available" products can be added to cart
         if (product.status === "Discontinued") {
         return res.status(400).send("This product has been discontinued.");
         }
@@ -53,9 +51,7 @@ const addTocart=async(req,res)=>{
         return res.status(400).send("Product is out of stock.");
         }
 
-
         let cart = await Cart.findOne({userId});
-
         if(!cart){
             cart=new Cart({
                 userId,
@@ -122,6 +118,7 @@ const addTocart=async(req,res)=>{
 };
 
 
+
 const loadCart=async(req,res)=>{
     try {
         const userId=req.session.user;
@@ -140,8 +137,6 @@ const loadCart=async(req,res)=>{
             cart
         });
         
-
-
     } catch (error) {
         console.log("Error occur while loading cart:",error);
         return res.status(500).send("Internal Server Error");
@@ -202,8 +197,6 @@ const decreaseqty=async(req,res)=>{
             cart.items=cart.items.filter(i=>i.productId.toString()!==productId)
         }
 
-       
-
         cart.cartTotal = cart.items.reduce((sum,i)=> sum + i.subtotal , 0)
 
         await cart.save();
@@ -214,6 +207,7 @@ const decreaseqty=async(req,res)=>{
         return res.status(500).send("Internal server Error");
     }
 };
+
 
 const removeItem= async(req,res)=>{
     try {
@@ -235,7 +229,6 @@ const removeItem= async(req,res)=>{
         return res.status(500).send("Internal Server error");
     }
 };
-
 
 
 module.exports = {

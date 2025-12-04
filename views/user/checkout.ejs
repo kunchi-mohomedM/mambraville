@@ -63,12 +63,7 @@
                         <p class="text-sm text-gray-600"><%= addr.street %>, <%= addr.city %>, <%= addr.state %> - <%= addr.pincode %></p>
                         <p class="text-sm text-gray-600">Phone: <%= addr.phone %></p>
                       </div>
-                      <div class="flex gap-2">
-                        <button onclick="editAddress('<%= addr._id %>')" class="text-blue-600 text-sm">Edit</button>
-                        <form action="/delete-address/<%= addr._id %>" method="GET" class="inline">
-                          <button type="submit" class="text-red-600 text-sm">Delete</button>
-                        </form>
-                      </div>
+                     
                     </div>
                   </div>
                 </label>

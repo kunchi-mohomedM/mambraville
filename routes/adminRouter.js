@@ -48,8 +48,8 @@ router.patch('/product/delete',adminAuth,productController.toggleDeletedproduct)
 
 
 router.get("/orders", adminAuth, adminOrderController.listOrders);
-router.get("/orders/:orderId", adminAuth, adminOrderController.viewOrder);
-router.post("/orders/:orderId/status", adminAuth, adminOrderController.updateOrderStatus);
+router.get("/order/:orderId", adminAuth, adminOrderController.viewOrder);
+router.post("/order/status/:orderId", adminAuth, adminOrderController.updateOrderStatus);
 router.post("/orders/:orderId/verify-return/:itemId", adminAuth, adminOrderController.verifyReturn);
 router.post("/orders/:orderId/cancel", adminAuth, adminOrderController.cancelOrderByAdmin);
 

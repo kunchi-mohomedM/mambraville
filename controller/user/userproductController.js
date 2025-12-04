@@ -80,9 +80,12 @@ const loadUserProducts = async (req, res) => {
                 };
             });
 
+            const categories = await Category.find({isListed: true});
+
         res.render('products', {
             products,
             categoryDoc,
+            categories,
             currentPage: page,
             totalPages: Math.ceil(totalProducts / limit),
             totalProducts,

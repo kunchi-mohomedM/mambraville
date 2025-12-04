@@ -1,7 +1,7 @@
 
 const Order = require("../../models/orderSchema");
 const Product = require("../../models/productSchema");
-const User = require("../../models/userSchema"); // for wallet update
+const User = require("../../models/userSchema"); 
 const mongoose = require("mongoose");
 
 const DEFAULT_LIMIT = 10;
@@ -92,7 +92,7 @@ const viewOrder = async (req, res) => {
     const order = await Order.findById(orderId).populate("userId", "name email phone").lean();
     if (!order) return res.redirect("/admin/orders");
 
-    return res.render("admin/orderDetails", { order });
+    return res.render("adminOrderDetails", { order });
   } catch (err) {
     console.error("admin viewOrder error:", err);
     return res.status(500).send("Server error");
@@ -109,11 +109,11 @@ const updateOrderStatus = async (req, res) => {
     const order = await Order.findById(orderId);
     if (!order) return res.status(404).send("Order not found");
 
-    // allowed status transitions (you can tighten rules if needed)
+    
     const allowed = ["Pending", "Shipped", "Out for Delivery", "Delivered", "Cancelled"];
     if (!allowed.includes(status)) return res.status(400).send("Invalid status");
 
-    // If moving to Cancelled by admin: restock all non-cancelled items
+   
     if (status === "Cancelled" && order.status !== "Cancelled") {
       for (const item of order.items) {
         if (item.status !== "Cancelled") {
@@ -123,13 +123,13 @@ const updateOrderStatus = async (req, res) => {
         }
       }
       order.cancelReason = order.cancelReason || "Cancelled by admin";
-      order.totalAmount = 0; // optional: keep original but typically set to 0 for business logic
+      order.totalAmount = 0; 
     }
 
-    // If marking Delivered, mark deliveredAt and mark item status -> Delivered if still pending
+    
     if (status === "Delivered") {
       order.deliveredAt = new Date();
-      // mark pending items as delivered
+     
       for (const item of order.items) {
         if (item.status === "Pending") item.status = "Delivered";
       }
@@ -138,24 +138,20 @@ const updateOrderStatus = async (req, res) => {
     order.status = status;
     await order.save();
 
-    // redirect back to order details or orders list
-    return res.redirect(`/admin/orders/${orderId}`);
+    
+    return res.redirect(`/admin/order/${orderId}`);
   } catch (err) {
     console.error("admin updateOrderStatus error:", err);
     return res.status(500).send("Server error");
   }
 };
 
-/**
- * Verify return request for a specific item.
- * This route expects admin to approve a return request for itemId inside the order.
- * On approve: update item.status to Returned, credit wallet, increment stock, set item.returnReason (if not set)
- */
+
 const verifyReturn = async (req, res) => {
   try {
     const { orderId, itemId } = req.params;
-    const { approve } = req.body; // optional true/false if you want reject too
-    const { adminNote } = req.body; // optional notes
+    const { approve } = req.body; 
+    const { adminNote } = req.body; 
 
     if (!mongoose.Types.ObjectId.isValid(orderId)) return res.status(400).send("Invalid orderId");
 
@@ -165,35 +161,34 @@ const verifyReturn = async (req, res) => {
     const item = order.items.id(itemId);
     if (!item) return res.status(404).send("Item not found");
 
-    // If item already returned or cancelled -> nothing to do
+   
     if (item.status === "Returned" || item.status === "Cancelled") {
       return res.redirect(`/admin/orders/${orderId}`);
     }
 
-    // Only verify requests for Delivered items (business rule)
+    
     if (item.status !== "Delivered") {
       return res.status(400).send("Only delivered items can be returned");
     }
 
-    // Approve the return
-    // 1) mark item as Returned
+ 
     item.status = "Returned";
     if (!item.returnReason && req.body.returnReason) item.returnReason = req.body.returnReason;
     if (adminNote) item.adminNote = adminNote;
 
-    // 2) restock product
+   
     await Product.findByIdAndUpdate(item.productId, { $inc: { quantity: item.qty } });
 
-    // 3) refund to user's wallet
-    const refundAmount = (item.price || 0) * (item.qty || 0); // simple refund rule
+    
+    const refundAmount = (item.price || 0) * (item.qty || 0); 
     await User.findByIdAndUpdate(order.userId, { $inc: { wallet: refundAmount } });
 
-    // 4) update order.status if all items returned
+    
     const allReturned = order.items.every(i => i.status === "Returned" || i.status === "Cancelled");
     if (allReturned) {
       order.status = "Returned";
     } else {
-      // if some items still delivered or pending, keep order as Delivered
+     
       order.status = order.items.some(i => i.status === "Delivered") ? "Delivered" : order.status;
     }
 
@@ -213,7 +208,7 @@ const cancelOrderByAdmin = async (req, res) => {
     if (!order) return res.redirect("/admin/orders");
 
     if (order.status === "Delivered") {
-      // business: cannot admin-cancel delivered orders (unless you want to)
+      
       return res.redirect(`/admin/orders/${orderId}`);
     }
 

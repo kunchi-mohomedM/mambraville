@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Order Details | Mambraville Admin</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body class="bg-gray-100">
+  <div class="flex h-screen">
+
+    <!-- Sidebar -->
+    <%- include('../partials/admin/sidebar') %>
+
+    <!-- Main Content -->
+    <div class="flex-1 flex flex-col overflow-hidden">
+
+      <!-- Header -->
+      <header class="bg-gradient-to-r from-black to-purple-900 text-white p-4 flex justify-between items-center">
+        <h1 class="text-2xl font-bold">Order Management</h1>
+        <div class="flex items-center">
+          <div class="relative mr-4">
+            <input type="text" placeholder="Search Order / User" class="bg-white bg-opacity-20 rounded-full py-2 px-4 pl-10 text-white placeholder-gray-200 focus:outline-none focus:ring-2 focus:ring-white">
+            <i class="fas fa-search absolute left-3 top-3 text-gray-200"></i>
+          </div>
+          <div class="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
+            <img src="/admin-avatar.png" alt="Admin" class="w-8 h-8 rounded-full">
+          </div>
+        </div>
+      </header>
+
+      <!-- Main Content -->
+      <main class="flex-1 overflow-y-auto p-6">
+
+        <div class="p-6 bg-white m-4 rounded-lg shadow">
+
+          <h2 class="text-2xl font-bold mb-4">Order Details: <%= order.orderId %></h2>
+
+          <!-- User Info -->
+          <div class="mb-4 space-y-1">
+            <p><strong>User:</strong> <%= order.userId.fullname %> | <%= order.userId.email %></p>
+           
+            <p><strong>Status:</strong> <span class="font-semibold text-purple-700"><%= order.status %></span></p>
+            <p><strong>Ordered At:</strong> <%= new Date(order.orderedAt).toLocaleString() %></p>
+            <% if(order.deliveredAt) { %>
+              <p><strong>Delivered At:</strong> <%= new Date(order.deliveredAt).toLocaleString() %></p>
+            <% } %>
+          </div>
+
+          <!-- Items Table -->
+          <div class="overflow-x-auto">
+            <table class="min-w-full border mb-4">
+              <thead class="bg-gray-100">
+                <tr>
+                  <th class="p-2 border">Item</th>
+                  <th class="p-2 border">Qty</th>
+                  <th class="p-2 border">Price</th>
+                  <th class="p-2 border">Status</th>
+                  <th class="p-2 border">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% order.items.forEach(item => { %>
+                  <tr class="border-b hover:bg-gray-50">
+                    <td class="p-2 border"><%= item.name %></td>
+                    <td class="p-2 border"><%= item.qty %></td>
+                    <td class="p-2 border">₹<%= item.price %></td>
+                    <td class="p-2 border font-semibold">
+                      <% if(item.status === 'Delivered') { %>
+                        <span class="text-green-600"><%= item.status %></span>
+                      <% } else if(item.status === 'Cancelled') { %>
+                        <span class="text-red-600"><%= item.status %></span>
+                      <% } else if(item.status === 'Returned') { %>
+                        <span class="text-orange-600"><%= item.status %></span>
+                      <% } else { %>
+                        <span class="text-purple-700"><%= item.status %></span>
+                      <% } %>
+                    </td>
+                    <td class="p-2 border">
+                      <% if(item.status !== "Cancelled") { %>
+                        <form action="/admin/order/cancel-item/<%= order._id %>/<%= item._id %>" method="POST">
+                          <button type="submit" class="px-3 py-1 bg-red-600 text-white rounded">Cancel</button>
+                        </form>
+                      <% } else { %>
+                        <span class="text-gray-400">Cancelled</span>
+                      <% } %>
+                    </td>
+                  </tr>
+                <% }) %>
+              </tbody>
+            </table>
+          </div>
+
+          <p class="font-bold mb-4">Total Amount: ₹<%= order.totalAmount %></p>
+
+          <!-- Cancel Entire Order (optional) -->
+          <% if(order.status !== "Cancelled") { %>
+            <form action="/admin/order/cancel/<%= order._id %>" method="POST" class="mb-2">
+              <button type="submit" class="px-4 py-2 bg-red-600 text-white rounded">Cancel Entire Order</button>
+            </form>
+          <% } %>
+
+          <!-- Update Order Status -->
+          <form action="/admin/order/status/<%= order._id %>" method="POST" class="mb-4 flex items-center gap-2">
+            <select name="status" class="border p-2 rounded">
+              <option value="Pending" <%= order.status === 'Pending' ? 'selected' : '' %>>Pending</option>
+              <option value="Shipped" <%= order.status === 'Shipped' ? 'selected' : '' %>>Shipped</option>
+              <option value="Out for Delivery" <%= order.status === 'Out for Delivery' ? 'selected' : '' %>>Out for Delivery</option>
+              <option value="Delivered" <%= order.status === 'Delivered' ? 'selected' : '' %>>Delivered</option>
+              <option value="Returned" <%= order.status === 'Returned' ? 'selected' : '' %>>Returned</option>
+              <option value="Cancelled" <%= order.status === 'Cancelled' ? 'selected' : '' %>>Cancelled</option>
+            </select>
+            <button type="submit" class="px-4 py-2 bg-purple-700 text-white rounded">Update Status</button>
+          </form>
+
+        </div>
+
+      </main>
+    </div>
+  </div>
+</body>
+</html>
