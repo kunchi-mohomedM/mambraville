@@ -38,6 +38,7 @@ router.get('/auth/google/callback',passport.authenticate('google',{failureRedire
 
 
 router.get("/user-Profile",userAuth,userController.loaduserprofile)
+router.post("/update-username",userAuth,userController.updateUserName);
 router.get("/change-password",userAuth,userController.loadChangePassword);
 router.post("/change-password",userAuth,userController.changePassword);
 

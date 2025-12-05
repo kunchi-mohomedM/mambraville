@@ -483,6 +483,26 @@ const changePassword = async (req,res) => {
 }
 
 
+const updateUserName = async(req,res)=>{
+    try {
+
+        const {fullname} = req.body ; 
+
+        if(!fullname || fullname.length < 3){
+            return res.json({success:false , message :"Invalid name"});
+        }
+
+        await User.findByIdAndUpdate(req.session.user , {fullname});
+
+        return res.json({success:true});
+
+    } catch (error) {
+        console.log("Error updating username:",error);
+        return res.json({succes:false , message:"Server error"});
+    }
+}
+
+
 
 
 module.exports = {
@@ -502,5 +522,6 @@ module.exports = {
     loaduserprofile,
     loadaddressmanagement,
     loadChangePassword,
-    changePassword
+    changePassword,
+    updateUserName
 };
