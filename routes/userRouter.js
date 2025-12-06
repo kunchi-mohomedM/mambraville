@@ -67,6 +67,7 @@ router.get("/cart/decrease/:id",userAuth,cartController.decreaseqty);
 router.get("/order-summary",userAuth,orderController.loadOrderSummary);
 router.get("/checkout",userAuth,orderController.loadCheckout);
 router.post("/order/place",userAuth,orderController.placeOrder);
+router.post("/verify-payment",userAuth,orderController.verifyPayment)
 router.get("/order/success/:orderId",userAuth,orderController.loadOrderSuccess);
 router.get("/order/details/:orderId",userAuth,orderController.loadOrderDetails)
 router.post("/order/cancel/:orderId",userAuth,orderController.cancelOrder);
