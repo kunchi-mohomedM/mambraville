@@ -6,6 +6,8 @@ const addressController=require("../controller/user/addressController")
 const cartController=require("../controller/user/cartController")
 const orderController =require("../controller/user/orderController");
 const wishlistController = require("../controller/user/wishlistController");
+const walletController = require("../controller/user/walletController");
+const couponController = require("../controller/user/couponController");
 const {userAuth,isLogin}= require('../middleware/userAuth');
 const passport = require("passport");
 
@@ -49,8 +51,6 @@ router.post("/add-address",userAuth,addressController.addAddress);
 router.post("/edit-address/:id",userAuth,addressController.editAddress);
 router.get("/delete-address/:id",userAuth,addressController.deleteAddress);
 router.get("/set-default-address/:id",userAuth,addressController.setDefaultAddress);
-
-router.get("/add-address-page",userAuth,addressController.loadAddAddressPage);
 router.get("/edit-address-page/:id",userAuth,addressController.loadEditAddressPage);
 
 
@@ -77,10 +77,18 @@ router.post("/order/return-item/:orderId/:itemId",userAuth,orderController.retur
 
 
 //  Wishlist Routes
-router.get("/wishlist", wishlistController.loadWishlist);
-router.get("/wishlist/toggle/:productId", wishlistController.toggleWishlist);
-router.post("/wishlist/move-to-cart", wishlistController.moveToCart);
+router.get("/wishlist",userAuth, wishlistController.loadWishlist);
+router.get("/wishlist/toggle/:productId", userAuth,wishlistController.toggleWishlist);
+router.post("/wishlist/move-to-cart",userAuth, wishlistController.moveToCart);
 
+
+router.get('/wallet',userAuth,walletController.loadWallet)
+router.post("/wallet/create-order", userAuth, walletController.createWalletOrder);
+router.post("/wallet/verify-payment", userAuth, walletController.verifyWalletPayment);
+
+
+
+router.post("/coupon/apply",userAuth,couponController.applyCoupon);
 
 
 

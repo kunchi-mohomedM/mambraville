@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Offer Management | Mambraville Admin</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body class="bg-gray-100">
+<div class="flex h-screen">
+
+    <!-- Sidebar -->
+    <%- include('../partials/admin/sidebar') %>
+
+    <!-- Main Content -->
+    <div class="flex-1 flex flex-col overflow-hidden">
+
+        <!-- Header -->
+        <header class="bg-gradient-to-r from-black to-purple-900 text-white p-4 flex justify-between items-center">
+            <h1 class="text-2xl font-bold">Offer Management</h1>
+        </header>
+
+        <!-- Page Content -->
+        <main class="flex-1 overflow-y-auto p-6 bg-white m-4 rounded-lg shadow">
+
+            <!-- ================= Referral Offer Section ================= -->
+            <section class="mb-10">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-xl font-bold text-gray-800">
+                        <i class="fas fa-user-friends mr-2 text-purple-600"></i>
+                        Referral Offer
+                    </h2>
+                </div>
+
+                <div class="overflow-x-auto border rounded-lg">
+                    <table class="min-w-full text-sm text-left">
+                        <thead class="bg-gray-100 text-gray-700">
+                            <tr>
+                                <th class="px-4 py-3">Referral Bonus</th>
+                                <th class="px-4 py-3">Max Uses Per User</th>
+                                <th class="px-4 py-3">Status</th>
+                                <th class="px-4 py-3">Actions</th>
+                            </tr>
+                        </thead>
+
+                        <tbody class="divide-y" id="referralTableBody">
+                            <% if(referralOffer) { %>
+                            <tr>
+                                <td class="px-4 py-3 font-medium"><%= referralOffer.refferalBonus %></td>
+                                <td class="px-4 py-3"><%= referralOffer.maxUsesPerUser %></td>
+                                <td class="px-4 py-3">
+                                    <span class="<%= referralOffer.isActive ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700' %> px-2 py-1 rounded text-xs">
+                                        <%= referralOffer.isActive ? 'Active' : 'Inactive' %>
+                                    </span>
+                                </td>
+                                <td class="px-4 py-3 space-x-2">
+                                    <button onclick="openEditReferralModal()" class="text-blue-600 hover:underline">
+                                        <i class="fas fa-edit"></i> Edit
+                                    </button>
+                                    <button onclick="toggleReferralStatus('<%= referralOffer.isActive %>')" 
+                                            class="<%= referralOffer.isActive ? 'text-red-600' : 'text-green-600' %> hover:underline">
+                                        <i class="fas fa-<%= referralOffer.isActive ? 'ban' : 'check' %>"></i>
+                                        <%= referralOffer.isActive ? 'Disable' : 'Enable' %>
+                                    </button>
+                                </td>
+                            </tr>
+                            <% } else { %>
+                            <tr>
+                                <td colspan="5" class="px-4 py-6 text-center text-gray-500">
+                                    No referral offer configured
+                                </td>
+                            </tr>
+                            <% } %>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- ================= Category Offer Section ================= -->
+            <section>
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-xl font-bold text-gray-800">
+                        <i class="fas fa-tags mr-2 text-green-600"></i>
+                        Category Offers
+                    </h2>
+
+                    <button onclick="openAddCategoryOfferModal()" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
+                        <i class="fas fa-plus mr-1"></i> Add Category Offer
+                    </button>
+                </div>
+
+                <div class="overflow-x-auto border rounded-lg">
+                    <table class="min-w-full text-sm text-left">
+                        <thead class="bg-gray-100 text-gray-700">
+                            <tr>
+                                <th class="px-4 py-3">Category</th>
+                                <th class="px-4 py-3">Discount (%)</th>
+                                <th class="px-4 py-3">Start Date</th>
+                                <th class="px-4 py-3">End Date</th>
+                                <th class="px-4 py-3">Status</th>
+                                <th class="px-4 py-3">Actions</th>
+                            </tr>
+                        </thead>
+
+                        <tbody class="divide-y" id="categoryOffersTableBody">
+                            <% if(categoryOffers && categoryOffers.length > 0) { %>
+                                <% categoryOffers.forEach(offer => { %>
+                                <tr data-offer-id="<%= offer._id %>">
+                                    <td class="px-4 py-3 font-medium">
+                                        <%= offer.categoryId?.categoryname || 'N/A' %>
+                                    </td>
+                                    <td class="px-4 py-3"><%= offer.discountPercentage %>%</td>
+                                    <td class="px-4 py-3"><%= new Date(offer.startDate).toLocaleDateString() %></td>
+                                    <td class="px-4 py-3"><%= new Date(offer.endDate).toLocaleDateString() %></td>
+                                    <td class="px-4 py-3">
+                                        <span class="<%= offer.isActive ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700' %> px-2 py-1 rounded text-xs">
+                                            <%= offer.isActive ? 'Active' : 'Inactive' %>
+                                        </span>
+                                    </td>
+                                    <td class="px-4 py-3 space-x-2">
+                                        <button onclick='editCategoryOffer(<%=JSON.stringify(offer)%>)' class="text-blue-600 hover:underline">
+                                            <i class="fas fa-edit"></i> Edit
+                                        </button>
+                                        <button onclick="toggleCategoryOfferStatus('<%= offer._id %>', <%= offer.isActive %>)" 
+                                                class="<%= offer.isActive ? 'text-red-600' : 'text-green-600' %> hover:underline">
+                                            <i class="fas fa-<%= offer.isActive ? 'ban' : 'check' %>"></i>
+                                            <%= offer.isActive ? 'Disable' : 'Enable' %>
+                                        </button>
+                                    </td>
+                                </tr>
+                                <% }) %>
+                            <% } else { %>
+                            <tr>
+                                <td colspan="6" class="px-4 py-6 text-center text-gray-500">
+                                    No category offers available
+                                </td>
+                            </tr>
+                            <% } %>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+        </main>
+    </div>
+</div>
+
+<!-- ================= Edit Referral Modal ================= -->
+<div id="editReferralModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div class="bg-white rounded-lg p-6 w-full max-w-md">
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="text-xl font-bold">Edit Referral Offer</h3>
+            <button onclick="closeEditReferralModal()" class="text-gray-500 hover:text-gray-700">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+
+        <form id="editReferralForm">
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Referral Bonus</label>
+                    <input type="text" name="bonus" value="<%= referralOffer?.refferalBonus || '' %>" 
+                           class="w-full border rounded px-3 py-2">
+                </div>
+
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Max Uses Per User</label>
+                    <input type="number" name="maxUsesPerUser" value="<%= referralOffer?.maxUsesPerUser || '' %>" 
+                           min="1" required
+                           class="w-full border rounded px-3 py-2">
+                </div>
+
+                <div class="flex gap-2 pt-4">
+                    <button type="submit" class="flex-1 bg-purple-600 text-white py-2 rounded hover:bg-purple-700">
+                        <i class="fas fa-save mr-1"></i> Update
+                    </button>
+                    <button type="button" onclick="closeEditReferralModal()" 
+                            class="flex-1 bg-gray-300 text-gray-700 py-2 rounded hover:bg-gray-400">
+                        Cancel
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- ================= Add/Edit Category Offer Modal ================= -->
+<div id="categoryOfferModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div class="bg-white rounded-lg p-6 w-full max-w-md">
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="text-xl font-bold" id="categoryModalTitle">Add Category Offer</h3>
+            <button onclick="closeCategoryOfferModal()" class="text-gray-500 hover:text-gray-700">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+
+        <form id="categoryOfferForm">
+            <input type="hidden" name="offerId" id="editOfferId">
+            
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Select Category</label>
+                    <select name="categoryId" id="categorySelect" required
+                            class="w-full border rounded px-3 py-2">
+                        <option value="">-- Select Category --</option>
+                        <% if(categories && categories.length > 0) { %>
+                            <% categories.forEach(cat => { %>
+                            <option value="<%= cat._id %>"><%= cat.categoryname %></option>
+                            <% }) %>
+                        <% } %>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Discount Percentage</label>
+                    <input type="number" name="discountPercentage" id="discountPercentage"
+                           min="1" max="100" required
+                           class="w-full border rounded px-3 py-2"
+                           placeholder="Enter discount %">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Start Date</label>
+                    <input type="date" name="startDate" id="startDate" required
+                           class="w-full border rounded px-3 py-2">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">End Date</label>
+                    <input type="date" name="endDate" id="endDate" required
+                           class="w-full border rounded px-3 py-2">
+                </div>
+
+                <div class="flex gap-2 pt-4">
+                    <button type="submit" id="categoryOfferSubmitBtn" 
+                            class="flex-1 bg-green-600 text-white py-2 rounded hover:bg-green-700">
+                        <i class="fas fa-save mr-1"></i> Save Offer
+                    </button>
+                    <button type="button" onclick="closeCategoryOfferModal()" 
+                            class="flex-1 bg-gray-300 text-gray-700 py-2 rounded hover:bg-gray-400">
+                        Cancel
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+// ================= Referral Offer Functions =================
+
+function openEditReferralModal() {
+    document.getElementById('editReferralModal').classList.remove('hidden');
+}
+
+function closeEditReferralModal() {
+    document.getElementById('editReferralModal').classList.add('hidden');
+}
+
+document.getElementById('editReferralForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const formData = new FormData(e.target);
+    const data = {
+        refferalBonus: parseInt(formData.get('bonus')),
+        maxUsesPerUser: parseInt(formData.get('maxUsesPerUser'))
+    };
+
+    try {
+        const response = await fetch('/admin/offers/referral/update', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+            alert('Referral offer updated successfully!');
+            location.reload();
+        } else {
+            alert(result.message || 'Failed to update referral offer');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('An error occurred while updating');
+    }
+});
+
+async function toggleReferralStatus(currentStatus) {
+    const isActive = currentStatus === 'true';
+    const action = isActive ? 'disable' : 'enable';
+    
+    if (!confirm(`Are you sure you want to ${action} the referral offer?`)) return;
+
+    try {
+        const response = await fetch('/admin/offers/referral/toggle', {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ isActive: !isActive })
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+            alert(`Referral offer ${action}d successfully!`);
+            location.reload();
+        } else {
+            alert(result.message || `Failed to ${action} referral offer`);
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('An error occurred');
+    }
+}
+
+// ================= Category Offer Functions =================
+
+function openAddCategoryOfferModal() {
+    document.getElementById('categoryModalTitle').textContent = 'Add Category Offer';
+    document.getElementById('categoryOfferForm').reset();
+    document.getElementById('editOfferId').value = '';
+    document.getElementById('categorySelect').disabled = false;
+    document.getElementById('categoryOfferSubmitBtn').innerHTML = '<i class="fas fa-save mr-1"></i> Save Offer';
+    document.getElementById('categoryOfferModal').classList.remove('hidden');
+    
+    // Set min date to today
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('startDate').min = today;
+    document.getElementById('endDate').min = today;
+}
+
+function closeCategoryOfferModal() {
+    document.getElementById('categoryOfferModal').classList.add('hidden');
+}
+
+function editCategoryOffer(offer) {
+    document.getElementById('categoryModalTitle').textContent = 'Edit Category Offer';
+    document.getElementById('editOfferId').value = offer._id;
+    document.getElementById('categorySelect').value = offer.categoryId._id || offer.categoryId;
+    document.getElementById('categorySelect').disabled = true;
+    document.getElementById('discountPercentage').value = offer.discountPercentage;
+    document.getElementById('startDate').value = new Date(offer.startDate).toISOString().split('T')[0];
+    document.getElementById('endDate').value = new Date(offer.endDate).toISOString().split('T')[0];
+    document.getElementById('categoryOfferSubmitBtn').innerHTML = '<i class="fas fa-save mr-1"></i> Update Offer';
+    document.getElementById('categoryOfferModal').classList.remove('hidden');
+}
+
+document.getElementById('categoryOfferForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const formData = new FormData(e.target);
+    const offerId = formData.get('offerId');
+    
+    const data = {
+        categoryId: formData.get('categoryId'),
+        discountPercentage: parseInt(formData.get('discountPercentage')),
+        startDate: formData.get('startDate'),
+        endDate: formData.get('endDate')
+    };
+
+    // Validate dates
+    if (new Date(data.endDate) <= new Date(data.startDate)) {
+        alert('End date must be after start date');
+        return;
+    }
+
+    try {
+        const url = offerId 
+            ? `/admin/offers/category/${offerId}`
+            : '/admin/offers/category/create';
+        
+        const method = offerId ? 'PUT' : 'POST';
+
+        const response = await fetch(url, {
+            method: method,
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+            alert(offerId ? 'Category offer updated successfully!' : 'Category offer created successfully!');
+            location.reload();
+        } else {
+            alert(result.message || 'Failed to save category offer');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('An error occurred while saving');
+    }
+});
+
+async function toggleCategoryOfferStatus(offerId, currentStatus) {
+    const action = currentStatus ? 'disable' : 'enable';
+    
+    if (!confirm(`Are you sure you want to ${action} this category offer?`)) return;
+
+    try {
+        const response = await fetch(`/admin/offers/category/${offerId}/toggle`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ isActive: !currentStatus })
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+            alert(`Category offer ${action}d successfully!`);
+            location.reload();
+        } else {
+            alert(result.message || `Failed to ${action} category offer`);
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('An error occurred');
+    }
+}
+
+// Auto-update end date min when start date changes
+document.getElementById('startDate').addEventListener('change', function() {
+    document.getElementById('endDate').min = this.value;
+});
+</script>
+
+</body>
+</html>

@@ -15,7 +15,7 @@ const loadWishlist=async(req,res)=>{
         lean();
 
         if(!wishlist){
-          return res.render("wishlist",{ wishlist :{items : [] } });
+          return res.render("wishList",{ wishlist :{items : [] } });
         }
 
         const validItems = wishlist.items.filter( i => i.productId && i.productId._id );

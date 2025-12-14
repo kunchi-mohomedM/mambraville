@@ -8,8 +8,10 @@ const productController= require("../controller/admin/productController")
 const dashboardController=require("../controller/admin/dashboardController")
 const adminOrderController = require("../controller/admin/adminOrderController");
 const couponController = require("../controller/admin/couponController")
+const offerController = require("../controller/admin/offerController")
 const {deleteCategory}=require('../controller/admin/categoryController');
 const upload=require("../config/multer");
+const { userAuth } = require("../middleware/userAuth");
 
 
 
@@ -80,7 +82,18 @@ router.post("/addCoupon",adminAuth,couponController.addCoupon);
 router.get('/coupon/delete/:id',couponController.deleteCoupon);
 
 
+router.get('/offers',adminAuth,offerController.loadOfferManagement)
 
+
+// ================= Referral Offer Routes =================
+router.put('/offers/referral/update', adminAuth, offerController.updateReferralOffer);
+router.patch('/offers/referral/toggle', adminAuth, offerController.toggleReferralOfferStatus);
+
+// ================= Category Offer Routes =================
+router.post('/offers/category/create', adminAuth, offerController.createCategoryOffer);
+router.put('/offers/category/:id', adminAuth, offerController.updateCategoryOffer);
+router.patch('/offers/category/:id/toggle', adminAuth, offerController.toggleCategoryOfferStatus);
+router.delete('/offers/category/:id', adminAuth, offerController.deleteCategoryOffer); // Optional
 
 
 module.exports = router;

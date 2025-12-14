@@ -123,72 +123,93 @@
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 <% newArrivals.forEach(product=>{ %>
                     <!-- Product Card 1 -->
-                    <div class="group bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all overflow-hidden border relative">
+   <div class="group bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all overflow-hidden border relative">
 
-    <!-- ❤️ Wishlist Button -->
+    <!-- Discount Badge -->
+    <% if (product.discount && product.discount > 0) { %>
+        <div class="absolute top-3 left-3 z-10">
+            <span class="bg-orange-600 text-white text-xs font-bold px-2 py-1 rounded-full shadow">
+                <%= product.discount %>% OFF
+            </span>
+        </div>
+    <% } %>
+
+    <!-- Wishlist / Heart Icon -->
     <div class="absolute top-3 right-3 z-10">
         <% if (product.inCart) { %>
-            <div class="bg-white/90 p-2 rounded-full shadow-md">
-                <i class="fa-solid fa-heart text-gray-300 opacity-60 cursor-not-allowed text-xl"></i>
+            <div class="bg-white/90 p-2 rounded-full shadow-md cursor-not-allowed">
+                <i class="fa-solid fa-heart text-gray-300 opacity-60 text-xl"></i>
             </div>
         <% } else { %>
-            <a href="/wishlist/toggle/<%= product._id %>" 
+            <a href="/wishlist/toggle/<%= product._id %>"
                class="wishlist-btn bg-white p-2 rounded-full shadow-md hover:shadow-lg 
-                      transition-all duration-300 cursor-pointer active:scale-90 inline-flex">
+                      transition-all duration-300 active:scale-90 inline-flex">
 
                 <i class="
-                    fa-heart text-xl transition-colors duration-300 
+                    fa-heart text-xl transition-colors duration-300
                     <%= product.inWishlist 
-                        ? 'fa-solid text-red-500' 
-                        : 'fa-regular text-gray-500 hover:text-red-400' 
+                        ? 'fa-solid text-red-500'
+                        : 'fa-regular text-gray-500 hover:text-red-400'
                     %>
                 "></i>
             </a>
         <% } %>
     </div>
 
-
-
-
     <!-- Product Image -->
     <div class="w-full h-44 bg-gray-50 flex items-center justify-center overflow-hidden">
         <img src="<%= product.productImage[0]?.url %>"
-            onclick="window.location.href='/productdetails/<%= product._id %>'"
-            class="w-full h-full object-contain p-3 group-hover:scale-105 transition" />
+             onclick="window.location.href='/productdetails/<%= product._id %>'"
+             class="w-full h-full object-contain p-3 group-hover:scale-105 transition cursor-pointer" />
     </div>
 
-    <!-- Details -->
+    <!-- Product Details -->
     <div class="p-4">
+
+        <!-- Product Name -->
         <h3 class="font-semibold text-sm text-gray-800 h-10 overflow-hidden leading-tight">
             <%= product.productName %>
         </h3>
 
-        <!-- Price -->
-        <p class="text-purple-700 font-bold text-lg mt-1">
-            ₹<%= product.price %>
-        </p>
+        <!-- Price Section -->
+        <div class="flex gap-2 items-center mt-1">
+            <!-- Discounted Price -->
+            <p class="text-purple-700 font-bold text-lg">
+                ₹<%= Math.round(product.price * (1 - (product.discount || 0) / 100)) %>
+            </p>
 
-        <!-- Rating -->
+            <% if (product.discount && product.discount > 0) { %>
+                <!-- Original Price -->
+                <p class="text-gray-500 text-sm mt-1 line-through">
+                    ₹<%= product.price %>
+                </p>
+            <% } %>
+        </div>
+
+        <!-- Rating (Static for now) -->
         <div class="flex items-center gap-1 mt-1">
             <i class="fas fa-star text-yellow-400 text-xs"></i>
             <span class="text-gray-500 text-xs">(5)</span>
         </div>
 
-        <!-- Add to Cart -->
+        <!-- Add to Cart Button -->
         <button
-            class="toggle-cart-btn mt-3 w-full text-center rounded-full py-2 font-medium text-white 
-            <%= product.inCart ? 'bg-green-600' : 'bg-purple-600' %>"
+            class="toggle-cart-btn mt-3 w-full text-center rounded-full py-2 font-medium text-white
+                   transition
+                   <%= product.inCart ? 'bg-green-600 hover:bg-green-700' : 'bg-purple-600 hover:bg-purple-700' %>"
             data-product-id="<%= product._id %>"
             data-in-cart="<%= product.inCart %>">
 
-            <i class="fas fa-shopping-cart text-xs"></i>
+            <i class="fas fa-shopping-cart text-xs mr-1"></i>
             <span><%= product.inCart ? 'Go to Cart' : 'Add to Cart' %></span>
         </button>
+
     </div>
 </div>
+
 <% }) %>
 
-                        <!-- Product Card 2 -->
+                
 
             </div>
         </div>
@@ -200,72 +221,92 @@
                 <a href="#" class="text-blue-600 text-sm font-medium">View all</a>
             </div>
 
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
                 <%trendingProducts.forEach(product=>{%>
-                    <!-- Trending Product 1 -->
                    <div class="group bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all overflow-hidden border relative">
 
-    <!-- ❤️ Wishlist Button -->
+    <!-- Discount Badge -->
+    <% if (product.discount && product.discount > 0) { %>
+        <div class="absolute top-3 left-3 z-10">
+            <span class="bg-orange-600 text-white text-xs font-bold px-2 py-1 rounded-full shadow">
+                <%= product.discount %>% OFF
+            </span>
+        </div>
+    <% } %>
+
+    <!-- Wishlist / Heart Icon -->
     <div class="absolute top-3 right-3 z-10">
         <% if (product.inCart) { %>
-            <div class="bg-white/90 p-2 rounded-full shadow-md">
-                <i class="fa-solid fa-heart text-gray-300 opacity-60 cursor-not-allowed text-xl"></i>
+            <div class="bg-white/90 p-2 rounded-full shadow-md cursor-not-allowed">
+                <i class="fa-solid fa-heart text-gray-300 opacity-60 text-xl"></i>
             </div>
         <% } else { %>
-            <a href="/wishlist/toggle/<%= product._id %>" 
+            <a href="/wishlist/toggle/<%= product._id %>"
                class="wishlist-btn bg-white p-2 rounded-full shadow-md hover:shadow-lg 
-                      transition-all duration-300 cursor-pointer active:scale-90 inline-flex">
+                      transition-all duration-300 active:scale-90 inline-flex">
 
                 <i class="
-                    fa-heart text-xl transition-colors duration-300 
+                    fa-heart text-xl transition-colors duration-300
                     <%= product.inWishlist 
-                        ? 'fa-solid text-red-500' 
-                        : 'fa-regular text-gray-500 hover:text-red-400' 
+                        ? 'fa-solid text-red-500'
+                        : 'fa-regular text-gray-500 hover:text-red-400'
                     %>
                 "></i>
             </a>
         <% } %>
     </div>
 
-
-
-
     <!-- Product Image -->
     <div class="w-full h-44 bg-gray-50 flex items-center justify-center overflow-hidden">
         <img src="<%= product.productImage[0]?.url %>"
-            onclick="window.location.href='/productdetails/<%= product._id %>'"
-            class="w-full h-full object-contain p-3 group-hover:scale-105 transition" />
+             onclick="window.location.href='/productdetails/<%= product._id %>'"
+             class="w-full h-full object-contain p-3 group-hover:scale-105 transition cursor-pointer" />
     </div>
 
-    <!-- Details -->
+    <!-- Product Details -->
     <div class="p-4">
+
+        <!-- Product Name -->
         <h3 class="font-semibold text-sm text-gray-800 h-10 overflow-hidden leading-tight">
             <%= product.productName %>
         </h3>
 
-        <!-- Price -->
-        <p class="text-purple-700 font-bold text-lg mt-1">
-            ₹<%= product.price %>
-        </p>
+        <!-- Price Section -->
+        <div class="flex gap-2 items-center mt-1">
+            <!-- Discounted Price -->
+            <p class="text-purple-700 font-bold text-lg">
+                ₹<%= Math.round(product.price * (1 - (product.discount || 0) / 100)) %>
+            </p>
 
-        <!-- Rating -->
+            <% if (product.discount && product.discount > 0) { %>
+                <!-- Original Price -->
+                <p class="text-gray-500 text-sm mt-1 line-through">
+                    ₹<%= product.price %>
+                </p>
+            <% } %>
+        </div>
+
+        <!-- Rating (Static for now) -->
         <div class="flex items-center gap-1 mt-1">
             <i class="fas fa-star text-yellow-400 text-xs"></i>
             <span class="text-gray-500 text-xs">(5)</span>
         </div>
 
-        <!-- Add to Cart -->
+        <!-- Add to Cart Button -->
         <button
-            class="toggle-cart-btn mt-3 w-full text-center rounded-full py-2 font-medium text-white 
-            <%= product.inCart ? 'bg-green-600' : 'bg-purple-600' %>"
+            class="toggle-cart-btn mt-3 w-full text-center rounded-full py-2 font-medium text-white
+                   transition
+                   <%= product.inCart ? 'bg-green-600 hover:bg-green-700' : 'bg-purple-600 hover:bg-purple-700' %>"
             data-product-id="<%= product._id %>"
             data-in-cart="<%= product.inCart %>">
 
-            <i class="fas fa-shopping-cart text-xs"></i>
+            <i class="fas fa-shopping-cart text-xs mr-1"></i>
             <span><%= product.inCart ? 'Go to Cart' : 'Add to Cart' %></span>
         </button>
+
     </div>
 </div>
+
 <% }) %>
 
             </div>
@@ -297,70 +338,89 @@
                 </div>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 <% specialOffers.forEach(product=>{%>
-                    <!-- Special Offer 1 -->
-                   <div class="group bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all overflow-hidden border relative">
+                  <div class="group bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all overflow-hidden border relative">
 
-    <!-- ❤️ Wishlist Button -->
+    <!-- Discount Badge -->
+    <% if (product.discount && product.discount > 0) { %>
+        <div class="absolute top-3 left-3 z-10">
+            <span class="bg-orange-600 text-white text-xs font-bold px-2 py-1 rounded-full shadow">
+                <%= product.discount %>% OFF
+            </span>
+        </div>
+    <% } %>
+
+    <!-- Wishlist / Heart Icon -->
     <div class="absolute top-3 right-3 z-10">
         <% if (product.inCart) { %>
-            <div class="bg-white/90 p-2 rounded-full shadow-md">
-                <i class="fa-solid fa-heart text-gray-300 opacity-60 cursor-not-allowed text-xl"></i>
+            <div class="bg-white/90 p-2 rounded-full shadow-md cursor-not-allowed">
+                <i class="fa-solid fa-heart text-gray-300 opacity-60 text-xl"></i>
             </div>
         <% } else { %>
-            <a href="/wishlist/toggle/<%= product._id %>" 
+            <a href="/wishlist/toggle/<%= product._id %>"
                class="wishlist-btn bg-white p-2 rounded-full shadow-md hover:shadow-lg 
-                      transition-all duration-300 cursor-pointer active:scale-90 inline-flex">
+                      transition-all duration-300 active:scale-90 inline-flex">
 
                 <i class="
-                    fa-heart text-xl transition-colors duration-300 
+                    fa-heart text-xl transition-colors duration-300
                     <%= product.inWishlist 
-                        ? 'fa-solid text-red-500' 
-                        : 'fa-regular text-gray-500 hover:text-red-400' 
+                        ? 'fa-solid text-red-500'
+                        : 'fa-regular text-gray-500 hover:text-red-400'
                     %>
                 "></i>
             </a>
         <% } %>
     </div>
 
-
-
-
     <!-- Product Image -->
     <div class="w-full h-44 bg-gray-50 flex items-center justify-center overflow-hidden">
         <img src="<%= product.productImage[0]?.url %>"
-            onclick="window.location.href='/productdetails/<%= product._id %>'"
-            class="w-full h-full object-contain p-3 group-hover:scale-105 transition" />
+             onclick="window.location.href='/productdetails/<%= product._id %>'"
+             class="w-full h-full object-contain p-3 group-hover:scale-105 transition cursor-pointer" />
     </div>
 
-    <!-- Details -->
+    <!-- Product Details -->
     <div class="p-4">
+
+        <!-- Product Name -->
         <h3 class="font-semibold text-sm text-gray-800 h-10 overflow-hidden leading-tight">
             <%= product.productName %>
         </h3>
 
-        <!-- Price -->
-        <p class="text-purple-700 font-bold text-lg mt-1">
-            ₹<%= product.price %>
-        </p>
+        <!-- Price Section -->
+        <div class="flex gap-2 items-center mt-1">
+            <!-- Discounted Price -->
+            <p class="text-purple-700 font-bold text-lg">
+                ₹<%= Math.round(product.price * (1 - (product.discount || 0) / 100)) %>
+            </p>
 
-        <!-- Rating -->
+            <% if (product.discount && product.discount > 0) { %>
+                <!-- Original Price -->
+                <p class="text-gray-500 text-sm mt-1 line-through">
+                    ₹<%= product.price %>
+                </p>
+            <% } %>
+        </div>
+
+        <!-- Rating (Static for now) -->
         <div class="flex items-center gap-1 mt-1">
             <i class="fas fa-star text-yellow-400 text-xs"></i>
             <span class="text-gray-500 text-xs">(5)</span>
         </div>
 
-        <!-- Add to Cart -->
+        <!-- Add to Cart Button -->
         <button
-            class="toggle-cart-btn mt-3 w-full text-center rounded-full py-2 font-medium text-white 
-            <%= product.inCart ? 'bg-green-600' : 'bg-purple-600' %>"
+            class="toggle-cart-btn mt-3 w-full text-center rounded-full py-2 font-medium text-white
+                   transition
+                   <%= product.inCart ? 'bg-green-600 hover:bg-green-700' : 'bg-purple-600 hover:bg-purple-700' %>"
             data-product-id="<%= product._id %>"
             data-in-cart="<%= product.inCart %>">
 
-            <i class="fas fa-shopping-cart text-xs"></i>
+            <i class="fas fa-shopping-cart text-xs mr-1"></i>
             <span><%= product.inCart ? 'Go to Cart' : 'Add to Cart' %></span>
         </button>
+
     </div>
 </div>
 <% }) %>
@@ -371,3 +431,41 @@
 
     </main>
     <%-include("../../views/partials/user/footer")-%>
+    <script>
+          const isLoggedIn = ' <%= isLoggedIn ? "true" : "false" %>';
+
+        document.addEventListener("DOMContentLoaded", () => {
+            document.querySelectorAll(".toggle-cart-btn").forEach(button => {
+                button.addEventListener("click", async () => {
+                    if (isLoggedIn === "false") {
+                        window.location.href = "/login";
+                        return;
+                    }
+
+                    const productId = button.dataset.productId;
+                    const isInCart = button.dataset.inCart === "true";
+
+                    if (isInCart) {
+                        window.location.href = "/cart";
+                        return;
+                    }
+
+                    try {
+                        const response = await fetch(`/add-to-cart/${productId}`, { method: "GET" });
+                        if (response.ok) {
+                            button.dataset.inCart = "true";
+                            button.classList.remove("bg-purple-600");
+                            button.classList.add("bg-green-600");
+                            button.querySelector("span").innerText = "Go to Cart";
+                        } else {
+                            alert("Failed to add item to cart.");
+                        }
+                    } catch (error) {
+                        console.error(error);
+                        alert("Something went wrong.");
+                    }
+                });
+            });
+        });
+
+    </script>

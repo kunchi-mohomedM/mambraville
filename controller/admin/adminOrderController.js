@@ -60,7 +60,7 @@ const listOrders = async (req, res) => {
 
    
     
-
+console.log(orders)
    
     const totalPages = Math.ceil(total / limit);
 

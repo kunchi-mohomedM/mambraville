@@ -127,12 +127,7 @@
                                         %>
                                 </p>
 
-                                <button 
-                                onclick="moveToCart('<%= item && item.productId ? item.productId._id : '' %>')"
-                                    class="mt-3 bg-green-600 text-white w-full py-2 rounded"
-                                     <%=(item && item.productId)? '' : 'disabled' %>>
-                                    Move to Cart
-                                </button>
+                               
 
                                 <button
                                     onclick="removeWishlist('<%= item && item.productId ? item.productId._id : '' %>')"

@@ -234,7 +234,7 @@ const removeItem = async (req, res) => {
 
         cart.items = cart.items.filter(item => item.productId.toString() !== productId);
 
-        cart.cartTotal = cart.items.reduce((sum, i) => sum + i.subtotal, 0);
+        cart.cartTotal = Math.round(cart.items.reduce((sum, i) => sum + i.subtotal, 0));
 
         await cart.save();
         return res.redirect("/cart");

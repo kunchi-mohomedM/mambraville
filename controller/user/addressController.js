@@ -108,9 +108,6 @@ const setDefaultAddress=async(req,res)=>{
     }
 };
 
-const loadAddAddressPage=(req,res)=>{
-    res.render("addaddress");
-}
 
 const loadEditAddressPage=async(req,res)=>{
     const userId=req.session.user;
@@ -127,6 +124,5 @@ module.exports={
     editAddress,
     deleteAddress,
     setDefaultAddress,
-    loadAddAddressPage,
     loadEditAddressPage
 }
