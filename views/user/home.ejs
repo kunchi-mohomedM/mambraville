@@ -126,10 +126,10 @@
    <div class="group bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all overflow-hidden border relative">
 
     <!-- Discount Badge -->
-    <% if (product.discount && product.discount > 0) { %>
+    <% if (product.discountPercent && product.discountPercent > 0) { %>
         <div class="absolute top-3 left-3 z-10">
             <span class="bg-orange-600 text-white text-xs font-bold px-2 py-1 rounded-full shadow">
-                <%= product.discount %>% OFF
+                <%= product.discountPercent %>% OFF
             </span>
         </div>
     <% } %>
@@ -175,13 +175,13 @@
         <div class="flex gap-2 items-center mt-1">
             <!-- Discounted Price -->
             <p class="text-purple-700 font-bold text-lg">
-                ₹<%= Math.round(product.price * (1 - (product.discount || 0) / 100)) %>
+                ₹<%=product.discountedPrice %>
             </p>
 
-            <% if (product.discount && product.discount > 0) { %>
+            <% if (product.discountPercent && product.discountPercent  > 0) { %>
                 <!-- Original Price -->
                 <p class="text-gray-500 text-sm mt-1 line-through">
-                    ₹<%= product.price %>
+                    ₹<%= product.originalPrice %>
                 </p>
             <% } %>
         </div>
@@ -226,10 +226,10 @@
                    <div class="group bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all overflow-hidden border relative">
 
     <!-- Discount Badge -->
-    <% if (product.discount && product.discount > 0) { %>
+    <% if (product.discountPercent && product.discountPercent > 0) { %>
         <div class="absolute top-3 left-3 z-10">
             <span class="bg-orange-600 text-white text-xs font-bold px-2 py-1 rounded-full shadow">
-                <%= product.discount %>% OFF
+                <%= product.discountPercent %>% OFF
             </span>
         </div>
     <% } %>
@@ -275,13 +275,13 @@
         <div class="flex gap-2 items-center mt-1">
             <!-- Discounted Price -->
             <p class="text-purple-700 font-bold text-lg">
-                ₹<%= Math.round(product.price * (1 - (product.discount || 0) / 100)) %>
+                ₹<%=product.discountedPrice   %>
             </p>
 
-            <% if (product.discount && product.discount > 0) { %>
+            <% if (product.discountPercent && product.discountPercent > 0) { %>
                 <!-- Original Price -->
                 <p class="text-gray-500 text-sm mt-1 line-through">
-                    ₹<%= product.price %>
+                    ₹<%= product.originalPrice %>
                 </p>
             <% } %>
         </div>
@@ -343,10 +343,10 @@
                   <div class="group bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all overflow-hidden border relative">
 
     <!-- Discount Badge -->
-    <% if (product.discount && product.discount > 0) { %>
+    <% if (product.discountPercent && product.discountPercent > 0) { %>
         <div class="absolute top-3 left-3 z-10">
             <span class="bg-orange-600 text-white text-xs font-bold px-2 py-1 rounded-full shadow">
-                <%= product.discount %>% OFF
+                <%= product.discountPercent %>% OFF
             </span>
         </div>
     <% } %>
@@ -390,15 +390,15 @@
 
         <!-- Price Section -->
         <div class="flex gap-2 items-center mt-1">
-            <!-- Discounted Price -->
+            <!-- discountPercented Price -->
             <p class="text-purple-700 font-bold text-lg">
-                ₹<%= Math.round(product.price * (1 - (product.discount || 0) / 100)) %>
+                ₹<%=product.discountedPrice %>
             </p>
 
-            <% if (product.discount && product.discount > 0) { %>
+            <% if (product.discountPercent && product.discountPercent > 0) { %>
                 <!-- Original Price -->
                 <p class="text-gray-500 text-sm mt-1 line-through">
-                    ₹<%= product.price %>
+                    ₹<%= product.originalPrice %>
                 </p>
             <% } %>
         </div>

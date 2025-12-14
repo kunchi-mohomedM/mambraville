@@ -78,10 +78,10 @@
                     
                     <span class="text-sm text-gray-500 ml-2">(69 Reviews)</span>
 
-                           <% if (product.discount && product.discount > 0) { %>
+                           <% if (product.discountPercent && product.discountPercent > 0) { %>
         <div class="ml-2">
             <span class="bg-orange-600 text-white text-xs font-bold px-2 py-1 rounded-full shadow">
-                <%= product.discount %>% OFF
+                <%= product.discountPercent %>% OFF
             </span>
         </div>
     <% } %>
@@ -89,8 +89,8 @@
 
                 <!-- Price -->
                 <div class="mb-4">
-                    <span class="text-2xl font-bold">₹<%=product.price%></span>
-                    <span class="text-sm text-gray-500 line-through ml-2"> ₹<%= Math.round(product.price * (1 - (product.discount || 0) / 100)) %></span>
+                    <span class="text-2xl font-bold">₹<%=product.discountedPrice%></span>
+                    <span class="text-sm text-gray-500 line-through ml-2"> ₹<%= product.originalPrice %></span>
                 </div>
 
          
@@ -168,6 +168,14 @@
                     <div
                         class="group bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all overflow-hidden border relative">
 
+                          <% if (product.discountPercent && product.discountPercent > 0) { %>
+        <div class="absolute top-3 left-3 z-10">
+            <span class="bg-orange-600 text-white text-xs font-bold px-2 py-1 rounded-full shadow">
+                <%= product.discountPercent %>% OFF
+            </span>
+        </div>
+    <% } %>
+
 
                         <div class="absolute top-3 right-3 z-10">
                             <% if (product.inCart) { %>
@@ -207,10 +215,19 @@
                             </h3>
 
                             <!-- Price -->
-                            <p class="text-purple-700 font-bold text-lg mt-1">
-                                ₹<%= product.price %>
-                            </p>
+                             <div class="flex gap-2 items-center mt-1">
+            <!-- Discounted Price -->
+            <p class="text-purple-700 font-bold text-lg">
+                ₹<%= product.discountedPrice%>
+            </p>
 
+            <% if (product.discountPercent && product.discountPercent > 0) { %>
+                <!-- Original Price -->
+                <p class="text-gray-500 text-sm mt-1 line-through">
+                    ₹<%= product.originalPrice %>
+                </p>
+            <% } %>
+        </div>
                             <!-- Rating -->
                             <div class="flex items-center gap-1 mt-1">
                                 <i class="fas fa-star text-yellow-400 text-xs"></i>

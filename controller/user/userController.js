@@ -8,6 +8,8 @@ const Products = require("../../models/productSchema");
 const Cart = require("../../models/cartSchema");
 const Wishlist = require("../../models/wishlistSchema");
 const Wallet = require("../../models/walletSchema")
+const applyBestDiscount = require('../../helper/applyBestDiscount')
+const CategoryOffer= require('../../models/categoryOffer')
 
 const pageNotFound = async (req, res) => {
   try {
@@ -208,32 +210,55 @@ const resendOtp = async (req, res) => {
   }
 };
 
+
 const loadHomepage = async (req, res) => {
   try {
-    let products = await Products.find({ isDeleted: false }).lean();
+    // 1️⃣ Get products
+    let products = await Products.find({ isDeleted: false });
     const categories = await Category.find({ isListed: true });
 
+    // 2️⃣ Load active category offers
+    const categoryOffers = await CategoryOffer.find({
+      isActive: true
+    }).lean();
+
+    const categoryOfferMap = {};
+    categoryOffers.forEach(offer => {
+      categoryOfferMap[offer.categoryId.toString()] =
+        offer.discountPercentage;
+    });
+
+    // 3️⃣ Cart & Wishlist
     let cartItems = [];
     let wishlistItems = [];
 
     if (req.session.user) {
-      const cart = await Cart.findOne({ userId: req.session.user }).lean();
-      cartItems = cart ? cart.items.map((i) => i.productId.toString()) : [];
+      const cart = await Cart.findOne({
+        userId: req.session.user
+      }).lean();
+
+      cartItems = cart
+        ? cart.items.map(i => i.productId.toString())
+        : [];
 
       const wishlist = await Wishlist.findOne({
-        userId: req.session.user,
+        userId: req.session.user
       }).lean();
+
       wishlistItems = wishlist
-        ? wishlist.items.map((i) => i.productId.toString())
+        ? wishlist.items.map(i => i.productId.toString())
         : [];
     }
 
-    products = products.map((p) => ({
-      ...p,
-      inCart: cartItems.includes(p._id.toString()),
-      inWishlist: wishlistItems.includes(p._id.toString()),
-    }));
+    // 4️⃣ Apply BEST discount (product vs category)
+    products = applyBestDiscount({
+      products,
+      categoryOfferMap,
+      cartItems,
+      wishlistItems
+    });
 
+    // 5️⃣ Sections
     const newArrivals = [...products]
       .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
       .slice(0, 3);
@@ -246,20 +271,23 @@ const loadHomepage = async (req, res) => {
       .sort((a, b) => a.quantity - b.quantity)
       .slice(0, 3);
 
+    // 6️⃣ Render
     return res.render("home", {
       newArrivals,
       trendingProducts,
       specialOffers,
       categories,
-      isLoggedIn: !!req.session.user,
+      isLoggedIn: !!req.session.user
     });
+
   } catch (error) {
     console.error("Homepage Load Error:", error);
     res.status(500).render("error", {
-      message: "Unable to load homepage",
+      message: "Unable to load homepage"
     });
   }
 };
+
 
 const emailverification = async (req, res) => {
   try {

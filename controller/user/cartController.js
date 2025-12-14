@@ -2,6 +2,7 @@ const Product = require('../../models/productSchema');
 const User = require("../../models/userSchema");
 const Cart = require('../../models/cartSchema');
 const Wishlist = require("../../models/wishlistSchema");
+const CategoryOffer= require('../../models/categoryOffer')
 
 
 
@@ -33,130 +34,172 @@ async function cleanCart(cart) {
 
 const MAX_QTY = 5;
 const addTocart = async (req, res) => {
-    try {
-        const userId = req.session.user;
-        if (!userId) return res.redirect("/login");
+  try {
+    const userId = req.session.user;
+    if (!userId) return res.redirect("/login");
 
-        const productId = req.params.id;
-        if (!productId) return res.redirect("/products-user");
+    const productId = req.params.id;
+    if (!productId) return res.redirect("/products-user");
 
-        const product = await Product.findById(productId)
-        if (!product) return res.redirect("/products-user");
-
-        if (product.isDeleted) {
-            return res.status(400).send("This product is no longer available.");
-        }
-
-        if (product.status === "Discontinued") {
-            return res.status(400).send("This product has been discontinued.");
-        }
-
-        if (product.status === "out of stock" || product.quantity <= 0) {
-            return res.status(400).send("Product is out of stock.");
-        }
-
-
-
-        let cart = await Cart.findOne({ userId });
-        if (!cart) {
-            cart = new Cart({
-                userId,
-                items: [],
-                cartTotal: 0
-            });
-        }
-
-        const originalPrice = product.price;
-        const discountPercentage = product.discount || 0;
-
-        const finalprice =
-            originalPrice - (originalPrice * discountPercentage / 100);
-
-        const existingItem = cart.items.find(
-            item => item.productId.toString() === productId
-        );
-
-        if (existingItem) {
-
-            if (existingItem.qty >= MAX_QTY) {
-                return res.status(400).send(`Maximum ${MAX_QTY} units allowed per products.`);
-            }
-
-            if (existingItem.qty + 1 > product.quantity) {
-                return res.status(400).send("Cannot add more than available stock.");
-            }
-
-            existingItem.qty += 1;
-            existingItem.subtotal = existingItem.qty * finalprice;
-        } else {
-
-            if (1 > product.quantity) {
-                return res.status(400).send("Cannot add more than available stock.");
-            }
-
-            cart.items.push({
-                productId: product._id,
-
-                name: product.productName,
-
-                image: product.productImage[0]?.url,
-
-                qty: 1,
-
-                price: originalPrice,
-
-                discount: discountPercentage,
-
-                subtotal: finalprice
-            });
-        }
-
-        cart.cartTotal = cart.items.reduce((sum, item) => sum + item.subtotal, 0);
-
-        await cart.save();
-
-        const wishlist = await Wishlist.findOne({ userId });
-        if (wishlist) {
-            await Wishlist.updateOne(
-                { userId },
-                { $pull: { items: { productId: product._id } } }
-            );
-        }
-
-        return res.redirect("/cart");
-
-    } catch (error) {
-        console.log("Error occur while addtocart", error)
-        return res.status(500).send("Internal server error");
+    const product = await Product.findById(productId);
+    if (!product || product.isDeleted) {
+      return res.status(400).send("Product not available");
     }
+
+    if (product.status === "Discontinued") {
+      return res.status(400).send("Product discontinued");
+    }
+
+    if (product.quantity <= 0) {
+      return res.status(400).send("Out of stock");
+    }
+
+    let cart = await Cart.findOne({ userId });
+    if (!cart) {
+      cart = new Cart({ userId, items: [] });
+    }
+
+    const existingItem = cart.items.find(
+      i => i.productId.toString() === productId
+    );
+
+    if (existingItem) {
+      if (existingItem.qty >= MAX_QTY) {
+        return res
+          .status(400)
+          .send(`Maximum ${MAX_QTY} units allowed`);
+      }
+
+      if (existingItem.qty + 1 > product.quantity) {
+        return res.status(400).send("Stock limit reached");
+      }
+
+      existingItem.qty += 1;
+    } else {
+      cart.items.push({
+        productId: product._id,
+        qty: 1
+      });
+    }
+
+    await cart.save();
+
+    // Remove from wishlist if exists
+    await Wishlist.updateOne(
+      { userId },
+      { $pull: { items: { productId: product._id } } }
+    );
+
+    return res.redirect("/cart");
+
+  } catch (error) {
+    console.error("Add to cart error:", error);
+    return res.status(500).send("Internal server error");
+  }
 };
 
 
 
 const loadCart = async (req, res) => {
-    try {
-        const userId = req.session.user;
-        if (!userId) return res.redirect("/login");
+  try {
+    const userId = req.session.user;
+    if (!userId) return res.redirect("/login");
 
-        let cart = await Cart.findOne({ userId }).populate("items.productId");
+    let cart = await Cart.findOne({ userId })
+      .populate({
+        path: "items.productId",
+        populate: { path: "category" }
+      });
 
-        if (!cart) {
-            return res.render("cartpage", {
-                cart: { items: [], cartTotal: 0 }
-            });
-        }
 
-        cart = await cleanCart(cart);
-
-        return res.render("cartpage", {
-            cart
-        });
-
-    } catch (error) {
-        console.log("Error occur while loading cart:", error);
-        return res.status(500).send("Internal Server Error");
+    if (!cart || cart.items.length === 0) {
+      return res.render("cartpage", {
+        cart: { items: [], cartTotal: 0 }
+      });
     }
-}
+
+    // 🔥 fetch active category offers once
+    const categoryOffers = await CategoryOffer.find({ isActive: true }).lean();
+
+    const categoryOfferMap = {};
+    categoryOffers.forEach(offer => {
+      categoryOfferMap[offer.categoryId.toString()] =
+        offer.discountPercentage;
+    });
+
+    let cartTotal = 0;
+    const validItems = [];
+
+    for (const item of cart.items) {
+      const product = item.productId;
+
+      // ❌ skip invalid products
+      if (
+        !product ||
+        product.isDeleted ||
+        product.status === "Discontinued" ||
+        product.quantity <= 0
+      ) {
+        continue;
+      }
+
+      // 🔒 stock protection
+      if (item.qty > product.quantity) {
+        item.qty = product.quantity;
+      }
+
+      // 💰 discount logic (INLINE)
+      const productDiscount = product.discount || 0;
+      const categoryDiscount =
+        categoryOfferMap[product.category?._id?.toString()] || 0;
+
+      const discountPercent = Math.max(
+        productDiscount,
+        categoryDiscount
+      );
+
+      const originalPrice = product.price;
+      const finalPrice = Math.round(
+        originalPrice - (originalPrice * discountPercent) / 100
+      );
+
+      const subtotal = finalPrice * item.qty;
+      cartTotal += subtotal;
+
+      validItems.push({
+        product,
+        qty: item.qty,
+
+        // pricing for UI only
+        originalPrice,
+        finalPrice,
+        discountPercent,
+        subtotal
+      });
+    }
+
+    // 🧹 clean cart DB (only productId + qty)
+    cart.items = validItems.map(i => ({
+      productId: i.product._id,
+      qty: i.qty
+    }));
+
+    await cart.save();
+
+    return res.render("cartpage", {
+      cart: {
+        items: validItems,
+        cartTotal
+      }
+    });
+
+  } catch (error) {
+    console.error("Error occur while loading cart:", error);
+    return res.status(500).send("Internal Server Error");
+  }
+};
+
+
 
 
 const increaseQty = async (req, res) => {

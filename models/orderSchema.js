@@ -7,25 +7,42 @@ const orderItemSchema = new mongoose.Schema({
         ref: "Product",
         required: true
     },
+
     name: { type: String, required: true },
     image: { type: String, required: true },
+
     qty: { type: Number, required: true },
-    price: { type: Number, required: true },
-    discount: { type: Number, default: 0 },
+
+    // 🔒 LOCKED PRICING
+    finalPrice: { type: Number, required: true },
+
+    discountPercent: { type: Number, default: 0 },
+    discountSource: {
+        type: String,
+        enum: ["product", "category", "none"],
+        default: "none"
+    },
+
+    subtotal: { type: Number, required: true },
+
     status: {
         type: String,
-        enum: ["Pending",
+        enum: [
+            "Pending",
             "Delivered",
             "Cancelled",
             "Return Requested",
-            "Returned"],
+            "Returned"
+        ],
         default: "Pending"
     },
+
     cancelReason: { type: String, default: "" },
     returnReason: { type: String, default: "" },
     returnRequestedAt: Date,
     returnApprovedAt: Date
 });
+
 
 const addressSchema = new mongoose.Schema({
     fullname: String,
@@ -35,12 +52,44 @@ const addressSchema = new mongoose.Schema({
     pincode: String,
 });
 
+const couponSchema = new mongoose.Schema({
+    couponId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Coupon",
+        default: null
+    },
+    code: {
+        type: String,
+        default: null
+    },
+    discountType: {
+        type: String,
+        enum: ["percentage"],
+        default: null
+    },
+    discountValue: {
+        type: Number,
+        default: 0
+    },
+    discountAmount: {
+        type: Number,
+        default: 0
+    },
+    minPurchase: {
+        type: Number,
+        default: 0
+    }
+}, { _id: false });
+
+
 const orderSchema = new mongoose.Schema({
+
     userId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
         required: true
     },
+
     orderId: {
         type: String,
         required: true,
@@ -49,7 +98,37 @@ const orderSchema = new mongoose.Schema({
 
     items: [orderItemSchema],
 
-    address: addressSchema,
+    address: {
+        fullname: String,
+        phone: String,
+        addressLine: String,
+        locality: String,
+        city: String,
+        state: String,
+        pincode: String
+    },
+
+    // 🔹 COUPON DETAILS
+    coupon: {
+        type: couponSchema,
+        default: null
+    },
+
+    subtotalAmount: {
+        type: Number,
+        required: true
+    },
+
+    couponDiscountAmount: {
+        type: Number,
+        default: 0
+    },
+
+
+    totalAmount: {
+        type: Number,
+        required: true
+    },
 
     status: {
         type: String,
@@ -72,39 +151,28 @@ const orderSchema = new mongoose.Schema({
         enum: ["COD", "Razorpay", "Wallet"],
         required: true
     },
+
     paymentStatus: {
         type: String,
         enum: ["Pending", "Paid", "Failed"],
         default: "Pending"
-
     },
 
-    razorpayOrderId: {
-        type: String,
-        default: null
-    },
-    razorpayPaymentId: {
-        type: String,
-        default: null
-    },
+    razorpayOrderId: String,
+    razorpayPaymentId: String,
 
     orderedAt: {
         type: Date,
         default: Date.now
     },
 
-    deliveredAt: {
-        type: Date,
-        default: null
-    },
+    deliveredAt: Date,
 
-    totalAmount: {
-        type: Number,
-        required: true
-    },
     cancelReason: { type: String, default: "" },
     returnReason: { type: String, default: "" }
-});
+
+}, { timestamps: true });
+
 
 module.exports = mongoose.model("Order", orderSchema);
 

@@ -3,6 +3,7 @@ const Products = require("../../models/productSchema");
 const Cart = require("../../models/cartSchema");
 const Wishlist = require("../../models/wishlistSchema");
 const CategoryOffer = require("../../models/categoryOffer");
+const applyBestDiscount = require('../../helper/applyBestDiscount')
 
 const loadUserProducts = async (req, res) => {
   try {
@@ -90,32 +91,12 @@ const loadUserProducts = async (req, res) => {
         : [];
     }
 
-    products = products.map((p) => {
-      const productDiscount = p.discount || 0;
-      const categoryDiscount = categoryOfferMap[p.category?.toString()] || 0;
-
-      const finalDiscountPercent = Math.max(productDiscount, categoryDiscount);
-
-      const discountedPrice = Math.round(
-        p.price - (p.price * finalDiscountPercent) / 100
-      );
-
-      return {
-        ...p._doc,
-
-        // cart & wishlist
-        inCart: cartItems.includes(p._id.toString()),
-        inWishlist: wishlistItems.includes(p._id.toString()),
-
-        // pricing
-        originalPrice: p.price,
-        discountedPrice,
-        discountPercent: finalDiscountPercent,
-        discountSource:
-          finalDiscountPercent === productDiscount ? "product" : "category",
-      };
+     products = applyBestDiscount({
+      products,
+      categoryOfferMap,
+      cartItems,
+      wishlistItems
     });
-
     const categories = await Category.find({ isListed: true });
 
     res.render("products", {
@@ -160,38 +141,82 @@ const loadproductdetails = async (req, res) => {
   try {
     const productId = req.params.id;
 
-    let product = await Products.findOne({ _id: productId, isDeleted: false });
-    if (!product) {
+    // 1️⃣ Fetch product
+    let productDoc = await Products.findOne({
+      _id: productId,
+      isDeleted: false
+    });
+
+    if (!productDoc) {
       return res.redirect("/products-user");
     }
 
-    let inCart = false;
-    if (req.session.user) {
-      const cart = await Cart.findOne({ userId: req.session.user });
+    // 2️⃣ Category offers
+    const categoryOffers = await CategoryOffer.find({
+      isActive: true
+    }).lean();
 
-      if (cart) {
-        inCart = cart.items.some(
-          (item) => item.productId.toString() === productId.toString()
-        );
-      }
+    const categoryOfferMap = {};
+    categoryOffers.forEach(offer => {
+      categoryOfferMap[offer.categoryId.toString()] =
+        offer.discountPercentage;
+    });
+
+    // 3️⃣ Cart check
+    let cartItems = [];
+    if (req.session.user) {
+      const cart = await Cart.findOne({
+        userId: req.session.user
+      }).lean();
+
+      cartItems = cart
+        ? cart.items.map(i => i.productId.toString())
+        : [];
     }
 
-    product = { ...product._doc, inCart };
+    // 4️⃣ Apply discount to MAIN product
+    let [product] = applyBestDiscount({
+      products: [productDoc],
+      categoryOfferMap,
+      cartItems,
+      wishlistItems: [] // not needed here
+    });
 
-    const category = await Category.findById(product.category);
-    const relatedProducts = await Products.find({
+    // 5️⃣ Category info
+    const category = await Category.findById(product.category).lean();
+
+    // 6️⃣ Related products
+    let relatedDocs = await Products.find({
       category: product.category,
       isDeleted: false,
-      _id: { $ne: product._id },
+      _id: { $ne: product._id }
     })
       .sort({ createdAt: -1 })
       .limit(4);
 
-    res.render("productdetails", { product, category, relatedProducts });
+    // 7️⃣ Apply discount to RELATED products
+    const relatedProducts = applyBestDiscount({
+      products: relatedDocs,
+      categoryOfferMap,
+      cartItems,
+      wishlistItems: []
+    });
+
+    // 8️⃣ Render
+    res.render("productdetails", {
+      product,
+      category,
+      relatedProducts
+    });
+
   } catch (error) {
-    console.error("Error occued while rendering productdetails page", error);
+    console.error(
+      "Error occurred while rendering productdetails page",
+      error
+    );
   }
 };
+
 
 module.exports = {
   loadUserProducts,

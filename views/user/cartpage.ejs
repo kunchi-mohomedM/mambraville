@@ -36,15 +36,14 @@
 
                         <!-- Product Image -->
                         <td class="py-2 px-4">
-                            <img src="<%= item.image %>" 
-     onerror="this.src='/img/no-image.png'"
+                            <img src="<%= item.product.productImage[0].url %>"
      class="w-16 h-16 object-cover rounded">
 
                         </td>
 
                         <!-- Product Name -->
                         <td class="py-2 px-4">
-                            <%= item.name %>
+                            <%= item.product.productName %>
                         </td>
 
                         <!-- QUANTITY SECTION -->
@@ -52,7 +51,7 @@
                             <div class="flex items-center gap-2">
 
                                 <!-- Decrease -->
-                                <a href="/cart/decrease/<%= item.productId._id ? item.productId._id : item.productId %>"
+                                <a href="/cart/decrease/<%= item.product._id %>"
                                    class="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300">-</a>
 
                                 <span class="px-3 font-semibold"><%= item.qty %></span>
@@ -69,7 +68,7 @@
                                 <% if (reachedStockLimit || reachedMax) { %>
                                     <button disabled class="px-2 py-1 bg-gray-300 text-gray-600 rounded">+</button>
                                 <% } else { %>
-                                    <a href="/cart/increase/<%= item.productId._id ? item.productId._id : item.productId %>"
+                                    <a href="/cart/increase/<%= item.product._id %>"
                                        class="px-2 py-1 bg-blue-500 text-white rounded hover:bg-blue-600">+</a>
                                 <% } %>
 
@@ -83,7 +82,7 @@
 
                         <!-- Remove -->
                         <td class="py-2 px-4">
-                            <form action="/cart/remove/<%= item.productId._id ? item.productId._id : item.productId %>" method="POST">
+                            <form action="/cart/remove/<%= item.product._id %>" method="POST">
                                 <button type="submit"
                                         class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600">
                                     Remove
