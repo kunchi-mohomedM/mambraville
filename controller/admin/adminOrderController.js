@@ -21,12 +21,17 @@ const listOrders = async (req, res) => {
     }
 
     
-    if (search && search.trim() !== "") {
+   if (search && search.trim() !== "") {
       const q = search.trim();
+
+      const users = await User.find({
+        fullname: { $regex: q, $options: "i" }
+      }).select("_id");
+
       query.$or = [
-        { orderId: { $regex: q, $options: "i" } }
+        { orderId: { $regex: q, $options: "i" } },
+        { userId: { $in: users.map(u => u._id) } }
       ];
-     
     }
 
     
@@ -43,29 +48,27 @@ const listOrders = async (req, res) => {
         break;
     }
 
-  
+   const total = await Order.countDocuments(query);
+
+
     const orders = await Order.find(query)
-      .populate({ path: "userId", select: "fullname email" })
+      .populate("userId","fullname email" )
+      .sort(sortOptions)
+      .skip(skip)
+      .limit(limit)
       .lean();
 
    
-    let filteredOrders = orders;
-    if (search && search.trim() !== "") {
-      const q = search.trim().toLowerCase();
-      filteredOrders = orders.filter(
-        o => o.orderId.toLowerCase().includes(q) || 
-             (o.userId.fullname && o.userId.fullname.toLowerCase().includes(q))
-      );
-    }
+    
 
-    const total = filteredOrders.length;
+   
     const totalPages = Math.ceil(total / limit);
 
     
-    const paginatedOrders = filteredOrders.slice(skip, skip + limit);
+    
 
     return res.render("adminOrders", {
-      orders: paginatedOrders,
+      orders,
       page,
       totalPages,
       queryParams: {
@@ -146,59 +149,48 @@ const updateOrderStatus = async (req, res) => {
   }
 };
 
-
 const verifyReturn = async (req, res) => {
-  try {
-    const { orderId, itemId } = req.params;
-    const { approve } = req.body; 
-    const { adminNote } = req.body; 
+  const { orderId, itemId } = req.params;
 
-    if (!mongoose.Types.ObjectId.isValid(orderId)) return res.status(400).send("Invalid orderId");
+  const order = await Order.findById(orderId);
+  if (!order) return res.redirect("/admin/orders");
 
-    const order = await Order.findById(orderId);
-    if (!order) return res.status(404).send("Order not found");
+  const item = order.items.id(itemId);
+  if (!item) return res.redirect("/admin/orders");
 
-    const item = order.items.id(itemId);
-    if (!item) return res.status(404).send("Item not found");
-
-   
-    if (item.status === "Returned" || item.status === "Cancelled") {
-      return res.redirect(`/admin/orders/${orderId}`);
-    }
-
-    
-    if (item.status !== "Delivered") {
-      return res.status(400).send("Only delivered items can be returned");
-    }
-
- 
-    item.status = "Returned";
-    if (!item.returnReason && req.body.returnReason) item.returnReason = req.body.returnReason;
-    if (adminNote) item.adminNote = adminNote;
-
-   
-    await Product.findByIdAndUpdate(item.productId, { $inc: { quantity: item.qty } });
-
-    
-    const refundAmount = (item.price || 0) * (item.qty || 0); 
-    await User.findByIdAndUpdate(order.userId, { $inc: { wallet: refundAmount } });
-
-    
-    const allReturned = order.items.every(i => i.status === "Returned" || i.status === "Cancelled");
-    if (allReturned) {
-      order.status = "Returned";
-    } else {
-     
-      order.status = order.items.some(i => i.status === "Delivered") ? "Delivered" : order.status;
-    }
-
-    await order.save();
-    return res.redirect(`/admin/orders/${orderId}`);
-  } catch (err) {
-    console.error("admin verifyReturn error:", err);
-    return res.status(500).send("Server error");
+  
+  if (item.status !== "Return Requested") {
+    return res.redirect(`/admin/order/${orderId}`);
   }
+
+  
+  item.status = "Returned";
+  item.returnApprovedAt = new Date();
+
+  
+  await Product.findByIdAndUpdate(item.productId, {
+    $inc: { quantity: item.qty }
+  });
+
+  
+  const refundAmount = (item.price - (item.discount || 0)) * item.qty;
+
+  await User.findByIdAndUpdate(order.userId, {
+    $inc: { wallet: refundAmount }
+  });
+
+  
+  const allReturned = order.items.every(
+    i => i.status === "Returned" || i.status === "Cancelled"
+  );
+
+  if (allReturned) order.status = "Returned";
+
+  await order.save();
+  res.redirect(`/admin/order/${orderId}`);
 };
+
+
 
 const cancelOrderByAdmin = async (req, res) => {
   try {
@@ -231,10 +223,103 @@ const cancelOrderByAdmin = async (req, res) => {
   }
 };
 
+const listReturnRequests = async (req, res) => {
+  try {
+    const orders = await Order.find({
+      "items.status": "Return Requested"
+    })
+      .populate("userId", "fullname email")
+      .lean();
+
+    // Extract only return-requested items
+    const returnRequests = [];
+
+    orders.forEach(order => {
+      order.items.forEach(item => {
+        if (item.status === "Return Requested") {
+          returnRequests.push({
+            orderId: order._id,
+            orderCode: order.orderId,
+            user: order.userId,
+            item
+          });
+        }
+      });
+    });
+
+    res.render("adminReturnRequests", { returnRequests });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Server Error");
+  }
+};
+
+const approveReturn = async (req, res) => {
+  const { orderId, itemId } = req.params;
+
+  const order = await Order.findById(orderId);
+  if (!order) return res.redirect("/admin/orders/returns");
+
+  const item = order.items.id(itemId);
+  if (!item || item.status !== "Return Requested") {
+    return res.redirect("/admin/orders/returns");
+  }
+
+  
+  item.status = "Returned";
+  item.returnApprovedAt = new Date();
+
+ 
+  await Product.findByIdAndUpdate(item.productId, {
+    $inc: { quantity: item.qty }
+  });
+
+
+  const refundAmount = (item.price - (item.discount || 0)) * item.qty;
+
+  await User.findByIdAndUpdate(order.userId, {
+    $inc: { wallet: refundAmount }
+  });
+
+ 
+  const allReturned = order.items.every(
+    i => i.status === "Returned" || i.status === "Cancelled"
+  );
+
+  if (allReturned) order.status = "Returned";
+
+  await order.save();
+  res.redirect("/admin/orders/returns");
+};
+
+const rejectReturn = async (req, res) => {
+  const { orderId, itemId } = req.params;
+
+  const order = await Order.findById(orderId);
+  if (!order) return res.redirect("/admin/orders/returns");
+
+  const item = order.items.id(itemId);
+  if (!item || item.status !== "Return Requested") {
+    return res.redirect("/admin/orders/returns");
+  }
+
+  item.status = "Delivered";
+  item.returnReason = "";
+  item.returnRequestedAt = null;
+
+  await order.save();
+  res.redirect("/admin/orders/returns");
+};
+
 module.exports = {
   listOrders,
   viewOrder,
   updateOrderStatus,
   verifyReturn,
-  cancelOrderByAdmin
+  cancelOrderByAdmin,
+  listReturnRequests,
+  approveReturn,
+  rejectReturn
+
 };

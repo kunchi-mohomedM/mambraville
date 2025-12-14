@@ -56,6 +56,14 @@
                                 </option>
                                 <option value="Shipped" <%=queryParams.status==='Shipped' ? 'selected' : '' %>>Shipped
                                 </option>
+                                <option value="Delivered" <%=queryParams.status==='Delivered' ? 'selected' : '' %>
+                                    >Delivered
+                                </option>
+                                <option value="Returned" <%=queryParams.status==='Returned' ? 'selected' : '' %>
+                                    >Returned
+                                </option>
+                                <option value="Paid" <%=queryParams.status==='Paid' ? 'selected' : '' %>>Paid
+                                </option>
                                 ...
                             </select>
 
@@ -72,6 +80,12 @@
 
                             <button type="submit" class="px-4 py-2 bg-purple-700 text-white rounded">Apply</button>
                         </form>
+
+                        <a href="/admin/orders/returns"
+                            class="flex items-center gap-2 px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-black font-semibold rounded shadow">
+                            <i class="fas fa-rotate-left"></i>
+                            Return Requests
+                        </a>
 
                     </div>
 

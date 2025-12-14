@@ -68,19 +68,22 @@
             <td class="p-2 border flex gap-2">
               <% if(item.status !=='Delivered' && order.status !=='Cancelled' ) { %>
                 <form action="/order/cancel-item/<%= order._id %>/<%= item._id %>" method="POST">
-                 <% if(item.status !== "Cancelled"){ %>
-                   <button 
-                    type="button"
-                    onclick="openReasonModal('/order/cancel-item/<%= order._id %>/<%= item._id %>', 'Cancel Product')"
-                    class="px-2 py-1 bg-red-500 text-white rounded text-xs">
-                    Cancel
-                  </button>
-                  <% } %>
+                  <% if(item.status !=="Cancelled" ){ %>
+                    <button type="button"
+                      onclick="openReasonModal('/order/cancel-item/<%= order._id %>/<%= item._id %>', 'Cancel Product')"
+                      class="px-2 py-1 bg-red-500 text-white rounded text-xs">
+                      Cancel
+                    </button>
+                    <% } %>
                 </form>
                 <% } %>
                   <% if(item.status==='Delivered' && order.status !=='Returned' ) { %>
                     <form action="/order/return-item/<%= order._id %>/<%= item._id %>" method="POST">
-                      <button class="px-2 py-1 bg-yellow-500 text-white rounded text-xs">Return</button>
+                      <button type="button" 
+                      onclick="openReasonModal('/order/return-item/<%= order._id %>/<%= item._id %>','Return Product' )" class="px-2 py-1 bg-yellow-500 text-white rounded text-xs">
+                        Return
+                      </button>
+
                     </form>
                     <% } %>
             </td>

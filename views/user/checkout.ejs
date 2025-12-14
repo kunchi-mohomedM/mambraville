@@ -217,20 +217,14 @@
       btn.disabled = true;
       btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
 
-      const formData = new FormData();
-      formData.append('addressId', addressId);
-      formData.append('paymentMethod', paymentMethodValue);
 
       try {
         const response = await fetch('/order/place', {
           method: 'POST',
           headers: {
-            'Content-Type': 'application/json',  // ← Critical!
+            'Content-Type': 'application/json',
           },
-          body: JSON.stringify({
-            addressId: addressId,
-            paymentMethod: paymentMethodValue
-          })
+          body: JSON.stringify({ addressId, paymentMethod: paymentMethodValue })
         });
 
         const data = await response.json();

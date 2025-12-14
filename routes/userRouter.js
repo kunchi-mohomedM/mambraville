@@ -5,6 +5,7 @@ const userproductController=require("../controller/user/userproductController")
 const addressController=require("../controller/user/addressController")
 const cartController=require("../controller/user/cartController")
 const orderController =require("../controller/user/orderController");
+const wishlistController = require("../controller/user/wishlistController");
 const {userAuth,isLogin}= require('../middleware/userAuth');
 const passport = require("passport");
 
@@ -41,7 +42,6 @@ router.get("/user-Profile",userAuth,userController.loaduserprofile)
 router.post("/update-username",userAuth,userController.updateUserName);
 router.get("/change-password",userAuth,userController.loadChangePassword);
 router.post("/change-password",userAuth,userController.changePassword);
-
 router.get("/addressmanagement",userAuth,userController.loadaddressmanagement)
 
 //address operations
@@ -74,6 +74,15 @@ router.post("/order/cancel/:orderId",userAuth,orderController.cancelOrder);
 
 router.post("/order/cancel-item/:orderId/:itemId",userAuth,orderController.cancelItem);
 router.post("/order/return-item/:orderId/:itemId",userAuth,orderController.returnItem);
+
+
+//  Wishlist Routes
+router.get("/wishlist", wishlistController.loadWishlist);
+router.get("/wishlist/toggle/:productId", wishlistController.toggleWishlist);
+router.post("/wishlist/move-to-cart", wishlistController.moveToCart);
+
+
+
 
 
 router.get("/",userController.loadHomepage);

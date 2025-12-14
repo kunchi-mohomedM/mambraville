@@ -1,6 +1,7 @@
 const Category = require("../../models/categorySchema");
-const Products=require("../../models/productSchema");
+const Products = require("../../models/productSchema");
 const Cart = require("../../models/cartSchema");
+const Wishlist = require("../../models/wishlistSchema")
 
 
 const loadUserProducts = async (req, res) => {
@@ -9,16 +10,16 @@ const loadUserProducts = async (req, res) => {
 
         // Pagination variables
         let page = parseInt(req.query.page) || 1;
-        let limit = parseInt(req.query.limit) || 4;
+        let limit = parseInt(req.query.limit) || 15;
         let skip = (page - 1) * limit;
 
-        let categoryDoc=null;
+        let categoryDoc = null;
         // Filtering by category
         if (req.query.category) {
-             categoryDoc = await Category.findOne({ categoryname:req.query.category });
-            if(categoryDoc){
+            categoryDoc = await Category.findOne({ categoryname: req.query.category });
+            if (categoryDoc) {
                 query.category = categoryDoc._id;
-            }else{
+            } else {
                 query.category = null;
             }
         }
@@ -57,45 +58,65 @@ const loadUserProducts = async (req, res) => {
                 sortOptions.createdAt = -1;
         }
 
-        // Get total products count for pagination
+   
         const totalProducts = await Products.countDocuments(query);
 
-        // Fetch filtered & paginated products
+      
         let products = await Products.find(query)
             .sort(sortOptions)
             .skip(skip)
             .limit(limit);
 
 
-            let cartItems = [];
-            if(req.session.user){
-                const cart = await Cart.findOne({userId:req.session.user});
-                cartItems = cart ? cart.items.map(i=>i.productId.toString()):[];
-            }
+        let cartItems = [];
+        if (req.session.user) {
+            const cart = await Cart.findOne({ userId: req.session.user });
+            cartItems = cart ? cart.items.map(i => i.productId.toString()) : [];
+        }
 
-            products = products.map(p=>{
-                return {
-                    ...p._doc,
-                    inCart:cartItems.includes(p._id.toString())
-                };
-            });
 
-            const categories = await Category.find({isListed: true});
+        let wishlistItems = [];
+        if (req.session.user) {
+            const wishlist = await Wishlist.findOne({ userId: req.session.user })
+            wishlistItems = wishlist ? wishlist.items.map(i => i.productId.toString()) : [];
+        }
+
+        products = products.map(p => {
+            return {
+                ...p._doc,
+                inCart: cartItems.includes(p._id.toString()),
+                inWishlist: wishlistItems.includes(p._id.toString())
+            };
+        });
+
+        const categories = await Category.find({ isListed: true });
 
         res.render('products', {
             products,
+
             categoryDoc,
+
             categories,
+
             currentPage: page,
+
             totalPages: Math.ceil(totalProducts / limit),
+
             totalProducts,
+
             queryParams: req.query,
+
             searchQuery: req.query.search || "",
-            isLoggedIn: !!req.session.user
+
+            isLoggedIn: !!req.session.user,
+
+            message: req.query.message || null // <-- here
         });
+
 
     } catch (error) {
         console.error("Error occurred while rendering products page:", error);
+
         if (req.xhr || req.headers['x-requested-with'] === 'XMLHttpRequest' || req.query.format === 'json') {
             return res.status(500).json({ status: 'error', message: "An error occurred while loading products." });
         }
@@ -105,39 +126,41 @@ const loadUserProducts = async (req, res) => {
 
 
 
-const loadproductdetails=async(req,res)=>{
+const loadproductdetails = async (req, res) => {
     try {
-        const productId=req.params.id;
+        const productId = req.params.id;
 
-        let product=await Products.findOne({_id:productId,isDeleted:false})
-        if(!product) return res.status(404).send("Product not found")
+        let product = await Products.findOne({ _id: productId, isDeleted: false })
+        if (!product) {
+            return res.redirect("/products-user")
+        }
 
-            let inCart = false ;
-            if(req.session.user){
-                const cart = await Cart.findOne({userId:req.session.user});
+        let inCart = false;
+        if (req.session.user) {
+            const cart = await Cart.findOne({ userId: req.session.user });
 
-                if(cart){
-                    inCart = cart.items.some(
-                        item => item.productId.toString()===productId.toString()
-                    );
-                }
+            if (cart) {
+                inCart = cart.items.some(
+                    item => item.productId.toString() === productId.toString()
+                );
             }
+        }
 
-            product = {...product._doc,inCart};
+        product = { ...product._doc, inCart };
 
         const category = await Category.findById(product.category)
-        const relatedProducts=await Products.find({isDeleted:false})
-        .sort({createdAt:-1})
-        .limit(4)
+        const relatedProducts = await Products.find({ isDeleted: false })
+            .sort({ createdAt: -1 })
+            .limit(4)
         console.log(category)
-        res.render("productdetails",{product,category,relatedProducts})
+        res.render("productdetails", { product, category, relatedProducts })
     } catch (error) {
-        console.error("Error occued while rendering productdetails page",error)
+        console.error("Error occued while rendering productdetails page", error)
     }
 }
 
 
-module.exports={
+module.exports = {
     loadUserProducts,
     loadproductdetails
 

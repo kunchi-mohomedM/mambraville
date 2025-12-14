@@ -32,17 +32,18 @@ const categoryInfo = async(req,res)=>{
 }
 
 const addCategory = async (req, res) => {
+
     const { categoryname, categorydesc } = req.body;
 
     console.log(req.body)
 
-    // Backend validation
+ 
     if (!categoryname || typeof categoryname !== 'string' || categoryname.trim() === '') {
         return res.status(400).json({ error: 'Category name is required and must be a non-empty string' });
     }
 
     try {
-        // Check for existing category (case-insensitive)
+       
         const existingCategory = await Category.findOne({ 
             categoryname: { $regex: new RegExp(`^${categoryname.trim()}$`, 'i') }
         });
@@ -51,7 +52,7 @@ const addCategory = async (req, res) => {
             return res.status(400).json({ error: 'Category already exists' });
         }
 
-        // Create new category
+       
         const newCategory = new Category({
             categoryname: categoryname.trim(),
             description: categorydesc ? categorydesc.trim() : ''
@@ -84,7 +85,7 @@ const loadaddCategory = async(req,res)=>{
 const editCategory = async(req,res)=>{
     try {
         const {categoryId,categoryname,categorydesc}=req.body;
-       // console.log(req.body)
+       
         const updatedCategory=await Category.findByIdAndUpdate(categoryId , {categoryname , description:categorydesc});
         res.redirect("/admin/category?mssg=Category edited successfully.");
     } catch (error) {
@@ -126,5 +127,4 @@ module.exports={
     loadeditcategory,
     editCategory,
     deleteCategory
-
 }

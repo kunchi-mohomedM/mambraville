@@ -123,48 +123,70 @@
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 <% newArrivals.forEach(product=>{ %>
                     <!-- Product Card 1 -->
-                    <div class="bg-white rounded-lg shadow-sm overflow-hidden">
-                        <a href="productdetails/<%= product._id %>">
-                            <div class="bg-purple-900 h-48 relative">
-                                <img src="<%=  product.productImage[0]?.url%>"
-                                    onclick="window.location.href = '/productdetails/<%= product._id %>'" alt="Product"
-                                    class="pointer w-full h-full object-cover">
-                                <div class="absolute  flex items-center justify-center">
+                    <div class="group bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all overflow-hidden border relative">
 
-                                </div>
-                            </div>
-                        </a>
-                        <div class="p-4">
-                            <div class="flex justify-between items-center mb-2">
-                                <span class="text-sm text-gray-600">
-                                    <%= product.categoryname %>
-                                </span>
-                                <div class="flex">
-                                    <i class="fas fa-star text-yellow-400 text-xs"></i>
-                                    <i class="fas fa-star text-yellow-400 text-xs"></i>
-                                    <i class="fas fa-star text-yellow-400 text-xs"></i>
-                                    <i class="fas fa-star text-yellow-400 text-xs"></i>
-                                    <i class="fas fa-star text-gray-300 text-xs"></i>
-                                </div>
-                            </div>
-                            <h4 class="font-medium mb-2">
-                                <%=product.productName%>
-                            </h4>
-                            <div class="flex justify-between items-center">
-                                <div>
-                                    <span class="text-lg font-bold text-blue-600">
-                                        <%= product.price%>
-                                    </span>
-                                    <span class="text-sm text-gray-500 line-through ml-2">$999.99</span>
-                                </div>
-                                <button
-                                    class="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center">
-                                    <i class="fas fa-plus"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                    <%})%>
+    <!-- ❤️ Wishlist Button -->
+    <div class="absolute top-3 right-3 z-10">
+        <% if (product.inCart) { %>
+            <div class="bg-white/90 p-2 rounded-full shadow-md">
+                <i class="fa-solid fa-heart text-gray-300 opacity-60 cursor-not-allowed text-xl"></i>
+            </div>
+        <% } else { %>
+            <a href="/wishlist/toggle/<%= product._id %>" 
+               class="wishlist-btn bg-white p-2 rounded-full shadow-md hover:shadow-lg 
+                      transition-all duration-300 cursor-pointer active:scale-90 inline-flex">
+
+                <i class="
+                    fa-heart text-xl transition-colors duration-300 
+                    <%= product.inWishlist 
+                        ? 'fa-solid text-red-500' 
+                        : 'fa-regular text-gray-500 hover:text-red-400' 
+                    %>
+                "></i>
+            </a>
+        <% } %>
+    </div>
+
+
+
+
+    <!-- Product Image -->
+    <div class="w-full h-44 bg-gray-50 flex items-center justify-center overflow-hidden">
+        <img src="<%= product.productImage[0]?.url %>"
+            onclick="window.location.href='/productdetails/<%= product._id %>'"
+            class="w-full h-full object-contain p-3 group-hover:scale-105 transition" />
+    </div>
+
+    <!-- Details -->
+    <div class="p-4">
+        <h3 class="font-semibold text-sm text-gray-800 h-10 overflow-hidden leading-tight">
+            <%= product.productName %>
+        </h3>
+
+        <!-- Price -->
+        <p class="text-purple-700 font-bold text-lg mt-1">
+            ₹<%= product.price %>
+        </p>
+
+        <!-- Rating -->
+        <div class="flex items-center gap-1 mt-1">
+            <i class="fas fa-star text-yellow-400 text-xs"></i>
+            <span class="text-gray-500 text-xs">(5)</span>
+        </div>
+
+        <!-- Add to Cart -->
+        <button
+            class="toggle-cart-btn mt-3 w-full text-center rounded-full py-2 font-medium text-white 
+            <%= product.inCart ? 'bg-green-600' : 'bg-purple-600' %>"
+            data-product-id="<%= product._id %>"
+            data-in-cart="<%= product.inCart %>">
+
+            <i class="fas fa-shopping-cart text-xs"></i>
+            <span><%= product.inCart ? 'Go to Cart' : 'Add to Cart' %></span>
+        </button>
+    </div>
+</div>
+<% }) %>
 
                         <!-- Product Card 2 -->
 
@@ -181,29 +203,70 @@
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <%trendingProducts.forEach(product=>{%>
                     <!-- Trending Product 1 -->
-                    <div class="bg-white rounded-lg shadow-sm overflow-hidden">
-                        <a href="productdetails/<%= product._id %>">
-                            <div class="h-32">
-                                <img src="<%=product.productImage[0]?.url%>" alt="Product"
-                                    class="w-full h-full object-cover">
-                            </div>
-                        </a>
-                        <div class="p-3">
-                            <h4 class="font-medium text-sm mb-1">
-                                <%=product.productName%>
-                            </h4>
-                            <div class="flex justify-between items-center">
-                                <span class="text-sm font-bold text-blue-600">
-                                    <%=product.price%>
-                                </span>
-                                <div class="flex items-center">
-                                    <i class="fas fa-star text-yellow-400 text-xs"></i>
-                                    <span class="text-xs text-gray-600 ml-1">4.8</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <% })%>
+                   <div class="group bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all overflow-hidden border relative">
+
+    <!-- ❤️ Wishlist Button -->
+    <div class="absolute top-3 right-3 z-10">
+        <% if (product.inCart) { %>
+            <div class="bg-white/90 p-2 rounded-full shadow-md">
+                <i class="fa-solid fa-heart text-gray-300 opacity-60 cursor-not-allowed text-xl"></i>
+            </div>
+        <% } else { %>
+            <a href="/wishlist/toggle/<%= product._id %>" 
+               class="wishlist-btn bg-white p-2 rounded-full shadow-md hover:shadow-lg 
+                      transition-all duration-300 cursor-pointer active:scale-90 inline-flex">
+
+                <i class="
+                    fa-heart text-xl transition-colors duration-300 
+                    <%= product.inWishlist 
+                        ? 'fa-solid text-red-500' 
+                        : 'fa-regular text-gray-500 hover:text-red-400' 
+                    %>
+                "></i>
+            </a>
+        <% } %>
+    </div>
+
+
+
+
+    <!-- Product Image -->
+    <div class="w-full h-44 bg-gray-50 flex items-center justify-center overflow-hidden">
+        <img src="<%= product.productImage[0]?.url %>"
+            onclick="window.location.href='/productdetails/<%= product._id %>'"
+            class="w-full h-full object-contain p-3 group-hover:scale-105 transition" />
+    </div>
+
+    <!-- Details -->
+    <div class="p-4">
+        <h3 class="font-semibold text-sm text-gray-800 h-10 overflow-hidden leading-tight">
+            <%= product.productName %>
+        </h3>
+
+        <!-- Price -->
+        <p class="text-purple-700 font-bold text-lg mt-1">
+            ₹<%= product.price %>
+        </p>
+
+        <!-- Rating -->
+        <div class="flex items-center gap-1 mt-1">
+            <i class="fas fa-star text-yellow-400 text-xs"></i>
+            <span class="text-gray-500 text-xs">(5)</span>
+        </div>
+
+        <!-- Add to Cart -->
+        <button
+            class="toggle-cart-btn mt-3 w-full text-center rounded-full py-2 font-medium text-white 
+            <%= product.inCart ? 'bg-green-600' : 'bg-purple-600' %>"
+            data-product-id="<%= product._id %>"
+            data-in-cart="<%= product.inCart %>">
+
+            <i class="fas fa-shopping-cart text-xs"></i>
+            <span><%= product.inCart ? 'Go to Cart' : 'Add to Cart' %></span>
+        </button>
+    </div>
+</div>
+<% }) %>
 
             </div>
         </div>
@@ -237,36 +300,70 @@
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 <% specialOffers.forEach(product=>{%>
                     <!-- Special Offer 1 -->
-                    <div class="bg-white rounded-lg shadow-sm overflow-hidden">
-                        <a href="productdetails/<%= product._id %>">
-                            <div class="h-40">
-                                <img src="<%= product.productImage[0]?.url%>" alt="Product"
-                                    class="w-full h-full object-cover">
-                            </div>
-                        </a>
-                        <div class="p-4">
-                            <div class="flex justify-between items-center mb-2">
-                                <span class="text-xs bg-red-100 text-red-600 px-2 py-1 rounded-full font-medium">50%
-                                    OFF</span>
-                                <div class="flex">
-                                    <i class="fas fa-star text-yellow-400 text-xs"></i>
-                                    <span class="text-xs text-gray-600 ml-1">4.9</span>
-                                </div>
-                            </div>
-                            <h4 class="font-medium mb-2">Stylish Desk Lamp</h4>
-                            <div class="flex justify-between items-center">
-                                <div>
-                                    <span class="text-sm font-bold text-blue-600">$24.99</span>
-                                    <span class="text-xs text-gray-500 line-through ml-2">$49.99</span>
-                                </div>
-                                <button
-                                    class="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center">
-                                    <i class="fas fa-plus"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                    <%}) %>
+                   <div class="group bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all overflow-hidden border relative">
+
+    <!-- ❤️ Wishlist Button -->
+    <div class="absolute top-3 right-3 z-10">
+        <% if (product.inCart) { %>
+            <div class="bg-white/90 p-2 rounded-full shadow-md">
+                <i class="fa-solid fa-heart text-gray-300 opacity-60 cursor-not-allowed text-xl"></i>
+            </div>
+        <% } else { %>
+            <a href="/wishlist/toggle/<%= product._id %>" 
+               class="wishlist-btn bg-white p-2 rounded-full shadow-md hover:shadow-lg 
+                      transition-all duration-300 cursor-pointer active:scale-90 inline-flex">
+
+                <i class="
+                    fa-heart text-xl transition-colors duration-300 
+                    <%= product.inWishlist 
+                        ? 'fa-solid text-red-500' 
+                        : 'fa-regular text-gray-500 hover:text-red-400' 
+                    %>
+                "></i>
+            </a>
+        <% } %>
+    </div>
+
+
+
+
+    <!-- Product Image -->
+    <div class="w-full h-44 bg-gray-50 flex items-center justify-center overflow-hidden">
+        <img src="<%= product.productImage[0]?.url %>"
+            onclick="window.location.href='/productdetails/<%= product._id %>'"
+            class="w-full h-full object-contain p-3 group-hover:scale-105 transition" />
+    </div>
+
+    <!-- Details -->
+    <div class="p-4">
+        <h3 class="font-semibold text-sm text-gray-800 h-10 overflow-hidden leading-tight">
+            <%= product.productName %>
+        </h3>
+
+        <!-- Price -->
+        <p class="text-purple-700 font-bold text-lg mt-1">
+            ₹<%= product.price %>
+        </p>
+
+        <!-- Rating -->
+        <div class="flex items-center gap-1 mt-1">
+            <i class="fas fa-star text-yellow-400 text-xs"></i>
+            <span class="text-gray-500 text-xs">(5)</span>
+        </div>
+
+        <!-- Add to Cart -->
+        <button
+            class="toggle-cart-btn mt-3 w-full text-center rounded-full py-2 font-medium text-white 
+            <%= product.inCart ? 'bg-green-600' : 'bg-purple-600' %>"
+            data-product-id="<%= product._id %>"
+            data-in-cart="<%= product.inCart %>">
+
+            <i class="fas fa-shopping-cart text-xs"></i>
+            <span><%= product.inCart ? 'Go to Cart' : 'Add to Cart' %></span>
+        </button>
+    </div>
+</div>
+<% }) %>
             </div>
 
             <!-- Special Offer 2 -->

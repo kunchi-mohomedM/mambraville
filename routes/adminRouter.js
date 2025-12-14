@@ -7,6 +7,7 @@ const brandController = require("../controller/admin/brandController")
 const productController= require("../controller/admin/productController")
 const dashboardController=require("../controller/admin/dashboardController")
 const adminOrderController = require("../controller/admin/adminOrderController");
+const couponController = require("../controller/admin/couponController")
 const {deleteCategory}=require('../controller/admin/categoryController');
 const upload=require("../config/multer");
 
@@ -52,6 +53,31 @@ router.get("/order/:orderId", adminAuth, adminOrderController.viewOrder);
 router.post("/order/status/:orderId", adminAuth, adminOrderController.updateOrderStatus);
 router.post("/orders/:orderId/verify-return/:itemId", adminAuth, adminOrderController.verifyReturn);
 router.post("/orders/:orderId/cancel", adminAuth, adminOrderController.cancelOrderByAdmin);
+router.get(
+  "/orders/returns",
+  adminAuth,
+  adminOrderController.listReturnRequests
+);
+
+router.post(
+  "/orders/returns/approve/:orderId/:itemId",
+  adminAuth,
+  adminOrderController.approveReturn
+);
+
+router.post(
+  "/orders/returns/reject/:orderId/:itemId",
+  adminAuth,
+  adminOrderController.rejectReturn
+);
+
+
+
+//Coupon Management
+router.get("/coupon",adminAuth,couponController.loadCouponManagement);
+router.get("/addCoupon",adminAuth,couponController.loadAddCoupon);
+router.post("/addCoupon",adminAuth,couponController.addCoupon);
+router.get('/coupon/delete/:id',couponController.deleteCoupon);
 
 
 
