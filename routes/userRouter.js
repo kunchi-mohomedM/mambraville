@@ -58,8 +58,8 @@ router.get("/edit-address-page/:id",userAuth,addressController.loadEditAddressPa
 
 
 
-router.get("/cart",userAuth,cartController.loadCart)
-router.get("/add-to-cart/:id",userAuth,cartController.addTocart)
+router.get("/cart",userAuth,cartController.loadCart);
+router.get("/add-to-cart/:id",userAuth,cartController.addTocart);
 router.post("/cart/remove/:id",userAuth,cartController.removeItem);
 router.get("/cart/increase/:id",userAuth,cartController.increaseQty);
 router.get("/cart/decrease/:id",userAuth,cartController.decreaseqty);
@@ -80,11 +80,13 @@ router.post("/order/return-item/:orderId/:itemId",userAuth,orderController.retur
 router.get("/wishlist",userAuth, wishlistController.loadWishlist);
 router.get("/wishlist/toggle/:productId", userAuth,wishlistController.toggleWishlist);
 router.post("/wishlist/move-to-cart",userAuth, wishlistController.moveToCart);
+router.post('/wishlist/remove',userAuth,wishlistController.removeFromWishlist)
 
 
 router.get('/wallet',userAuth,walletController.loadWallet)
 router.post("/wallet/create-order", userAuth, walletController.createWalletOrder);
 router.post("/wallet/verify-payment", userAuth, walletController.verifyWalletPayment);
+
 
 
 

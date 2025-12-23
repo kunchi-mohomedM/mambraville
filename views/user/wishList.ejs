@@ -1,169 +1,189 @@
 <header class="bg-white shadow-sm">
-    <%-include("../../views/partials/user/header")-%>
+  <%-include("../../views/partials/user/header")-%>
 </header>
 
 <div class="container mx-auto px-4 py-8 max-w-6xl">
-    <h1 class="text-3xl font-bold text-gray-900 mb-6">Your Profile</h1>
+  <h1 class="text-3xl font-bold text-gray-900 mb-6">Your Profile</h1>
 
-    <div class="flex flex-col md:flex-row gap-6">
-        <!-- Left sidebar -->
-        <div class="w-full md:w-1/3 lg:w-1/4">
-            <div class="bg-white rounded-lg shadow p-6 mb-6">
-                <div class="flex flex-col items-center mb-6">
-                    <!-- Profile Image -->
+  <div class="flex flex-col md:flex-row gap-6">
+    <!-- Left sidebar -->
+    <div class="w-full md:w-1/3 lg:w-1/4">
+      <div class="bg-white rounded-lg shadow p-6 mb-6">
+        <div class="flex flex-col items-center mb-6">
+          <!-- Profile Image -->
 
+          <input type="file" id="image-input" accept="image/*" class="hidden" />
 
-                    <input type="file" id="image-input" accept="image/*" class="hidden">
+          <div class="text-center">
+            <p class="text-gray-600 mb-1">Hello,</p>
+            <h2 class="text-xl font-semibold"><%= user.fullname %></h2>
+          </div>
+        </div>
 
-                    <div class="text-center">
-                        <p class="text-gray-600 mb-1">Hello,</p>
-                        <h2 class="text-xl font-semibold">
-                            <%= user.fullname %>
-                        </h2>
-                    </div>
-                </div>
-
-                <!-- Image Cropper Modal -->
-                <div id="crop-modal"
-                    class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden">
-                    <div class="bg-white p-4 rounded-lg shadow-lg">
-                        <h2 class="text-lg font-semibold mb-2">Crop Image</h2>
-                        <div class="w-60 h-60 overflow-hidden">
-                            <img id="crop-image">
-                        </div>
-                        <div class="flex justify-end gap-2 mt-4">
-                            <button id="cancel-btn" class="px-3 py-1 bg-gray-500 text-white rounded">Cancel</button>
-                            <button id="crop-btn" class="px-3 py-1 bg-blue-500 text-white rounded">Crop &
-                                Save</button>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="border-t border-gray-200 pt-4">
-                    <ul class="space-y-4">
-                        <li>
-                            <a href="/user-Profile" class="flex items-center text-indigo-600 font-medium">
-                                <i class="fas fa-user mr-3 w-5 text-gray-600"></i>
-                                <span>Profile Information</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="/order-summary" class="flex items-center text-gray-700 hover:text-indigo-600">
-                                <i class="fas fa-shopping-bag mr-3 w-5 text-gray-600"></i>
-                                <span>My Orders</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="/addressmanagement" class="flex items-center text-gray-700 hover:text-indigo-600">
-                                <i class="fas fa-home mr-3 w-5 text-gray-600"></i>
-                                <span>Manage Addresses</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#" class="flex items-center text-gray-700 hover:text-indigo-600">
-                                <i class="fas fa-wallet mr-3 w-5 text-gray-600"></i>
-                                <span>My Wallet</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="/wishlist" class="flex items-center text-gray-700 hover:text-indigo-600">
-                                <i class="fas fa-heart mr-3 w-5 text-gray-600"></i>
-                                <span>My Wishlist</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#" class="flex items-center text-gray-700 hover:text-indigo-600">
-                                <i class="fas fa-user-friends mr-3 w-5 text-gray-600"></i>
-                                <span>Refer Friends</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="/change-password" class="flex items-center text-gray-700 hover:text-indigo-600">
-                                <i class="fas fa-key mr-3 w-5 text-gray-600"></i>
-                                <span>Change Password</span>
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-
-                <div class="border-t border-gray-200 mt-6 pt-4">
-                    <a href="#" class="flex items-center text-red-600 hover:text-red-700">
-                        <i class="fas fa-sign-out-alt mr-3 w-5"></i>
-                        <span>Log out</span>
-                    </a>
-                </div>
+        <!-- Image Cropper Modal -->
+        <div
+          id="crop-modal"
+          class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden"
+        >
+          <div class="bg-white p-4 rounded-lg shadow-lg">
+            <h2 class="text-lg font-semibold mb-2">Crop Image</h2>
+            <div class="w-60 h-60 overflow-hidden">
+              <img id="crop-image" />
             </div>
+            <div class="flex justify-end gap-2 mt-4">
+              <button
+                id="cancel-btn"
+                class="px-3 py-1 bg-gray-500 text-white rounded"
+              >
+                Cancel
+              </button>
+              <button
+                id="crop-btn"
+                class="px-3 py-1 bg-blue-500 text-white rounded"
+              >
+                Crop & Save
+              </button>
+            </div>
+          </div>
         </div>
 
-
-
-
-        <div class="container mx-auto mt-10">
-            <h2 class="text-2xl font-semibold mb-6">Your Wishlist</h2>
-
-            <% if (wishlist.items.length===0) { %>
-                <p class="text-gray-500">Your wishlist is empty.</p>
-                <% } else { %>
-
-                    <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
-
-                        <% wishlist.items.forEach(item=> { %>
-                            <div class="bg-white p-4 shadow rounded">
-
-                                <img src="<%= item.productId?.productImage?.[0]?.url || '/images/default.jpg' %>" 
-                                class="w-full h-40 object-cover">
-
-
-                                <h3 class="font-semibold mt-3">
-                                    <%= (item && item.productId && item.productId.productName) ?
-                                        item.productId.productName : "Product not available" %>
-                                </h3>
-
-                               
-
-
-                                <p class="text-gray-600">
-                                    ₹ <%= (item && item.productId && item.productId.price) ? item.productId.price : "-"
-                                        %>
-                                </p>
-
-                               
-
-                                <button
-                                    onclick="removeWishlist('<%= item && item.productId ? item.productId._id : '' %>')"
-                                    class="mt-2 bg-red-500 text-white w-full py-2 rounded">
-                                    Remove
-                                </button>
-
-                            </div>
-                            <% }) %>
-
-
-                    </div>
-
-                    <% } %>
+        <div class="border-t border-gray-200 pt-4">
+          <ul class="space-y-4">
+            <li>
+              <a
+                href="/user-Profile"
+                class="flex items-center text-indigo-600 font-medium"
+              >
+                <i class="fas fa-user mr-3 w-5 text-gray-600"></i>
+                <span>Profile Information</span>
+              </a>
+            </li>
+            <li>
+              <a
+                href="/order-summary"
+                class="flex items-center text-gray-700 hover:text-indigo-600"
+              >
+                <i class="fas fa-shopping-bag mr-3 w-5 text-gray-600"></i>
+                <span>My Orders</span>
+              </a>
+            </li>
+            <li>
+              <a
+                href="/addressmanagement"
+                class="flex items-center text-gray-700 hover:text-indigo-600"
+              >
+                <i class="fas fa-home mr-3 w-5 text-gray-600"></i>
+                <span>Manage Addresses</span>
+              </a>
+            </li>
+            <li>
+              <a
+                href="#"
+                class="flex items-center text-gray-700 hover:text-indigo-600"
+              >
+                <i class="fas fa-wallet mr-3 w-5 text-gray-600"></i>
+                <span>My Wallet</span>
+              </a>
+            </li>
+            <li>
+              <a
+                href="/wishlist"
+                class="flex items-center text-gray-700 hover:text-indigo-600"
+              >
+                <i class="fas fa-heart mr-3 w-5 text-gray-600"></i>
+                <span>My Wishlist</span>
+              </a>
+            </li>
+            <li>
+              <a
+                href="#"
+                class="flex items-center text-gray-700 hover:text-indigo-600"
+              >
+                <i class="fas fa-user-friends mr-3 w-5 text-gray-600"></i>
+                <span>Refer Friends</span>
+              </a>
+            </li>
+            <li>
+              <a
+                href="/change-password"
+                class="flex items-center text-gray-700 hover:text-indigo-600"
+              >
+                <i class="fas fa-key mr-3 w-5 text-gray-600"></i>
+                <span>Change Password</span>
+              </a>
+            </li>
+          </ul>
         </div>
 
+        <div class="border-t border-gray-200 mt-6 pt-4">
+          <a href="#" class="flex items-center text-red-600 hover:text-red-700">
+            <i class="fas fa-sign-out-alt mr-3 w-5"></i>
+            <span>Log out</span>
+          </a>
+        </div>
+      </div>
     </div>
+
+    <div class="container mx-auto mt-10">
+      <h2 class="text-2xl font-semibold mb-6">Your Wishlist</h2>
+
+      <% if (wishlist.items.length===0) { %>
+      <p class="text-gray-500">Your wishlist is empty.</p>
+      <% } else { %>
+
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+        <% wishlist.items.forEach(item=> { %>
+        <div class="bg-white p-4 shadow rounded">
+          <img
+            src="<%= item.productId?.productImage?.[0]?.url || '/images/default.jpg' %>"
+            class="w-full h-40 object-cover"
+          />
+
+          <h3 class="font-semibold mt-3">
+            <%= (item && item.productId && item.productId.productName) ?
+            item.productId.productName : "Product not available" %>
+          </h3>
+
+          <p class="text-gray-600">
+            ₹ <%= (item && item.productId && item.productId.price) ?
+            item.productId.price : "-" %>
+          </p>
+
+          <button
+            onclick="moveToCart('<%= item && item.productId ? item.productId._id : '' %>')"
+            class="mt-2 bg-green-600 text-white w-full py-2 rounded"
+          >
+            Move to Cart
+          </button>
+
+          <button
+            onclick="removeWishlist('<%= item && item.productId ? item.productId._id : '' %>')"
+            class="mt-2 bg-red-500 text-white w-full py-2 rounded"
+          >
+            Remove
+          </button>
+        </div>
+        <% }) %>
+      </div>
+
+      <% } %>
+    </div>
+  </div>
 </div>
-
-
+ <%-include("../../views/partials/user/footer")-%>
 <script>
-    function removeWishlist(id) {
-        fetch("/wishlist/remove", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ productId: id })
-        }).then(() => location.reload());
-    }
-    function moveToCart(id) {
-    fetch("/wishlist/move-to-cart", {
-        method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: "productId=" + encodeURIComponent(id)
+  function removeWishlist(id) {
+    fetch("/wishlist/remove", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ productId: id }),
     }).then(() => location.reload());
-}
-
-    
-
+  }
+  function moveToCart(id) {
+    fetch("/wishlist/move-to-cart", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: "productId=" + encodeURIComponent(id),
+    }).then(() => location.reload());
+  }
 </script>

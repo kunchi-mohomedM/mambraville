@@ -35,7 +35,7 @@ const addCategory = async (req, res) => {
 
     const { categoryname, categorydesc } = req.body;
 
-    console.log(req.body)
+    
 
  
     if (!categoryname || typeof categoryname !== 'string' || categoryname.trim() === '') {

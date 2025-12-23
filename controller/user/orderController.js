@@ -27,7 +27,7 @@ const loadCheckout = async (req, res) => {
     const user = await User.findById(userId).lean();
     const addresses = user?.address || [];
 
-    // 🔥 fetch active category offers
+    //  fetch active category offers
     const categoryOffers = await CategoryOffer.find({ isActive: true }).lean();
 
     const categoryOfferMap = {};
@@ -46,7 +46,7 @@ const loadCheckout = async (req, res) => {
             : p.productImage[0].url
           : "";
 
-      // 💰 discount comparison
+      //  discount comparison
       const productDiscount = p.discount || 0;
       const categoryDiscount =
         categoryOfferMap[p.category?._id?.toString()] || 0;
@@ -84,7 +84,7 @@ const loadCheckout = async (req, res) => {
       0
     );
 
-    // 🎟️ coupons
+    //  coupons
     const coupons = await Coupon.find({
       isActive: true,
       expiryDate: { $gte: new Date() },
@@ -175,7 +175,7 @@ const placeOrder = async (req, res) => {
         });
       }
 
-      // 🔥 DISCOUNT LOGIC
+      //  DISCOUNT LOGIC
       const productDiscount = product.discount || 0;
       const categoryDiscount =
         categoryOfferMap[product.category?._id?.toString()] || 0;
@@ -287,21 +287,21 @@ const placeOrder = async (req, res) => {
 
       await order.save();
 
-      // MARK COUPON USED
+     
       if (couponData?.couponId) {
         await Coupon.findByIdAndUpdate(couponData.couponId, {
           $addToSet: { usedBy: userId },
         });
       }
 
-      // STOCK UPDATE
+     
       for (const item of orderItems) {
         await Product.findByIdAndUpdate(item.productId, {
           $inc: { quantity: -item.qty },
         });
       }
 
-      // CLEAR CART
+      
       await Cart.findOneAndUpdate(
         { userId },
         { $set: { items: [], cartTotal: 0 } }
@@ -310,7 +310,7 @@ const placeOrder = async (req, res) => {
       return order;
     };
 
-    // COD
+    
     if (paymentMethod === "cod") {
       const order = await createFinalOrder("Pending", "COD");
       return res.json({
@@ -320,10 +320,10 @@ const placeOrder = async (req, res) => {
       });
     }
 
-    // RAZORPAY
+   
   if (paymentMethod === "razorpay") {
 
-  // 1️⃣ CREATE DB ORDER FIRST (Pending)
+  
   const order = new Order({
     orderId: "MAM" + Date.now(),
     userId,
@@ -340,25 +340,25 @@ const placeOrder = async (req, res) => {
 
   await order.save();
 
-  // 2️⃣ CREATE RAZORPAY ORDER
+  
   const razorpayOrder = await razorpay.orders.create({
     amount: totalAmount * 100,
     currency: "INR",
     receipt: order.orderId
   });
 
-  // 3️⃣ SAVE RAZORPAY ORDER ID IN DB
+  
   order.razorpayOrderId = razorpayOrder.id;
   await order.save();
 
-  // 4️⃣ SEND REQUIRED DATA
+ 
   return res.json({
     success: true,
     razorpay: true,
     key_id: process.env.RAZORPAY_KEY_ID,
     amount: razorpayOrder.amount,
-    order_id: razorpayOrder.id,   // Razorpay order id
-    orderId: order._id,           // 🔥 DB order id (IMPORTANT)
+    order_id: razorpayOrder.id,   
+    orderId: order._id,           
     name: user.fullname || "Customer",
     email: user.email || "",
     contact: user.phone || "9999999999",
@@ -385,7 +385,7 @@ const verifyPayment = async (req, res) => {
       razorpay_signature
     } = req.body;
 
-    // 1️⃣ VERIFY SIGNATURE
+   
     const sign = razorpay_order_id + "|" + razorpay_payment_id;
 
     const expectedSign = crypto
@@ -400,7 +400,7 @@ const verifyPayment = async (req, res) => {
       });
     }
 
-    // 2️⃣ FETCH EXISTING ORDER
+   
     const order = await Order.findById(orderId);
 
     if (!order) {
@@ -410,7 +410,7 @@ const verifyPayment = async (req, res) => {
       });
     }
 
-    // 3️⃣ PREVENT DOUBLE PAYMENT
+    
     if (order.paymentStatus === "Paid") {
       return res.json({
         success: true,
@@ -418,7 +418,7 @@ const verifyPayment = async (req, res) => {
       });
     }
 
-    // 4️⃣ UPDATE ORDER PAYMENT DETAILS
+    
     order.paymentStatus = "Paid";
     order.status = "Confirmed";
     order.razorpayOrderId = razorpay_order_id;
@@ -426,14 +426,14 @@ const verifyPayment = async (req, res) => {
 
     await order.save();
 
-    // 5️⃣ STOCK DEDUCTION (ONLY ONCE)
+   
     for (const item of order.items) {
       await Product.findByIdAndUpdate(item.productId, {
         $inc: { quantity: -item.qty }
       });
     }
 
-    // 6️⃣ CLEAR CART
+ 
     await Cart.findOneAndUpdate(
       { userId: order.userId },
       { $set: { items: [], cartTotal: 0 } }
@@ -495,6 +495,7 @@ const loadOrderDetails = async (req, res) => {
     return res.status(500).send("Internal server error");
   }
 };
+
 
 const cancelOrder = async (req, res) => {
   try {

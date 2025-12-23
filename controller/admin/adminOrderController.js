@@ -2,6 +2,7 @@
 const Order = require("../../models/orderSchema");
 const Product = require("../../models/productSchema");
 const User = require("../../models/userSchema"); 
+const Wallet = require("../../models/walletSchema")
 const mongoose = require("mongoose");
 
 const DEFAULT_LIMIT = 10;
@@ -58,9 +59,6 @@ const listOrders = async (req, res) => {
       .limit(limit)
       .lean();
 
-   
-    
-console.log(orders)
    
     const totalPages = Math.ceil(total / limit);
 
@@ -228,10 +226,10 @@ const listReturnRequests = async (req, res) => {
     const orders = await Order.find({
       "items.status": "Return Requested"
     })
-      .populate("userId", "fullname email")
-      .lean();
+    .populate("userId", "fullname email")
+    .lean();
 
-    // Extract only return-requested items
+    
     const returnRequests = [];
 
     orders.forEach(order => {
@@ -266,23 +264,45 @@ const approveReturn = async (req, res) => {
     return res.redirect("/admin/orders/returns");
   }
 
-  
   item.status = "Returned";
   item.returnApprovedAt = new Date();
 
- 
+  // Restock product
   await Product.findByIdAndUpdate(item.productId, {
     $inc: { quantity: item.qty }
   });
 
+  // ✅ CORRECT refund amount
+  const refundAmount = Number(item.subtotal);
 
-  const refundAmount = (item.price - (item.discount || 0)) * item.qty;
+  if (!Number.isFinite(refundAmount) || refundAmount <= 0) {
+    console.error("Invalid refund amount", {
+      subtotal: item.subtotal,
+      qty: item.qty,
+      finalPrice: item.finalPrice
+    });
+    return res.redirect("/admin/orders/returns");
+  }
 
-  await User.findByIdAndUpdate(order.userId, {
-    $inc: { wallet: refundAmount }
-  });
+  // ✅ Update wallet
+  await Wallet.findOneAndUpdate(
+    { userId: order.userId },
+    {
+      $inc: { balance: refundAmount },
+      $push: {
+        transactions: {
+          amount: refundAmount,
+          type: "credit",
+          reason: "Order Refund",
+          orderId: order._id,
+          description: `Refund for returned item`
+        }
+      }
+    },
+    { upsert: true, new: true }
+  );
 
- 
+  // Update order status if all items returned/cancelled
   const allReturned = order.items.every(
     i => i.status === "Returned" || i.status === "Cancelled"
   );
@@ -292,6 +312,8 @@ const approveReturn = async (req, res) => {
   await order.save();
   res.redirect("/admin/orders/returns");
 };
+
+
 
 const rejectReturn = async (req, res) => {
   const { orderId, itemId } = req.params;

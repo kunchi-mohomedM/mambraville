@@ -27,7 +27,7 @@ const login = async(req,res)=>{
         return res.render("adminlogin",{message:"Invalid Password"})
     }
     req.session.admin=true;
-  res.render("dashboard")
+  res.redirect("/admin/dashboard")
 
  } catch (error) {
     console.log(error)
@@ -46,7 +46,7 @@ const toggleBlockUser = async (req, res) => {
             return res.status(404).json({ success: false, message: 'User not found' });
         }
 
-        // Toggle the isBlocked status
+        
         user.isBlocked = !user.isBlocked;
         await user.save();
 
@@ -106,18 +106,18 @@ const loaduser = async (req, res) => {
                 sortOption = { fullname: 1 };
         }
        
-        // Fetch users with pagination and sorting
+       
         const users = await Users.find(query)
             .sort(sortOption)
             .limit(limit)
             .skip((page - 1) * limit)
             .exec();
 
-        // Get total count for pagination
+        
         const count = await Users.countDocuments(query);
         const totalPages = Math.ceil(count / limit);
 
-        // Render the page
+        
         res.render('users', {
             users,
             search,

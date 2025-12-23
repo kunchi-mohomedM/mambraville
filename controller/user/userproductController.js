@@ -7,6 +7,7 @@ const applyBestDiscount = require('../../helper/applyBestDiscount')
 
 const loadUserProducts = async (req, res) => {
   try {
+   
     let query = { isDeleted: false };
 
     // Pagination variables
@@ -36,7 +37,7 @@ const loadUserProducts = async (req, res) => {
 
     // Searching
     if (req.query.search) {
-      query.productName = { $regex: req.query.search, $options: "i" }; // Case-insensitive search
+      query.productName = { $regex: req.query.search, $options: "i" }; 
     }
 
     // Sorting
@@ -82,6 +83,7 @@ const loadUserProducts = async (req, res) => {
       const cart = await Cart.findOne({ userId: req.session.user });
       cartItems = cart ? cart.items.map((i) => i.productId.toString()) : [];
     }
+   
 
     let wishlistItems = [];
     if (req.session.user) {
@@ -97,6 +99,7 @@ const loadUserProducts = async (req, res) => {
       cartItems,
       wishlistItems
     });
+
     const categories = await Category.find({ isListed: true });
 
     res.render("products", {
@@ -140,8 +143,8 @@ const loadUserProducts = async (req, res) => {
 const loadproductdetails = async (req, res) => {
   try {
     const productId = req.params.id;
-
-    // 1️⃣ Fetch product
+   
+   
     let productDoc = await Products.findOne({
       _id: productId,
       isDeleted: false
@@ -151,7 +154,7 @@ const loadproductdetails = async (req, res) => {
       return res.redirect("/products-user");
     }
 
-    // 2️⃣ Category offers
+    
     const categoryOffers = await CategoryOffer.find({
       isActive: true
     }).lean();
@@ -162,7 +165,7 @@ const loadproductdetails = async (req, res) => {
         offer.discountPercentage;
     });
 
-    // 3️⃣ Cart check
+
     let cartItems = [];
     if (req.session.user) {
       const cart = await Cart.findOne({
@@ -174,18 +177,18 @@ const loadproductdetails = async (req, res) => {
         : [];
     }
 
-    // 4️⃣ Apply discount to MAIN product
+    
     let [product] = applyBestDiscount({
       products: [productDoc],
       categoryOfferMap,
       cartItems,
-      wishlistItems: [] // not needed here
+      wishlistItems: [] 
     });
 
-    // 5️⃣ Category info
+  
     const category = await Category.findById(product.category).lean();
 
-    // 6️⃣ Related products
+    
     let relatedDocs = await Products.find({
       category: product.category,
       isDeleted: false,
@@ -194,7 +197,7 @@ const loadproductdetails = async (req, res) => {
       .sort({ createdAt: -1 })
       .limit(4);
 
-    // 7️⃣ Apply discount to RELATED products
+  
     const relatedProducts = applyBestDiscount({
       products: relatedDocs,
       categoryOfferMap,
@@ -202,7 +205,7 @@ const loadproductdetails = async (req, res) => {
       wishlistItems: []
     });
 
-    // 8️⃣ Render
+   
     res.render("productdetails", {
       product,
       category,

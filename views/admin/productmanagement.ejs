@@ -6,6 +6,8 @@
     <title>Product Listing - Mambraville Admin</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body class="bg-gray-100">
     <div class="flex h-screen">
@@ -29,7 +31,8 @@
             </header>
 
             <!-- Product List Content -->
-            <div class="flex-1 overflow-x-hidden overflow-y-auto p-6">
+           <div class="flex-1 overflow-y-auto p-6">
+
                 <!-- Page Title and Actions -->
                 <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-6">
                     <div>
@@ -80,8 +83,8 @@
                 </div>
 
                 <!-- Products Table -->
-                <div class="bg-white rounded-lg shadow overflow-hidden">
-                    <div class="overflow-x-auto">
+              <div class="bg-white rounded-lg shadow">
+                    <div class="overflow-x-auto w-full">
                         <table class="min-w-full divide-y divide-gray-200">
                             <% if(products.length>0) {%>
                             <thead class="bg-gray-50">
@@ -140,21 +143,25 @@
                                             <%= product.status %>
                                         </span>
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                        <div class="flex justify-end gap-3  ">
-                                            <a href="/admin/editproduct/<%= product._id %>" class="text-blue-600 hover:text-blue-800">
-                                                <i class="fas fa-edit"></i>
-                                            </a>
-                                            <!-- delte butttn -->
-                                            <button id="dlt-btn" onclick="toggleDltProduct('<%=product._id%>')" class="text-red-600 hover:text-red-900 ">
-                                             <% if(product.isDeleted){%>
-                                                        <i class="fa-solid fa-trash-arrow-up"></i>
-                                            <% } else{%>
-                                                <i class="fas fa-trash"></i>
-                                                <%}%>
-                                            </button>
-                                        </div>
-                                    </td>
+                                   <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+    <div class="flex justify-end items-center gap-1">
+       <a href="/admin/editproduct/<%= product._id %>" 
+   class="text-indigo-600 hover:bg-indigo-100 hover:text-indigo-900 p-2 rounded transition-all"
+   title="Edit Product">
+    <i class="fa-solid fa-pen-to-square text-lg"></i>
+</a>
+
+<button onclick="toggleDltProduct('<%= product._id %>')" 
+        class="text-red-600 hover:bg-red-100 hover:text-red-900 p-2 rounded transition-all"
+        title="<%= product.isDeleted ? 'Restore' : 'Soft Delete' %>">
+    <% if (product.isDeleted) { %>
+        <i class="fa-solid fa-trash-arrow-up text-lg"></i>
+    <% } else { %>
+        <i class="fa-solid fa-trash text-lg"></i>
+    <% } %>
+</button>
+    </div>
+</td>
                                 </tr>
                                 <% }) %>
                             </tbody>
@@ -216,7 +223,7 @@
             }
         }
 
-        // for toggle delete button
+       
 
         async function toggleDltProduct(productId){
                 try {

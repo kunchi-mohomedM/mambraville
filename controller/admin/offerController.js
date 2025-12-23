@@ -74,7 +74,7 @@ const updateReferralOffer= async (req,res)=>{
     }
 };
 
-// Toggle Referral Offer Status
+
 const toggleReferralOfferStatus = async (req, res) => {
     try {
         const { isActive } = req.body;

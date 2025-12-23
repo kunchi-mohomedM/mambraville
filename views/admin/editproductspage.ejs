@@ -24,6 +24,7 @@
             <div class="flex items-center">
                 <span class="mr-4">Admin User</span>
                 <img src="https://via.placeholder.com/40" alt="Admin" class="rounded-full h-8 w-8">
+                <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
             </div>
         </header>
 
@@ -150,6 +151,7 @@
                     <a href="/admin/products">  <button type="button"
                         class="bg-gray-300 text-gray-800 py-3 px-6 rounded-lg hover:bg-gray-400 transition duration-300">Cancel</button></a>
                     <button type="submit"
+                        
                         class="bg-purple-600 text-white py-3 px-6 rounded-lg hover:bg-purple-700 transition duration-300 flex items-center justify-center">
                         <i class="fas fa-plus-circle mr-2"></i> Edit Product
                     </button>
@@ -271,15 +273,33 @@ Object.keys(selectedFiles).forEach(index => {
                 const data = await res.json();
 
                 if (data.success) {
-                    alert('Product updated successfully!');
-                    location.href = '/admin/products';
-                } else {
-                    alert(data.message || 'Failed to update product');
-                }
+    Swal.fire({
+        icon: 'success',
+        title: 'Product Updated!',
+        text: 'The product has been updated successfully.',
+        confirmButtonColor: '#7c3aed',
+        confirmButtonText: 'OK'
+    }).then(() => {
+        window.location.href = '/admin/products';
+    });
+} else {
+    Swal.fire({
+        icon: 'error',
+        title: 'Update Failed',
+        text: data.message || 'Failed to update product',
+        confirmButtonColor: '#dc2626'
+    });
+}
+
             } catch (err) {
-                console.error(err);
-                alert('Network error');
-            } finally {
+    console.error(err);
+    Swal.fire({
+        icon: 'error',
+        title: 'Network Error',
+        text: 'Please try again later'
+    });
+}
+ finally {
                 btn.disabled = false;
                 btn.innerHTML = '<i class="fas fa-plus-circle mr-2"></i> Edit Product';
             }

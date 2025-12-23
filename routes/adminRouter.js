@@ -20,7 +20,9 @@ router.post("/login",islogin,adminController.login)
 router.get("/users",adminAuth,adminController.loaduser)
 router.post('/users/block/:userId',adminAuth,adminController.toggleBlockUser);
 
-router.get("/dashboard",dashboardController.loaddashboard)
+
+router.get('/dashboard',adminAuth,dashboardController.loadDashboard);
+
 
 
 router.get("/category",adminAuth,categoryController.categoryInfo);
@@ -79,17 +81,16 @@ router.post(
 router.get("/coupon",adminAuth,couponController.loadCouponManagement);
 router.get("/addCoupon",adminAuth,couponController.loadAddCoupon);
 router.post("/addCoupon",adminAuth,couponController.addCoupon);
-router.get('/coupon/delete/:id',couponController.deleteCoupon);
+router.get('/coupon/delete/:id',adminAuth,couponController.deleteCoupon);
+
+
 
 
 router.get('/offers',adminAuth,offerController.loadOfferManagement)
-
-
-// ================= Referral Offer Routes =================
 router.put('/offers/referral/update', adminAuth, offerController.updateReferralOffer);
 router.patch('/offers/referral/toggle', adminAuth, offerController.toggleReferralOfferStatus);
 
-// ================= Category Offer Routes =================
+
 router.post('/offers/category/create', adminAuth, offerController.createCategoryOffer);
 router.put('/offers/category/:id', adminAuth, offerController.updateCategoryOffer);
 router.patch('/offers/category/:id/toggle', adminAuth, offerController.toggleCategoryOfferStatus);

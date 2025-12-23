@@ -23,21 +23,139 @@
             
             <!-- Content -->
             <main class="flex-1 overflow-y-auto p-6 bg-white m-4 rounded-lg shadow">
-                <!-- User Management Content -->
-                <div class="overflow-x-auto">
-                    
-                </div>
-                
-    
-            </main>
+
+    <!-- Page Title -->
+    <h2 class="text-2xl font-bold text-gray-800 mb-6">Sales Report</h2>
+
+    <!-- Filters Section -->
+    <form method="GET" action="/admin/dashboard" class="grid grid-cols-4 gap-4 mb-6">
+  <select name="filter" class="border px-3 py-2 rounded">
+    <option value="daily"   <%= filter === 'daily' ? 'selected' : '' %>>Daily</option>
+    <option value="weekly"  <%= filter === 'weekly' ? 'selected' : '' %>>Weekly</option>
+    <option value="monthly" <%= filter === 'monthly' ? 'selected' : '' %>>Monthly</option>
+    <option value="yearly"  <%= filter === 'yearly' ? 'selected' : '' %>>Yearly</option>
+    <option value="custom"  <%= filter === 'custom' ? 'selected' : '' %>>Custom</option>
+  </select>
+
+  <input type="date" name="fromDate" value="<%= fromDate || '' %>" class="border px-3 py-2 rounded">
+  <input type="date" name="toDate" value="<%= toDate || '' %>" class="border px-3 py-2 rounded">
+
+  <button class="bg-black text-white rounded px-4 py-2">
+    Apply
+  </button>
+</form>
+
+
+
+    <!-- Summary Cards -->
+    <div class="grid grid-cols-4 gap-4 mb-8">
+  <div class="bg-gray-100 p-4 rounded">
+    <p>Total Orders</p>
+    <h2 class="text-xl font-bold"><%= report.totalOrders %></h2>
+  </div>
+
+  <div class="bg-gray-100 p-4 rounded">
+    <p>Gross Sales</p>
+    <h2 class="text-xl font-bold">₹ <%= grossSales %></h2>
+  </div>
+
+  <div class="bg-gray-100 p-4 rounded">
+    <p>Coupon Discount</p>
+    <h2 class="text-xl font-bold">₹ <%= report.couponDiscount %></h2>
+  </div>
+
+  <div class="bg-gray-100 p-4 rounded">
+    <p>Net Sales</p>
+    <h2 class="text-xl font-bold">₹ <%= report.netSales %></h2>
+  </div>
+</div>
+
+
+    <!-- Sales Report Table -->
+    <div class="overflow-x-auto bg-white rounded-lg shadow">
+        <table class="w-full border">
+  <thead class="bg-gray-200">
+    <tr>
+      <th class="p-2">Date</th>
+      <th class="p-2">Orders</th>
+      <th class="p-2">Discount</th>
+      <th class="p-2">Net Amount</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% if (tableData.length === 0) { %>
+      <tr>
+        <td colspan="4" class="text-center p-4">No data found</td>
+      </tr>
+    <% } %>
+
+    <% tableData.forEach(row => { %>
+      <tr class="border-t">
+        <td class="p-2"><%= row._id %></td>
+        <td class="p-2"><%= row.orders %></td>
+        <td class="p-2">₹ <%= row.discount %></td>
+        <td class="p-2">₹ <%= row.netAmount %></td>
+      </tr>
+    <% }) %>
+  </tbody>
+</table>
+
+    </div>
+
+    <!-- Export Buttons -->
+    <div class="flex justify-end gap-3 mt-6">
+        <button 
+        onclick="exportToExcel()"
+        class="bg-green-600 hover:bg-green-700 text-white px-5 py-2 rounded-lg">
+            <i class="fas fa-file-excel mr-2"></i> Export Excel
+        </button>
+        <button 
+        onclick="exportToPDF()"
+        class="bg-red-600 hover:bg-red-700 text-white px-5 py-2 rounded-lg">
+           <i class="fas fa-file-pdf mr-2"></i> Export PDF
+        </button>
+    </div>
+
+</main>
+
         </div>
     </div>
     
     <script>
         function logout() {
-            // Add your logout logic here
+           
             window.location.href = '/admin/logout';
         }
+
+        function exportToExcel(){
+          const table = document.querySelector("table");
+          const wb = XLSX.utils.table_to_book(table,{sheet :"Sales Report"});
+          XLSX.writeFile(wb,"Sales_Report.XLSX");
+        }
+
+
+        function exportToPDF(){
+          const { jsPDF }=windoow.jsPDF;
+          const doc = new jsPDF();
+
+          doc.text("Sales Report = Gadgetry Mambraville" , 14, 15);
+          doc.setFontSize(10);
+          doc.text(`Generated on: ${new Date().toLocaleDateString()}`, 14, 22);
+        
+
+
+        doc.autoTable({
+            html: 'table',
+            startY: 30,
+            theme: 'grid',
+            headStyles: { fillColor: [0, 0, 0] }, // Black header to match your theme
+            styles: { fontSize: 9 }
+        });
+
+        doc.save("Sales_Report.pdf");
+      }
+
     </script>
 </body>
 </html>

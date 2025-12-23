@@ -86,6 +86,8 @@ const removeFromWishlist = async (req, res) => {
     const userId = req.session.user;
     const { productId } = req.body;
 
+    console.log(productId)
+
     await Wishlist.updateOne(
       { userId },
       { $pull: { items: { productId } } }
@@ -108,7 +110,7 @@ const moveToCart = async (req, res) => {
    if(!userId) return res.redirect("/login");
 
     let cart = await Cart.findOne({ userId });
-
+ 
     if (!cart) {
       cart = new Cart({ userId, items: [],cartTotal :0 });
     }
@@ -139,54 +141,65 @@ const moveToCart = async (req, res) => {
 
 
 const toggleWishlist = async (req, res) => {
-    try {
-        const userId = req.session.user;
-        const productId = req.params.productId;
+  try {
+    const userId = req.session.user;
+    const productId = req.params.productId;
 
-        if (!userId) return res.redirect("/login");
-
-
-        const cart = await Cart.findOne({ userId });
-        const inCart = cart?.items.some(
-          item => item.productId.toString() === productId
-        );
-
-        if(inCart){
-          return res.redirect("back?message=Product already in cart");
-        }
-
-        let wishlist = await Wishlist.findOne({ userId });
-
-        if (!wishlist) {
-            wishlist = new Wishlist({
-                userId,
-                items: [{ productId }]
-            });
-            await wishlist.save();
-            return res.redirect("back");
-        }
-
-        const exists = wishlist.items.some(
-            item => item.productId.toString() === productId
-        );
-
-        if (exists) {
-            // remove
-            wishlist.items = wishlist.items.filter(
-                item => item.productId.toString() !== productId
-            );
-        } else {
-            // add
-            wishlist.items.push({ productId });
-        }
-
-        await wishlist.save();
-        return res.redirect("back");
-
-    } catch (err) {
-        console.error(err);
-        res.status(500).send("Server Error");
+    // 🔐 Auth check
+    if (!userId) {
+      return res.redirect("/login");
     }
+
+    // 🛡️ ObjectId validation (CRITICAL)
+    if (!mongoose.Types.ObjectId.isValid(productId)) {
+      return res.status(400).send("Invalid product ID");
+    }
+
+    // 🛒 Check if product already in cart
+    const cart = await Cart.findOne({ userId });
+
+    const inCart = cart?.items?.some(
+      item => item.productId.toString() === productId
+    );
+
+    if (inCart) {
+      return res.redirect("/wishlist?message=Product already in cart");
+    }
+
+    // ❤️ Find wishlist
+    let wishlist = await Wishlist.findOne({ userId });
+
+    // 🆕 Create wishlist if not exists
+    if (!wishlist) {
+      wishlist = new Wishlist({
+        userId,
+        items: [{ productId }]
+      });
+
+      await wishlist.save();
+      return res.redirect("/products-user");
+    }
+
+    // 🔁 Toggle logic
+    const index = wishlist.items.findIndex(
+      item => item.productId.toString() === productId
+    );
+
+    if (index !== -1) {
+      // ❌ Remove from wishlist
+      wishlist.items.splice(index, 1);
+    } else {
+      // ➕ Add to wishlist
+      wishlist.items.push({ productId });
+    }
+
+    await wishlist.save();
+    return res.redirect("/products-user");
+
+  } catch (error) {
+    console.error("Toggle Wishlist Error:", error);
+    res.status(500).send("Server Error");
+  }
 };
 
 

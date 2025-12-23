@@ -43,7 +43,7 @@ const addTocart = async (req, res) => {
 
     const product = await Product.findById(productId);
     if (!product || product.isDeleted) {
-      return res.status(400).send("Product not available");
+      return res.redirect("/products-user")
     }
 
     if (product.status === "Discontinued") {
@@ -74,6 +74,8 @@ const addTocart = async (req, res) => {
         return res.status(400).send("Stock limit reached");
       }
 
+
+
       existingItem.qty += 1;
     } else {
       cart.items.push({
@@ -84,7 +86,7 @@ const addTocart = async (req, res) => {
 
     await cart.save();
 
-    // Remove from wishlist if exists
+    
     await Wishlist.updateOne(
       { userId },
       { $pull: { items: { productId: product._id } } }
@@ -118,7 +120,7 @@ const loadCart = async (req, res) => {
       });
     }
 
-    // 🔥 fetch active category offers once
+    
     const categoryOffers = await CategoryOffer.find({ isActive: true }).lean();
 
     const categoryOfferMap = {};
@@ -133,7 +135,7 @@ const loadCart = async (req, res) => {
     for (const item of cart.items) {
       const product = item.productId;
 
-      // ❌ skip invalid products
+      
       if (
         !product ||
         product.isDeleted ||
@@ -143,12 +145,12 @@ const loadCart = async (req, res) => {
         continue;
       }
 
-      // 🔒 stock protection
+      
       if (item.qty > product.quantity) {
         item.qty = product.quantity;
       }
 
-      // 💰 discount logic (INLINE)
+      
       const productDiscount = product.discount || 0;
       const categoryDiscount =
         categoryOfferMap[product.category?._id?.toString()] || 0;
@@ -170,7 +172,7 @@ const loadCart = async (req, res) => {
         product,
         qty: item.qty,
 
-        // pricing for UI only
+        
         originalPrice,
         finalPrice,
         discountPercent,
@@ -178,7 +180,7 @@ const loadCart = async (req, res) => {
       });
     }
 
-    // 🧹 clean cart DB (only productId + qty)
+    
     cart.items = validItems.map(i => ({
       productId: i.product._id,
       qty: i.qty

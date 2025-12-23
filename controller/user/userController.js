@@ -213,11 +213,11 @@ const resendOtp = async (req, res) => {
 
 const loadHomepage = async (req, res) => {
   try {
-    // 1️⃣ Get products
+    
     let products = await Products.find({ isDeleted: false });
     const categories = await Category.find({ isListed: true });
 
-    // 2️⃣ Load active category offers
+    
     const categoryOffers = await CategoryOffer.find({
       isActive: true
     }).lean();
@@ -228,7 +228,7 @@ const loadHomepage = async (req, res) => {
         offer.discountPercentage;
     });
 
-    // 3️⃣ Cart & Wishlist
+   
     let cartItems = [];
     let wishlistItems = [];
 
@@ -250,7 +250,7 @@ const loadHomepage = async (req, res) => {
         : [];
     }
 
-    // 4️⃣ Apply BEST discount (product vs category)
+    
     products = applyBestDiscount({
       products,
       categoryOfferMap,
@@ -258,7 +258,7 @@ const loadHomepage = async (req, res) => {
       wishlistItems
     });
 
-    // 5️⃣ Sections
+    
     const newArrivals = [...products]
       .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
       .slice(0, 3);
@@ -271,7 +271,7 @@ const loadHomepage = async (req, res) => {
       .sort((a, b) => a.quantity - b.quantity)
       .slice(0, 3);
 
-    // 6️⃣ Render
+ 
     return res.render("home", {
       newArrivals,
       trendingProducts,

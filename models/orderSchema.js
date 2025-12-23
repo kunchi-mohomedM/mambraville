@@ -13,7 +13,7 @@ const orderItemSchema = new mongoose.Schema({
 
     qty: { type: Number, required: true },
 
-    // 🔒 LOCKED PRICING
+    
     finalPrice: { type: Number, required: true },
 
     discountPercent: { type: Number, default: 0 },

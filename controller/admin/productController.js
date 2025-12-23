@@ -76,7 +76,7 @@ const loadaddproduct=async(req,res)=>{
     }
 }
 
-// productController.addproducts - FIXED VERSION
+
 const addproducts = async (req, res) => {
     try {
         const {
@@ -96,7 +96,7 @@ const addproducts = async (req, res) => {
             });
         }
 
-        // CORRECT WAY: Wrap upload_stream in a Promise
+        
         const uploadToCloudinary = (buffer) => {
             return new Promise((resolve, reject) => {
                 const uploadStream = cloudinary.uploader.upload_stream(
@@ -116,10 +116,10 @@ const addproducts = async (req, res) => {
             });
         };
 
-        // Upload all 4 images
+        
         const uploadPromises = req.files.map(file => uploadToCloudinary(file.buffer));
 
-        const results = await Promise.all(uploadPromises); // Now this actually waits!
+        const results = await Promise.all(uploadPromises); 
 
         const uploadedImages = results.map(result => ({
             url: result.secure_url,
@@ -177,7 +177,7 @@ const editproduct = async (req, res) => {
         const productId = req.params.id;
         const { productName, description, price, discount = 0, quantity, category, brand } = req.body;
 
-        // Parse incoming indices
+       
         const imageIndices = Array.isArray(req.body.imageIndices)
             ? req.body.imageIndices.map(Number)
             : req.body.imageIndices ? [Number(req.body.imageIndices)] : [];
@@ -193,10 +193,10 @@ const editproduct = async (req, res) => {
         const product = await Product.findById(productId);
         if (!product) return res.status(404).json({ success: false, message: "Product not found" });
 
-        // Start with current images (preserve order)
+        
         let finalImages = [...product.productImage];
 
-        // Step 1: Delete images that are NOT in keepPublicIds
+        
         const currentIds = product.productImage.map(img => img.public_id);
         const idsToDelete = currentIds.filter(id => !keepPublicIds.includes(id));
 
@@ -204,7 +204,7 @@ const editproduct = async (req, res) => {
             await cloudinary.uploader.destroy(id);
         }
 
-        // Step 2: Upload new images and place them in correct index
+       
         if (req.files && req.files.length > 0) {
             const uploadToCloudinary = (buffer) => new Promise((resolve, reject) => {
                 cloudinary.uploader.upload_stream(
@@ -233,13 +233,13 @@ const editproduct = async (req, res) => {
             });
         }
 
-        // Final check: must have exactly 4 images
+       
         finalImages = finalImages.filter(img => img && img.url);
         if (finalImages.length !== 4) {
             return res.status(400).json({ success: false, message: "Exactly 4 images are required" });
         }
 
-        // Update product
+       
         await Product.findByIdAndUpdate(productId, {
             productName: productName.trim(),
             description: description.trim(),
@@ -260,6 +260,7 @@ const editproduct = async (req, res) => {
 
 const deleteProductImage = async(req, res) => {
     try {
+      
         const productId = req.params.productId;
         const imageIndex = req.params.imageIndex;
         
@@ -283,7 +284,7 @@ const deleteProductImage = async(req, res) => {
             await product.save();
         }
         
-        // Redirect back to the edit page
+        
         res.status(200).json({message:"Succesfully deleted"})
     } catch (error) {
         console.error("Error deleting product image:", error);
@@ -294,8 +295,9 @@ const deleteProductImage = async(req, res) => {
 
 const toggleDeletedproduct=async(req,res)=>{
     try {
+       
         const {productId}=req.body
-
+        
         const product= await Product.findById(productId)
         if(!product){
             return res.status(404).json({error:'product not found'})

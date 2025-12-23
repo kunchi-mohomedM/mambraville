@@ -1,81 +1,73 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Return Requests | Mambraville Admin</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  </head>
 
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Return Requests | Mambraville Admin</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-</head>
+  <body class="bg-gray-100">
+    <div class="flex h-screen">
+      <!-- Sidebar -->
+      <%- include('../partials/admin/sidebar') %>
 
-<body class="bg-gray-100">
+      <!-- Main Content -->
+      <div class="flex-1 flex flex-col overflow-hidden">
+        <!-- Header -->
+        <header
+          class="bg-gradient-to-r from-black to-purple-900 text-white p-4 flex justify-between items-center"
+        >
+          <h1 class="text-2xl font-bold flex items-center gap-2">
+            <i class="fas fa-rotate-left"></i>
+            Return Requests
+          </h1>
 
-  <div class="flex h-screen">
+          <a
+            href="/admin/orders"
+            class="px-4 py-2 bg-white bg-opacity-20 hover:bg-opacity-30 rounded-full text-white"
+          >
+            ← Back to Orders
+          </a>
+        </header>
 
-    <!-- Sidebar -->
-    <%- include('../partials/admin/sidebar') %>
+        <!-- Page Content -->
+        <main class="flex-1 overflow-y-auto p-6 bg-white m-4 rounded-lg shadow">
+          <!-- Table -->
+          <div class="overflow-x-auto">
+            <table class="min-w-full bg-white border">
+              <thead class="bg-gray-100 text-gray-700">
+                <tr>
+                  <th class="p-3 border">Order ID</th>
+                  <th class="p-3 border">User</th>
+                  <th class="p-3 border">Product</th>
+                  <th class="p-3 border">Qty</th>
+                  <th class="p-3 border">Reason</th>
+                  <th class="p-3 border text-center">Action</th>
+                </tr>
+              </thead>
 
-    <!-- Main Content -->
-    <div class="flex-1 flex flex-col overflow-hidden">
-
-      <!-- Header -->
-      <header class="bg-gradient-to-r from-black to-purple-900 text-white p-4 flex justify-between items-center">
-        <h1 class="text-2xl font-bold flex items-center gap-2">
-          <i class="fas fa-rotate-left"></i>
-          Return Requests
-        </h1>
-
-        <a href="/admin/orders"
-          class="px-4 py-2 bg-white bg-opacity-20 hover:bg-opacity-30 rounded-full text-white">
-          ← Back to Orders
-        </a>
-      </header>
-
-      <!-- Page Content -->
-      <main class="flex-1 overflow-y-auto p-6 bg-white m-4 rounded-lg shadow">
-
-        <!-- Table -->
-        <div class="overflow-x-auto">
-          <table class="min-w-full bg-white border">
-            <thead class="bg-gray-100 text-gray-700">
-              <tr>
-                <th class="p-3 border">Order ID</th>
-                <th class="p-3 border">User</th>
-                <th class="p-3 border">Product</th>
-                <th class="p-3 border">Qty</th>
-                <th class="p-3 border">Reason</th>
-                <th class="p-3 border text-center">Action</th>
-              </tr>
-            </thead>
-
-            <tbody>
-              <% if (returnRequests.length === 0) { %>
+              <tbody>
+                <% if (returnRequests.length === 0) { %>
                 <tr>
                   <td colspan="6" class="p-6 text-center text-gray-500">
                     No return requests found
                   </td>
                 </tr>
-              <% } %>
-
-              <% returnRequests.forEach(r => { %>
+                <% } %> <% returnRequests.forEach(r => { %>
                 <tr class="border-b hover:bg-gray-50">
+                  <td class="p-3 border font-medium"><%= r.orderCode %></td>
 
-                  <td class="p-3 border font-medium">
-                    <%= r.orderCode %>
-                  </td>
+                  <td class="p-3 border"><%= r.user.fullname %></td>
 
-                  <td class="p-3 border">
-                    <%= r.user.fullname %>
-                  </td>
+                  <td class="p-3 border"><%= r.item.name %></td>
 
-                  <td class="p-3 border">
-                    <%= r.item.name %>
-                  </td>
-
-                  <td class="p-3 border text-center">
-                    <%= r.item.qty %>
-                  </td>
+                  <td class="p-3 border text-center"><%= r.item.qty %></td>
 
                   <td class="p-3 border text-sm text-gray-700">
                     <%= r.item.returnReason %>
@@ -83,40 +75,88 @@
 
                   <td class="p-3 border">
                     <div class="flex justify-center gap-2">
-
                       <!-- Approve -->
-                      <form method="POST"
-                        action="/admin/orders/returns/approve/<%= r.orderId %>/<%= r.item._id %>">
+                      <form
+                        method="POST"
+                        action="/admin/orders/returns/approve/<%= r.orderId %>/<%= r.item._id %>"
+                        onsubmit="return confirmApprove(event)"
+                      >
                         <button
-                          class="flex items-center gap-1 px-3 py-1 bg-green-600 hover:bg-green-700 text-white rounded">
+                          class="flex items-center gap-1 px-3 py-1 bg-green-600 hover:bg-green-700 text-white rounded"
+                        >
                           <i class="fas fa-check"></i>
                           Approve
                         </button>
                       </form>
 
                       <!-- Reject -->
-                      <form method="POST"
-                        action="/admin/orders/returns/reject/<%= r.orderId %>/<%= r.item._id %>">
+                      <form
+                        method="POST"
+                        action="/admin/orders/returns/reject/<%= r.orderId %>/<%= r.item._id %>"
+                        onsubmit="return confirmCancel(event)"
+                      >
                         <button
-                          class="flex items-center gap-1 px-3 py-1 bg-red-600 hover:bg-red-700 text-white rounded">
+                          class="flex items-center gap-1 px-3 py-1 bg-red-600 hover:bg-red-700 text-white rounded"
+                        >
                           <i class="fas fa-xmark"></i>
                           Reject
                         </button>
                       </form>
-
                     </div>
                   </td>
-
                 </tr>
-              <% }) %>
-            </tbody>
-          </table>
-        </div>
-
-      </main>
+                <% }) %>
+              </tbody>
+            </table>
+          </div>
+        </main>
+      </div>
     </div>
-  </div>
+    <script>
+  function confirmApprove(event) {
+    event.preventDefault(); // stop form submit
 
-</body>
+    const form = event.target;
 
+    Swal.fire({
+      title: 'Approve Return?',
+      text: 'This action will approve the return request.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#16a34a', // green
+      cancelButtonColor: '#dc2626', // red
+      confirmButtonText: 'Yes, approve',
+      cancelButtonText: 'Cancel'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        form.submit(); // submit ONLY after confirmation
+      }
+    });
+
+    return false;
+  }
+
+function confirmCancel(event){
+   event.preventDefault(); // stop form submit
+
+    const form = event.target;
+
+    Swal.fire({
+      title: 'Cancel Return?',
+      text: 'This action will Cancel the return request.',
+      icon: 'warning',
+      confirmButtonColor: '#dc2626', 
+      confirmButtonText: 'Yes, Cancel',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        form.submit(); // submit ONLY after confirmation
+      }
+    });
+
+    return false;
+}
+
+</script>
+
+  </body>
 </html>

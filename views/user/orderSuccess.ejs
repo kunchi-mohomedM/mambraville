@@ -6,6 +6,9 @@
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-100">
+   <header class="bg-white shadow-sm">
+        <%-include("../../views/partials/user/header")-%>
+    </header>
   <div class="container mx-auto py-20 px-4 max-w-3xl text-center">
     <div class="bg-white p-8 rounded-lg shadow">
       <h1 class="text-3xl font-bold mb-4 text-green-600">Thank you! 🎉</h1>
@@ -18,5 +21,6 @@
       </div>
     </div>
   </div>
+   <%-include("../../views/partials/user/footer")-%>
 </body>
 </html>

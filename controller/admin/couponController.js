@@ -2,7 +2,9 @@ const Coupon = require("../../models/couponSchema")
 
 const loadCouponManagement = async(req,res) =>{
     try {
+        
         const Coupons = await Coupon.find({});
+
         res.render("couponManagement",{Coupons})
     } catch (error) {
         console.log(error)
@@ -63,10 +65,14 @@ const addCoupon = async (req, res) => {
             expiryDate: new Date(expiredate),
             isActive: true
         });
+        console.log(newCoupon.expiryDate)
 
         await newCoupon.save();
 
-        return res.redirect("/admin/coupon")
+        return res.status(201).json({
+    message: "Coupon added successfully"
+});
+
 
     } catch (error) {
         console.error(error);
@@ -79,22 +85,23 @@ const deleteCoupon = async (req, res) => {
         const couponId = req.params.id;
 
         if (!couponId) {
-            return res.redirect('/admin/coupons?msg=Invalid coupon ID');
+            return res.redirect('/admin/coupon?msg=Invalid coupon ID');
         }
 
         const deleted = await Coupon.findByIdAndDelete(couponId);
 
         if (!deleted) {
-            return res.redirect('/admin/coupons?msg=Coupon not found');
+            return res.redirect('/admin/coupon?msg=Coupon not found');
         }
 
-        return res.redirect('/admin/coupons?msg=Coupon deleted successfully');
+        return res.redirect('/admin/coupon?msg=Coupon deleted successfully');
 
     } catch (error) {
         console.error('Delete coupon error:', error);
-        return res.redirect('/admin/coupons?msg=Error deleting coupon');
+        return res.redirect('/admin/coupon?msg=Error deleting coupon');
     }
 };
+
 
 
 
@@ -104,6 +111,7 @@ module.exports = {
     loadCouponManagement,
     loadAddCoupon,
     addCoupon,
-    deleteCoupon
+    deleteCoupon,
+    
 
 }
