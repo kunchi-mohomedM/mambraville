@@ -60,6 +60,13 @@
                                 class="w-full border border-gray-300 rounded-md p-2 mt-1 focus:ring-2 focus:ring-blue-500">
                         </div>
 
+                        <!-- Referral Code (New Field) -->
+                        <div class="mb-6">
+                            <label class="block text-gray-700 font-medium">Referral Code <span class="text-gray-500 font-normal text-sm">(optional)</span></label>
+                            <input type="text" id="referral_code" name="referral_code" placeholder="Enter referral code if you have one"
+                                class="w-full border border-gray-300 rounded-md p-2 mt-1 focus:ring-2 focus:ring-blue-500">
+                        </div>
+
                         <!-- Sign Up Button -->
                         <button type="submit"
                             class="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition">Sign
@@ -89,22 +96,20 @@
                     </p>
         </div>
     </div>
+
     <script>
+        function togglePassword(inputId, eyeId) {
+            const input = document.getElementById(inputId);
+            const eye = document.getElementById(eyeId);
 
-
-            function togglePassword(inputId, eyeId) {
-    const input = document.getElementById(inputId);
-    const eye = document.getElementById(eyeId);
-
-    if (input.type === "password") {
-        input.type = "text";
-        eye.textContent = "🙈";  // eye closed
-    } else {
-        input.type = "password";
-        eye.textContent = "👁️"; // eye open
-    }
-}
-
+            if (input.type === "password") {
+                input.type = "text";
+                eye.textContent = "🙈";  // eye closed
+            } else {
+                input.type = "password";
+                eye.textContent = "👁️"; // eye open
+            }
+        }
 
         document.addEventListener("DOMContentLoaded", function () {
             const form = document.querySelector("form");
@@ -125,15 +130,13 @@
                 }
 
                 // Email Validation
-               
                 const emailRegex = /^(?!.*\.\.)(?!.*\.$)(?!^\.)[A-Za-z0-9._%+-]{2,}@[A-Za-z0-9-]+\.[A-Za-z]{2,24}$/;
-
                 if (!email.value.match(emailRegex)) {
                     swal("Error", "Enter a valid email address!", "error");
                     return;
                 }
 
-                // Password Validation (At least 8 characters, 1 uppercase, 1 lowercase, 1 number, 1 special character)
+                // Password Validation
                 const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
                 if (!password.value.match(passwordRegex)) {
                     swal("Error", "Password must be at least 8 characters and include an uppercase letter, lowercase letter, number, and special character!", "error");
@@ -145,10 +148,11 @@
                     swal("Error", "Passwords do not match!", "error");
                     return;
                 }
-                form.submit()
+
+                // All validations passed → submit the form
+                form.submit();
             });
         });
-
     </script>
 
 </body>

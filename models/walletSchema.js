@@ -21,7 +21,9 @@ const walletTransactionSchema = new Schema({
       "Order Cancel Refund",
       "Wallet Topup",
       "Order Payment",
-      "Admin Adjustment"
+      "Admin Adjustment","Referral Bonus",     // New user gets 50
+    "Referral Reward",    // Referrer gets 100
+    "Signup Bonus"        // Optional: for future non-referral signup bonus
     ],
     required: true
   },

@@ -1,6 +1,5 @@
 const User = require("../../models/userSchema");
 const bcrypt = require("bcryptjs");
-const validator = require("validator");
 const nodemailer = require("nodemailer");
 const env = require("dotenv").config();
 const Category = require("../../models/categorySchema");
@@ -87,40 +86,41 @@ const generateUniqueReferralId = async () => {
 
 const signUp = async (req, res) => {
   try {
-    const { fullname, email, password, confirm_password, referralId } = req.body;
+    const { fullname, email, password, confirm_password, referral_code:referralId } = req.body;
 
+    // Check if user already exists
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       return res.render("signup", {
-        message: "User with this email already exists"
+        message: "User with this email already exists",
+        oldInput: { fullname, email }
       });
     }
 
-   
     let referredUser = null;
+    let referredUserId = null;
 
-if (referralId) {
-  referredUser = await User.findOne({ referralId });
+    if (referralId && referralId.trim()) {
+      referredUser = await User.findOne({ referralId: referralId.trim() });
 
-  // Invalid referral code
-  if (!referredUser) {
-    return res.render("signup", {
-      message: "Invalid referral code",
-      oldInput: { fullname, email }
-    });
-  }
+      if (!referredUser) {
+        return res.render("signup", {
+          message: "Invalid referral code",
+          oldInput: { fullname, email }
+        });
+      }
 
-  // Prevent self-referral (email match)
-  if (referredUser.email === email) {
-    return res.render("signup", {
-      message: "You cannot use your own referral code",
-      oldInput: { fullname, email }
-    });
-  }
-}
+      if (referredUser.email === email) {
+        return res.render("signup", {
+          message: "You cannot use your own referral code",
+          oldInput: { fullname, email }
+        });
+      }
 
+      referredUserId = referredUser._id;
+    }
 
-    // OTP flow (non-google)
+    // OTP-based signup (email + password)
     if (password) {
       if (password !== confirm_password) {
         return res.render("signup", { message: "Passwords do not match" });
@@ -129,22 +129,26 @@ if (referralId) {
       const otp = generateOtp();
       const emailSent = await sendVerificationEmail(email, otp);
 
-      if (!emailSent) return res.json("email-error");
-     console.log(otp)
-      req.session.userOtp = otp;
+      if (!emailSent) {
+        return res.json({ success: false, message: "Failed to send OTP email" });
+      }
 
+      console.log("OTP:", otp); // Remove in production!
+
+      // Store in session for verification
       req.session.userData = {
         fullname,
         email,
         password,
-        referralId,
-        
+        referralId: referralId?.trim() || null,
+        referredUserId // Important: store the referrer's _id
       };
+      req.session.userOtp = otp;
 
       return res.render("otp_page", { email });
     }
 
-    // Google signup
+    // Google signup (no password → immediate)
     const newReferralId = await generateUniqueReferralId();
 
     const newUser = new User({
@@ -156,36 +160,12 @@ if (referralId) {
 
     await newUser.save();
 
-   
-    const signupBonus = referralId ? 50 : 0;
-
-    await Wallet.create({
-      userId: newUser._id,
-      balance: signupBonus,
-      transactions: referralId
-        ? [{ amount: 50, type: "credit", reason: "Referral Bonus" }]
-        : []
-    });
-
-    
-    if (referredUser) {
-      await Wallet.updateOne(
-        { userId: referredUser._id },
-        {
-          $inc: { balance: 100 },
-          $push: {
-            transactions: {
-              amount: 100,
-              type: "credit",
-              reason: "Referral Reward"
-            }
-          }
-        }
-      );
-    }
+    // Credit bonuses immediately for Google signup
+    await creditReferralBonuses(newUser._id, referredUserId);
 
     req.session.user = newUser._id;
     res.locals.user = true;
+
     return res.json({ success: true, redirectUrl: "/" });
 
   } catch (error) {
@@ -209,93 +189,129 @@ const verifyOtp = async (req, res) => {
     const { otp } = req.body;
 
     if (otp !== req.session.userOtp) {
-      return res
-        .status(400)
-        .json({ success: false, message: "Invalid OTP, please try again" });
+      return res.status(400).json({
+        success: false,
+        message: "Invalid OTP, please try again"
+      });
     }
 
-    
     const userData = req.session.userData;
+    if (!userData) {
+      return res.status(400).json({
+        success: false,
+        message: "Session expired. Please sign up again."
+      });
+    }
 
     let passwordHash = null;
     if (userData.password) {
       passwordHash = await securePassword(userData.password);
     }
 
-    // Generate referral ID for new user
     const referralId = await generateUniqueReferralId();
 
-    // Find referred user
-    let referredUser = null;
-    if (userData.referralId) {
-      referredUser = await User.findOne({ referralId: userData.referralId });
-      if (!referredUser) referredUser = null;
-    }
-
-    // Create user
-    const saveUserData = new User({
+    // Create new user
+    const newUser = new User({
       fullname: userData.fullname,
       email: userData.email,
       password: passwordHash,
       referralId: referralId,
-      referredBy: referredUser ? referredUser.referralId : null,
+      referredBy: userData.referralId || null
     });
 
-    await saveUserData.save();
+    await newUser.save();
 
-    // Signup bonus
-    const signupBonus = userData.referralId ? 50 : 0;
+    // Now safely credit referral bonuses AFTER successful verification
+    await creditReferralBonuses(newUser._id, userData.referredUserId || null);
 
-    await Wallet.create({
-      userId: saveUserData._id,
-      balance: signupBonus,
-      transactions: signupBonus
-        ? [
-            {
-              amount: signupBonus,
-              type: "credit",
-              reason: "Referral Bonus",
-            },
-          ]
-        : [],
-    });
+    // Cleanup session
+    delete req.session.userOtp;
+    delete req.session.userData;
 
-    // Referral reward to referrer
-    if (referredUser) {
-      const alreadyReferred = referredUser.referredUsers?.some(
-        (r) => r.userId.toString() === saveUserData._id.toString()
-      );
-
-      if (!alreadyReferred) {
-        await Wallet.updateOne(
-          { userId: referredUser._id },
-          {
-            $inc: { balance: 100 },
-            $push: {
-              transactions: {
-                amount: 100,
-                type: "credit",
-                reason: "Referral Reward",
-              },
-            },
-          }
-        );
-
-        await User.findByIdAndUpdate(referredUser._id, {
-          $push: { referredUsers: { userId: saveUserData._id } },
-        });
-      }
-    }
-
-    req.session.user = saveUserData._id;
+    req.session.user = newUser._id;
     res.locals.user = true;
 
     res.json({ success: true, redirectUrl: "/" });
+
   } catch (error) {
-    console.error("Error verifying OTP", error);
+    console.error("Error verifying OTP:", error);
     res.status(500).json({ success: false, message: "An error occurred" });
   }
 };
+
+async function creditReferralBonuses(newUserId, referredByUserId = null) {
+  const signupBonus = referredByUserId ? 50 : 0;
+
+  // Step 1: Create or update new user's wallet with bonus
+  const existingWallet = await Wallet.findOne({ userId: newUserId });
+
+  if (!existingWallet) {
+    // Wallet doesn't exist → create with initial balance = signup bonus
+    const newUserTransactions = signupBonus ? [{
+      amount: signupBonus,
+      type: "credit",
+      reason: "Referral Bonus",
+      description: "Bonus for signing up with a referral code"
+    }] : [];
+
+    await Wallet.create({
+      userId: newUserId,
+      balance: signupBonus,
+      transactions: newUserTransactions
+    });
+  } else {
+    // Wallet exists (very rare in signup, but safe to handle)
+    if (signupBonus > 0) {
+      await Wallet.updateOne(
+        { userId: newUserId },
+        {
+          $inc: { balance: signupBonus },
+          $push: {
+            transactions: {
+              amount: signupBonus,
+              type: "credit",
+              reason: "Referral Bonus",
+              description: "Bonus for signing up with a referral code"
+            }
+          }
+        }
+      );
+    }
+  }
+
+  // Step 2: Credit referrer (100) if applicable
+  if (referredByUserId) {
+    const referrer = await User.findById(referredByUserId);
+    if (!referrer) return;
+
+    // Prevent duplicate rewards
+    const alreadyReferred = referrer.referredUsers?.some(
+      (ref) => ref.userId.toString() === newUserId.toString()
+    );
+
+    if (alreadyReferred) return;
+
+    await Wallet.updateOne(
+      { userId: referredByUserId },
+      {
+        $inc: { balance: 100 },
+        $push: {
+          transactions: {
+            amount: 100,
+            type: "credit",
+            reason: "Referral Reward",
+            description: "Reward for successful referral"
+          }
+        }
+      }
+    );
+
+    // Record referral
+    await User.findByIdAndUpdate(referredByUserId, {
+      $push: { referredUsers: { userId: newUserId } }
+    });
+  }
+}
 
 
 const resendOtp = async (req, res) => {
