@@ -70,63 +70,130 @@ async function sendVerificationEmail(email, otp) {
   }
 }
 
+const generateUniqueReferralId = async () => {
+  let referralId;
+  let exists = true;
+
+  while (exists) {
+    referralId = Math.random().toString(36).substring(2, 8).toUpperCase();
+    exists = await User.findOne({ referralId });
+  }
+
+  return referralId;
+};
+
+
+
+
 const signUp = async (req, res) => {
   try {
-    console.log(req.body);
+    const { fullname, email, password, confirm_password, referralId } = req.body;
 
-    const { fullname, email, password, confirm_password } = req.body;
-
-    let googleSignIn = !password;
-    console.log(password, googleSignIn);
-
-    const findUser = await User.findOne({ email });
-    if (findUser) {
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
       return res.render("signup", {
-        message: "User with this email already exists",
+        message: "User with this email already exists"
       });
     }
 
-    if (googleSignIn) {
-      const newUser = new User({
+   
+    let referredUser = null;
+
+if (referralId) {
+  referredUser = await User.findOne({ referralId });
+
+  // Invalid referral code
+  if (!referredUser) {
+    return res.render("signup", {
+      message: "Invalid referral code",
+      oldInput: { fullname, email }
+    });
+  }
+
+  // Prevent self-referral (email match)
+  if (referredUser.email === email) {
+    return res.render("signup", {
+      message: "You cannot use your own referral code",
+      oldInput: { fullname, email }
+    });
+  }
+}
+
+
+    // OTP flow (non-google)
+    if (password) {
+      if (password !== confirm_password) {
+        return res.render("signup", { message: "Passwords do not match" });
+      }
+
+      const otp = generateOtp();
+      const emailSent = await sendVerificationEmail(email, otp);
+
+      if (!emailSent) return res.json("email-error");
+     console.log(otp)
+      req.session.userOtp = otp;
+
+      req.session.userData = {
         fullname,
         email,
-        googleUser: true,
-      });
-      await newUser.save();
+        password,
+        referralId,
+        
+      };
+
+      return res.render("otp_page", { email });
+    }
+
+    // Google signup
+    const newReferralId = await generateUniqueReferralId();
+
+    const newUser = new User({
+      fullname,
+      email,
+      referralId: newReferralId,
+      referredBy: referredUser ? referredUser.referralId : null
+    });
+
+    await newUser.save();
+
+   
+    const signupBonus = referralId ? 50 : 0;
+
+    await Wallet.create({
+      userId: newUser._id,
+      balance: signupBonus,
+      transactions: referralId
+        ? [{ amount: 50, type: "credit", reason: "Referral Bonus" }]
+        : []
+    });
+
     
-      
-
-      await Wallet.create({
-        userId: newUser._id,
-        balance: 0,
-        transactions: []
-      });
-
-      req.session.user = newUser._id;
-      res.locals.user = true;
-      return res.json({ success: true, redirectUrl: "/" });
+    if (referredUser) {
+      await Wallet.updateOne(
+        { userId: referredUser._id },
+        {
+          $inc: { balance: 100 },
+          $push: {
+            transactions: {
+              amount: 100,
+              type: "credit",
+              reason: "Referral Reward"
+            }
+          }
+        }
+      );
     }
 
-    if (password !== confirm_password) {
-      return res.render("signup", { message: "Passwords do not match" });
-    }
+    req.session.user = newUser._id;
+    res.locals.user = true;
+    return res.json({ success: true, redirectUrl: "/" });
 
-    const otp = generateOtp();
-    console.log(otp);
-    const emailSent = await sendVerificationEmail(email, otp);
-    if (!emailSent) {
-      return res.json("email-error");
-    }
-
-    req.session.userOtp = otp;
-    req.session.userData = { fullname, email, password };
-    res.render("otp_page", { email });
-    console.log("OTP Sent ", otp);
   } catch (error) {
-    console.error("Signup error", error);
+    console.error("Signup error:", error);
     res.redirect("/PageNotFound");
   }
 };
+
 
 const securePassword = async (password) => {
   try {
@@ -140,43 +207,96 @@ const securePassword = async (password) => {
 const verifyOtp = async (req, res) => {
   try {
     const { otp } = req.body;
-    console.log(otp);
 
-    if (otp === req.session.userOtp) {
-      const user = req.session.userData;
-
-      let passwordHash = null;
-      if (user.password) {
-        passwordHash = await securePassword(user.password);
-      }
-
-      const saveUserData = new User({
-        fullname: user.fullname,
-        email: user.email,
-        password: passwordHash,
-        googleUser: passwordHash ? false : true,
-      });
-
-      await saveUserData.save();
-
-        await Wallet.create({
-        userId: saveUserData._id,
-        balance: 0,
-        transactions: []
-      });
-      req.session.user = saveUserData._id;
-      res.locals.user = true;
-      res.json({ success: true, redirectUrl: "/" });
-    } else {
-      res
+    if (otp !== req.session.userOtp) {
+      return res
         .status(400)
         .json({ success: false, message: "Invalid OTP, please try again" });
     }
+
+    
+    const userData = req.session.userData;
+
+    let passwordHash = null;
+    if (userData.password) {
+      passwordHash = await securePassword(userData.password);
+    }
+
+    // Generate referral ID for new user
+    const referralId = await generateUniqueReferralId();
+
+    // Find referred user
+    let referredUser = null;
+    if (userData.referralId) {
+      referredUser = await User.findOne({ referralId: userData.referralId });
+      if (!referredUser) referredUser = null;
+    }
+
+    // Create user
+    const saveUserData = new User({
+      fullname: userData.fullname,
+      email: userData.email,
+      password: passwordHash,
+      referralId: referralId,
+      referredBy: referredUser ? referredUser.referralId : null,
+    });
+
+    await saveUserData.save();
+
+    // Signup bonus
+    const signupBonus = userData.referralId ? 50 : 0;
+
+    await Wallet.create({
+      userId: saveUserData._id,
+      balance: signupBonus,
+      transactions: signupBonus
+        ? [
+            {
+              amount: signupBonus,
+              type: "credit",
+              reason: "Referral Bonus",
+            },
+          ]
+        : [],
+    });
+
+    // Referral reward to referrer
+    if (referredUser) {
+      const alreadyReferred = referredUser.referredUsers?.some(
+        (r) => r.userId.toString() === saveUserData._id.toString()
+      );
+
+      if (!alreadyReferred) {
+        await Wallet.updateOne(
+          { userId: referredUser._id },
+          {
+            $inc: { balance: 100 },
+            $push: {
+              transactions: {
+                amount: 100,
+                type: "credit",
+                reason: "Referral Reward",
+              },
+            },
+          }
+        );
+
+        await User.findByIdAndUpdate(referredUser._id, {
+          $push: { referredUsers: { userId: saveUserData._id } },
+        });
+      }
+    }
+
+    req.session.user = saveUserData._id;
+    res.locals.user = true;
+
+    res.json({ success: true, redirectUrl: "/" });
   } catch (error) {
     console.error("Error verifying OTP", error);
     res.status(500).json({ success: false, message: "An error occurred" });
   }
 };
+
 
 const resendOtp = async (req, res) => {
   try {
@@ -434,9 +554,14 @@ const forgotpassword = async (req, res) => {
 const loaduserprofile = async (req, res) => {
   try {
     const userId = req.session.user;
-    const user = await User.findById(userId).lean();
+
+    const user = await User.findById(userId)
+    .populate("referredUsers.userId","fullname email")
+    .lean();
 
     if (!user) return res.redirect("/login");
+
+    const wallet = await Wallet.findOne({ userId }).lean();
 
     const addresses = user.address || [];
 
@@ -444,6 +569,9 @@ const loaduserprofile = async (req, res) => {
 
     res.render("userprofile", {
       user,
+      wallet,
+      referralCode:user.referralId,
+      referredCount:user.referredUsers?.length || 0,
       addresses,
       defaultAddress,
     });

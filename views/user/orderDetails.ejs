@@ -1,197 +1,319 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Order Details</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
+  </head>
 
-<head>
-  <meta charset="UTF-8">
-  <title>Order Details</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-</head>
+  <body class="bg-gray-100 min-h-screen">
+    <%- include("../../views/partials/user/header") %>
 
-<body class="bg-gray-50 p-6">
+    <div class="container mx-auto px-4 py-8 max-w-5xl">
+      <h1 class="text-3xl font-bold text-gray-800 mb-8">Order Details</h1>
 
-  <h1 class="text-3xl font-bold mb-6">Order Details</h1>
+      <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+        <!-- Order Header Info -->
+        <div class="p-6 border-b border-gray-200">
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+            <div>
+              <p class="text-sm text-gray-600">Order ID</p>
+              <p class="font-semibold text-lg"><%= order.orderId %></p>
+            </div>
+            <div>
+              <p class="text-sm text-gray-600">Order Date</p>
+              <p class="font-semibold"><%= new Date(order.orderedAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'long', year: 'numeric' }) %></p>
+            </div>
+            <div>
+              <p class="text-sm text-gray-600">Delivery Date</p>
+              <p class="font-semibold"><%= order.deliveredAt ? new Date(order.deliveredAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'long', year: 'numeric' }) : 'Not Delivered Yet' %></p>
+            </div>
+          </div>
 
-  <div class="bg-white p-6 rounded shadow">
-    <p><strong>Order ID:</strong>
-      <%= order.orderId %>
-    </p>
+          <!-- Status Badges -->
+          <div class="flex flex-wrap gap-6 text-sm">
+            <div class="flex items-center gap-3">
+              <span class="font-medium text-gray-700">Order Status:</span>
+              <span class="px-4 py-1.5 rounded-full text-white font-medium text-sm
+                <%= order.status === 'Delivered' ? 'bg-green-600' : 
+                    order.status === 'Cancelled' ? 'bg-red-600' : 
+                    order.status === 'Confirmed' ? 'bg-blue-600' : 
+                    'bg-orange-500' %>">
+                <%= order.status %>
+              </span>
+            </div>
 
-    <p><strong>Ordered At:</strong>
-      <%= new Date(order.orderedAt).toLocaleDateString() %>
-    </p>
-    <p><strong>Delivered At:</strong>
-      <%= order.deliveredAt ? new Date(order.deliveredAt).toLocaleDateString() : '-' %>
-    </p>
+            <div class="flex items-center gap-3">
+              <span class="font-medium text-gray-700">Payment Status:</span>
+              <span class="px-4 py-1.5 rounded-full text-white font-medium text-sm
+                <%= order.paymentStatus === 'Paid' ? 'bg-green-600' : 
+                    order.paymentStatus === 'Failed' ? 'bg-red-600' : 
+                    'bg-orange-500' %>">
+                <%= order.paymentStatus %>
+              </span>
+            </div>
 
-      <div class="mt-2 flex flex-wrap gap-4 text-sm">
+            <div class="flex items-center gap-3">
+              <span class="font-medium text-gray-700">Payment Method:</span>
+              <span class="px-4 py-1.5 rounded-full bg-gray-800 text-white font-medium text-sm">
+                <%= order.paymentMethod %>
+              </span>
+            </div>
+          </div>
 
-  <!-- Order Status -->
-  <div class="flex items-center gap-2">
-      <span class="font-semibold">Order Status:</span>
-    <span class="px-3 py-1 rounded-full text-white
-      <%= order.status === 'Delivered' ? 'bg-green-600' :
-          order.status === 'Cancelled' ? 'bg-red-600' :
-          order.status === 'Confirmed' ? 'bg-blue-600' :
-          'bg-yellow-500' %>">
-      <%= order.status %>
-    </span>
-  </div>
+          <!-- Action Buttons -->
+          <div class="mt-6 flex flex-wrap gap-4">
+            <% if(order.status !== 'Delivered' && order.status !== 'Cancelled') { %>
+              <button
+                onclick="openReasonModal('/order/cancel/<%= order._id %>', 'Cancel Entire Order')"
+                class="px-6 py-2.5 bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg transition shadow-md">
+                Cancel Entire Order
+              </button>
+            <% } %>
 
-  <!-- Payment Status -->
-  <div class="flex items-center gap-2">
-    <span class="font-semibold">Payment Status:</span>
-    <span class="px-3 py-1 rounded-full text-white
-      <%= order.paymentStatus === 'Paid' ? 'bg-green-600' :
-          order.paymentStatus === 'Failed' ? 'bg-red-600' :
-          'bg-yellow-500' %>">
-      <%= order.paymentStatus %>
-    </span>
-  </div>
-
-  <!-- Payment Method -->
-  <div class="flex items-center gap-2">
-    <span class="font-semibold">Payment Method:</span>
-    <span class="px-3 py-1 rounded-full bg-gray-800 text-white">
-      <%= order.paymentMethod %>
-    </span>
-  </div>
-
-</div>
-
-
-
-
-    <!-- Entire Order Actions -->
-    <div class="mt-4 flex gap-4">
-      <% if(order.status !=='Delivered' && order.status !=='Cancelled' ) { %>
-        <form action="/order/cancel/<%= order._id %>" method="POST">
-          <button type="button" onclick="openReasonModal('/order/cancel/<%= order._id %>', 'Cancel Entire Order')"
-            class="px-4 py-2 bg-red-600 text-white rounded">
-            Cancel Entire Order
-          </button>
-
-        </form>
-        <% } %>
-    </div>
-
-    <table class="min-w-full mt-6 border">
-      <thead class="bg-gray-100">
-        <tr>
-          <th class="p-2 border">Product</th>
-          <th class="p-2 border">Qty</th>
-          <th class="p-2 border">Price</th>
-          <th class="p-2 border">Status</th>
-          <th class="p-2 border">Action</th>
-        </tr>
-      </thead>
-      <tbody>
-        <% order.items.forEach(item=> { %>
-          <tr class="border-b">
-            <td class="p-2 border flex items-center gap-2">
-              <img src="<%= item.image %>" class="w-12 h-12 object-cover rounded">
-              <%= item.name %>
-            </td>
-            <td class="p-2 border">
-              <%= item.qty %>
-            </td>
-            <td class="p-2 border">₹<%= item.finalPrice %>
-            </td>
-            <td class="p-2 border">
-              <%= item.status || order.status %>
-            </td>
-            <td class="p-2 border flex gap-2">
-              <% if(item.status !=='Delivered' && order.status !=='Cancelled' ) { %>
-                <form action="/order/cancel-item/<%= order._id %>/<%= item._id %>" method="POST">
-                  <% if(item.status !=="Cancelled" ){ %>
-                    <button type="button"
-                      onclick="openReasonModal('/order/cancel-item/<%= order._id %>/<%= item._id %>', 'Cancel Product')"
-                      class="px-2 py-1 bg-red-500 text-white rounded text-xs">
-                      Cancel
-                    </button>
-                    <% } %>
-                </form>
-                <% } %>
-                  <% if(item.status==='Delivered' && order.status !=='Returned' ) { %>
-                    <form action="/order/return-item/<%= order._id %>/<%= item._id %>" method="POST">
-                      <button type="button" 
-                      onclick="openReasonModal('/order/return-item/<%= order._id %>/<%= item._id %>','Return Product' )" class="px-2 py-1 bg-yellow-500 text-white rounded text-xs">
-                        Return
-                      </button>
-
-                    </form>
-                    <% } %>
-            </td>
-          </tr>
-          <% }) %>
-      </tbody>
-    </table>
-
-        <hr class="my-4">
-
-<h2 class="text-xl font-semibold mb-2">Payment Summary</h2>
-
-<div class="space-y-1 text-sm">
-  <p class="flex justify-between">
-    <span>Subtotal</span>
-    <span>₹<%= order.subtotalAmount %></span>
-  </p>
-
-  <% if(order.coupon && order.coupon.discountAmount > 0){ %>
-    <p class="flex justify-between text-green-600">
-      <span>
-        Coupon Applied (<%= order.coupon.code %>)
-      </span>
-      <span>- ₹<%= order.coupon.discountAmount %></span>
-    </p>
-  <% } else { %>
-    <p class="flex justify-between text-gray-500">
-      <span>No Coupon Applied</span>
-      <span>₹0</span>
-    </p>
-  <% } %>
-
-  <hr>
-
-  <p class="flex justify-between font-bold text-lg">
-    <span>Total Paid</span>
-    <span>₹<%= order.totalAmount %></span>
-  </p>
-</div>
-  </div>
-
-  
-
-  <!-- Reason Modal -->
-  <div id="reasonModal" class="fixed inset-0 bg-black bg-opacity-40 hidden justify-center items-center">
-    <div class="bg-white p-6 rounded w-96">
-      <h2 id="modalTitle" class="text-xl font-bold mb-4"></h2>
-
-      <form id="reasonForm" method="POST">
-        <textarea name="reason" required class="w-full p-2 border rounded" placeholder="Enter reason..."></textarea>
-
-        <div class="mt-4 flex justify-end gap-2">
-          <button type="button" onclick="closeModal()" class="px-4 py-2 bg-gray-400 text-white rounded">Close</button>
-          <button class="px-4 py-2 bg-blue-600 text-white rounded">Submit</button>
+            <% if (order.paymentMethod === "Razorpay" && order.paymentStatus === "Failed" && order.status === "Failed") { %>
+              <button
+                id="retryPaymentBtn"
+                class="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-red-600 hover:bg-red-700 text-white font-semibold transition shadow-md">
+                <i class="fas fa-sync-alt"></i> Retry Payment
+              </button>
+            <% } %>
+          </div>
         </div>
-      </form>
+
+        <!-- Order Items Table -->
+        <div class="p-6">
+          <h2 class="text-xl font-semibold mb-4 text-gray-800">Order Items</h2>
+          <div class="overflow-x-auto">
+            <table class="w-full border border-gray-300 rounded-lg overflow-hidden">
+              <thead class="bg-gray-50">
+                <tr>
+                  <th class="text-left px-6 py-4 font-medium text-gray-700">Product</th>
+                  <th class="text-center px-6 py-4 font-medium text-gray-700">Quantity</th>
+                  <th class="text-center px-6 py-4 font-medium text-gray-700">Price</th>
+                  <th class="text-center px-6 py-4 font-medium text-gray-700">Status</th>
+                  <th class="text-center px-6 py-4 font-medium text-gray-700">Action</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-gray-200">
+                <% order.items.forEach(item => { %>
+                  <tr class="hover:bg-gray-50 transition">
+                    <td class="px-6 py-4">
+                      <div class="flex items-center gap-4">
+                        <img src="<%= item.image %>" alt="<%= item.name %>" class="w-16 h-16 object-cover rounded-lg shadow-sm" />
+                        <div>
+                          <p class="font-medium text-gray-800"><%= item.name %></p>
+                        </div>
+                      </div>
+                    </td>
+                    <td class="px-6 py-4 text-center font-medium"><%= item.qty %></td>
+                    <td class="px-6 py-4 text-center font-semibold">₹<%= item.finalPrice.toLocaleString('en-IN') %></td>
+                    <td class="px-6 py-4 text-center">
+                      <span class="px-3 py-1 rounded-full text-xs font-medium text-white
+                        <%= (item.status || order.status) === 'Delivered' ? 'bg-green-600' :
+                            (item.status || order.status) === 'Cancelled' ? 'bg-red-600' :
+                            (item.status || order.status) === 'Returned' ? 'bg-purple-600' :
+                            'bg-blue-600' %>">
+                        <%= item.status || order.status %>
+                      </span>
+                    </td>
+                    <td class="px-6 py-4 text-center">
+                      <div class="flex justify-center gap-2">
+                        <% if((item.status || order.status) !== 'Delivered' && order.status !== 'Cancelled' && item.status !== 'Cancelled') { %>
+                          <button
+                            onclick="openReasonModal('/order/cancel-item/<%= order._id %>/<%= item._id %>', 'Cancel Item')"
+                            class="px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white text-xs font-medium rounded transition">
+                            Cancel
+                          </button>
+                        <% } %>
+                        <% if((item.status || order.status) === 'Delivered' && order.status !== 'Returned') { %>
+                          <button
+                            onclick="openReasonModal('/order/return-item/<%= order._id %>/<%= item._id %>', 'Return Item')"
+                            class="px-3 py-1.5 bg-amber-600 hover:bg-amber-700 text-white text-xs font-medium rounded transition">
+                            Return
+                          </button>
+                        <% } %>
+                      </div>
+                    </td>
+                  </tr>
+                <% }) %>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Payment Summary -->
+        <div class="bg-gray-50 p-6 border-t border-gray-200">
+          <h2 class="text-xl font-semibold mb-4 text-gray-800">Payment Summary</h2>
+          <div class="space-y-3 max-w-md ml-auto">
+            <div class="flex justify-between text-gray-700">
+              <span>Subtotal</span>
+              <span class="font-medium">₹<%= order.subtotalAmount.toLocaleString('en-IN') %></span>
+            </div>
+
+            <% if(order.coupon && order.coupon.discountAmount > 0) { %>
+              <div class="flex justify-between text-green-600 font-medium">
+                <span>Coupon Applied (<%= order.coupon.code %>)</span>
+                <span>- ₹<%= order.coupon.discountAmount.toLocaleString('en-IN') %></span>
+              </div>
+            <% } else { %>
+              <div class="flex justify-between text-gray-500">
+                <span>No Coupon Applied</span>
+                <span>₹0</span>
+              </div>
+            <% } %>
+
+            <hr class="border-gray-300" />
+
+            <div class="flex justify-between text-xl font-bold text-gray-800 pt-2">
+              <span>Total Amount</span>
+              <span>₹<%= order.totalAmount.toLocaleString('en-IN') %></span>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
-  </div>
 
+    <!-- Reason Modal -->
+    <div id="reasonModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50 px-4">
+      <div class="bg-white rounded-xl shadow-2xl w-full max-w-md">
+        <div class="p-6">
+          <h2 id="modalTitle" class="text-2xl font-bold text-gray-800 mb-4"></h2>
+          <form id="reasonForm" method="POST">
+            <textarea
+              name="reason"
+              required
+              rows="4"
+              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 resize-none"
+              placeholder="Please provide a reason for cancellation/return..."
+            ></textarea>
 
-</body>
-<script>
+            <div class="mt-6 flex justify-end gap-3">
+              <button
+                type="button"
+                onclick="closeModal()"
+                class="px-6 py-2.5 bg-gray-300 hover:bg-gray-400 text-gray-800 font-medium rounded-lg transition">
+                Cancel
+              </button>
+              <button
+                type="submit"
+                class="px-6 py-2.5 bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg transition shadow-md">
+                Submit
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
 
-  function openReasonModal(actionUrl, title) {
-    document.getElementById("reasonForm").action = actionUrl;
-    document.getElementById("modalTitle").innerText = title;
-    document.getElementById("reasonModal").classList.remove("hidden");
-  }
+    <%- include("../../views/partials/user/footer") %>
 
-  function closeModal() {
-    document.getElementById("reasonModal").classList.add("hidden");
-  }
+    <script>
+      function openReasonModal(actionUrl, title) {
+        document.getElementById("reasonForm").action = actionUrl;
+        document.getElementById("modalTitle").innerText = title;
+        document.getElementById("reasonModal").classList.remove("hidden");
+      }
 
+      function closeModal() {
+        document.getElementById("reasonModal").classList.add("hidden");
+        document.getElementById("reasonForm").reset();
+      }
 
-</script>
+      // Close modal when clicking outside
+      document.getElementById("reasonModal").addEventListener("click", function(e) {
+        if (e.target === this) closeModal();
+      });
+    </script>
 
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <script>
+      const retryBtn = document.getElementById("retryPaymentBtn");
+      if (retryBtn) {
+        retryBtn.addEventListener("click", async function () {
+          retryBtn.disabled = true;
+          retryBtn.innerHTML = '<span class="flex items-center gap-2"><div class="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div> Processing...</span>';
+
+          try {
+            const response = await fetch(`/order/retry-payment-create/<%= order._id %>`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+            });
+
+            const data = await response.json();
+
+            if (!data.success) {
+              alert(data.message || "Failed to initiate payment.");
+              resetButton();
+              return;
+            }
+
+            const options = {
+              key: data.key_id,
+              amount: data.amount,
+              currency: "INR",
+              name: "MambraVille",
+              description: "Retry Payment - Order <%= order.orderId %>",
+              order_id: data.order_id,
+              retry: false,
+              handler: async function (response) {
+                const verifyRes = await fetch("/order/verify-payment", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({
+                    orderId: "<%= order._id %>",
+                    razorpay_order_id: response.razorpay_order_id,
+                    razorpay_payment_id: response.razorpay_payment_id,
+                    razorpay_signature: response.razorpay_signature,
+                  }),
+                });
+
+                const verifyData = await verifyRes.json();
+                if (verifyData.success) {
+                  window.location.href = verifyData.redirect;
+                } else {
+                  alert("Payment verification failed.");
+                  window.location.reload();
+                }
+              },
+              prefill: {
+                name: "<%= order.address.fullname %>",
+                contact: "<%= order.address.phone %>",
+              },
+              theme: { color: "#dc2626" },
+              modal: { ondismiss: handlePaymentFailure },
+            };
+
+            const razorpay = new Razorpay(options);
+            razorpay.open();
+            razorpay.on("payment.failed", function () {
+              alert("Payment failed. Please try again.");
+              handlePaymentFailure();
+            });
+
+          } catch (error) {
+            console.error(error);
+            alert("Something went wrong. Please try again.");
+            resetButton();
+          }
+
+          function resetButton() {
+            retryBtn.disabled = false;
+            retryBtn.innerHTML = '<i class="fas fa-sync-alt"></i> Retry Payment';
+          }
+
+          async function handlePaymentFailure() {
+            await fetch("/order/payment-failed", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ orderId: "<%= order._id %>" }),
+            });
+            resetButton();
+          }
+        });
+      }
+    </script>
+  </body>
 </html>

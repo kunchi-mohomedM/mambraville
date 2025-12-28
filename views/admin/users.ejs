@@ -76,12 +76,28 @@
                             <!-- Search Form -->
                             <form action="/admin/users" method="GET" class="flex items-center gap-4">
                                 <div class="relative w-full sm:w-64">
-                                    <input type="text" name="search" placeholder="Search for user" 
-                                        value="<%= typeof search !== 'undefined' ? search : '' %>"
-                                        class="w-full bg-white bg-opacity-20 rounded-full py-2 px-4 pl-10 text-gray-700 placeholder-gray-400 
-                                        focus:outline-none focus:ring-2 focus:ring-blue-400">
-                                    <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
-                                </div>
+  <input
+    type="text"
+    id="userSearchInput"
+    name="search"
+    placeholder="Search for user"
+    value="<%= typeof search !== 'undefined' ? search : '' %>"
+    class="w-full bg-white bg-opacity-20 rounded-full py-2 px-4 pl-10 pr-10 text-gray-700 placeholder-gray-400 
+    focus:outline-none focus:ring-2 focus:ring-blue-400"
+  />
+
+  <!-- Search icon -->
+  <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+
+  <!-- Clear button -->
+  <button
+    type="button"
+    id="clearUserSearchBtn"
+    class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-black hidden">
+    <i class="fas fa-times"></i>
+  </button>
+</div>
+
                                 <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Search</button>
                             </form>
             
@@ -179,6 +195,28 @@
         function logout() {
             window.location.href = '/admin/logout';
         }
+
+        
+        // 🔍 User search clear button logic
+const userSearchInput = document.getElementById("userSearchInput");
+const clearUserSearchBtn = document.getElementById("clearUserSearchBtn");
+
+if (userSearchInput && clearUserSearchBtn) {
+  // Show clear button if value already exists
+  clearUserSearchBtn.classList.toggle("hidden", !userSearchInput.value);
+
+  // Toggle while typing
+  userSearchInput.addEventListener("input", () => {
+    clearUserSearchBtn.classList.toggle("hidden", !userSearchInput.value);
+  });
+
+  // Clear search and reload users page
+  clearUserSearchBtn.addEventListener("click", () => {
+    window.location.href = "/admin/users";
+  });
+}
+
+
 
         document.addEventListener("DOMContentLoaded", () => {
             // Sidebar toggle

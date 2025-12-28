@@ -52,32 +52,49 @@
                     <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                         <div class="hidden md:flex items-center flex-1 mx-6">
                             <div class="relative w-full">
-                                <form action="/admin/products" method="GET">
-                                <input 
-                                type="text" 
-                                name="search" 
-                                value="<%= searchQuery || '' %>" 
-                                placeholder="Search products..." 
-                                class="bg-white rounded-lg py-2 px-4 pl-10 w-full border focus:outline-none focus:ring-2 focus:ring-purple-600"
-                            >
-                                <button type="submit" class="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500">
-                                    <i class="fas fa-search"></i>
-                                </button>
-                            </form>
-                            </div>
-                            
-                        </div>
-                        <form action="/admin/products" method="GET">
-                        <div class="flex items-center">                  
-                            <label class="text-sm text-gray-600 mr-2">Sort by:</label>
-                            <select name="sort" onchange="this.form.submit()" class="border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-600">
-                                <option value="newest" <%=sort === "newest" ? "selected" : "" %> >Newest</option>
-                                <option value="oldest"  <%=sort === "oldest" ? "selected" : "" %>  >Oldest</option>
-                                <option value="priceasc"  <%=sort === "priceasc" ? "selected" : "" %>  >Price: Low to High</option>
-                                <option value="pricedesc"  <%=sort === "pricedesc" ? "selected" : "" %>  >Price: High to Low</option>
-                                <option value="popular"  <%=sort === "popular" ? "selected" : "" %>  >Popular</option>
-                            </select>
-                        </form>
+                                <div class="bg-white p-4 rounded-lg shadow mb-6">
+  <form action="/admin/products" method="GET"
+        class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+
+    <!-- SEARCH -->
+    <div class="relative w-full md:w-1/2">
+      <input
+        type="text"
+        id="searchInput"
+        name="search"
+        value="<%= searchQuery %>"
+        placeholder="Search products..."
+        class="bg-white rounded-lg py-2 px-4 pl-10 pr-10 w-full border focus:outline-none focus:ring-2 focus:ring-purple-600"
+      />
+
+      <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+
+      <!-- CLEAR BUTTON -->
+      <button
+        type="button"
+        id="clearSearchBtn"
+        class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-red-500 hidden">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+
+    <!-- SORT -->
+    <div class="flex items-center gap-2">
+      <label class="text-sm text-gray-600">Sort by:</label>
+      <select name="sort"
+              onchange="this.form.submit()"
+              class="border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-600">
+        <option value="newest" <%= sort === "newest" ? "selected" : "" %>>Newest</option>
+        <option value="oldest" <%= sort === "oldest" ? "selected" : "" %>>Oldest</option>
+        <option value="priceasc" <%= sort === "priceasc" ? "selected" : "" %>>Price: Low to High</option>
+        <option value="pricedesc" <%= sort === "pricedesc" ? "selected" : "" %>>Price: High to Low</option>
+        <option value="popular" <%= sort === "popular" ? "selected" : "" %>>Popular</option>
+      </select>
+    </div>
+
+  </form>
+</div>
+
                         </div>
                     </div>
                 </div>
@@ -242,6 +259,28 @@
                 }
             
             }
-    </script>
+
+
+
+const searchInput = document.getElementById("searchInput");
+const clearBtn = document.getElementById("clearSearchBtn");
+
+if (searchInput && clearBtn) {
+  clearBtn.classList.toggle("hidden", !searchInput.value);
+
+  searchInput.addEventListener("input", () => {
+    clearBtn.classList.toggle("hidden", !searchInput.value);
+  });
+
+  clearBtn.addEventListener("click", () => {
+    const params = new URLSearchParams(window.location.search);
+    params.delete("search");
+    params.delete("page"); // reset page only
+
+    window.location.href = `/admin/products?${params.toString()}`;
+  });
+}
+
+</script>
 </body>
 </html>

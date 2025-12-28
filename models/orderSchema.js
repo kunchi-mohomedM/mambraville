@@ -124,7 +124,6 @@ const orderSchema = new mongoose.Schema({
         default: 0
     },
 
-
     totalAmount: {
         type: Number,
         required: true

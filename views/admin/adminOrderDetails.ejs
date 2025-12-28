@@ -41,7 +41,6 @@
           <!-- User Info -->
           <div class="mb-4 space-y-1">
             <p><strong>User:</strong> <%= order.userId.fullname %> | <%= order.userId.email %></p>
-           
             <p><strong>Status:</strong> <span class="font-semibold text-purple-700"><%= order.status %></span></p>
             <p><strong>Ordered At:</strong> <%= new Date(order.orderedAt).toLocaleString() %></p>
             <% if(order.deliveredAt) { %>
@@ -66,7 +65,7 @@
                   <tr class="border-b hover:bg-gray-50">
                     <td class="p-2 border"><%= item.name %></td>
                     <td class="p-2 border"><%= item.qty %></td>
-                    <td class="p-2 border">₹<%= item.price %></td>
+                    <td class="p-2 border">₹<%= item.finalPrice %></td>
                     <td class="p-2 border font-semibold">
                       <% if(item.status === 'Delivered') { %>
                         <span class="text-green-600"><%= item.status %></span>

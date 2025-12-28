@@ -33,6 +33,7 @@ router.post("/reset-password",isLogin,userController.resetpasswordverification)
 router.get('/products-user',userproductController.loadUserProducts)
 router.get('/productdetails/:id',userproductController.loadproductdetails)
 
+
 router.get('/auth/google',passport.authenticate('google',{scope:['profile','email']}));
 router.get('/auth/google/callback',passport.authenticate('google',{failureRedirect:'/signup'}),(req,res)=>{
     req.session.user=req.user._id
@@ -54,21 +55,26 @@ router.get("/set-default-address/:id",userAuth,addressController.setDefaultAddre
 router.get("/edit-address-page/:id",userAuth,addressController.loadEditAddressPage);
 
 
-
-
-
-
 router.get("/cart",userAuth,cartController.loadCart);
 router.get("/add-to-cart/:id",userAuth,cartController.addTocart);
 router.post("/cart/remove/:id",userAuth,cartController.removeItem);
 router.get("/cart/increase/:id",userAuth,cartController.increaseQty);
 router.get("/cart/decrease/:id",userAuth,cartController.decreaseqty);
 
+
 router.get("/order-summary",userAuth,orderController.loadOrderSummary);
 router.get("/checkout",userAuth,orderController.loadCheckout);
 router.post("/order/place",userAuth,orderController.placeOrder);
+
 router.post("/order/verify-payment",userAuth,orderController.verifyPayment)
+// Route
+router.post("/order/payment-failed", userAuth, orderController.markPaymentFailed);
+
 router.get("/order/success/:orderId",userAuth,orderController.loadOrderSuccess);
+
+router.get('/order/payment-failed/:orderId',userAuth,orderController.loadOrderFailure);
+router.post("/order/retry-payment-create/:orderId", orderController.retryPaymentCreate);
+
 router.get("/order/details/:orderId",userAuth,orderController.loadOrderDetails)
 router.post("/order/cancel/:orderId",userAuth,orderController.cancelOrder);
 
@@ -76,7 +82,6 @@ router.post("/order/cancel-item/:orderId/:itemId",userAuth,orderController.cance
 router.post("/order/return-item/:orderId/:itemId",userAuth,orderController.returnItem);
 
 
-//  Wishlist Routes
 router.get("/wishlist",userAuth, wishlistController.loadWishlist);
 router.get("/wishlist/toggle/:productId", userAuth,wishlistController.toggleWishlist);
 router.post("/wishlist/move-to-cart",userAuth, wishlistController.moveToCart);

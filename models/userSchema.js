@@ -24,7 +24,6 @@ const userSchema = new Schema({
     },
     googleId:{
         type:String,
-        unique:true,
     },
     password:{
         type:String,
@@ -34,9 +33,25 @@ const userSchema = new Schema({
         type :Boolean,
         default:false
     },
+    referralId:{
+        type:String,
+        unique:true,
+        sparse:true
+    },
+
+    referredBy:{
+        type:String,
+        default:null
+    },
+    referredUsers:[
+        {
+            userId:{type : mongoose.Schema.Types.ObjectId,ref:"User"},
+            date:{type : Date , default : Date.now }
+        }
+    ],
 
     address:[addressSchema],
-    wallet:{type:Number , defualt:0}
+    
     
 },{timestamps:true})
 

@@ -6,6 +6,10 @@
 </head>
 <body class="bg-gray-100 p-6">
 
+     <header class="bg-white shadow-sm">
+        <%-include("../../views/partials/user/header")-%>
+    </header>
+
     <div class="max-w-lg mx-auto bg-white p-6 shadow rounded">
         <h2 class="text-xl font-semibold text-center mb-4">Edit Address</h2>
 
@@ -21,15 +25,7 @@
                 <input type="text" name="phone" value="<%= address.phone %>" required class="w-full border p-2 rounded">
             </div>
 
-            <div>
-                <label class="block font-medium">House *</label>
-                <input type="text" name="house" value="<%= address.house %>" required class="w-full border p-2 rounded">
-            </div>
-
-            <div>
-                <label class="block font-medium">Street *</label>
-                <input type="text" name="street" value="<%= address.street %>" required class="w-full border p-2 rounded">
-            </div>
+            
 
             <div class="flex gap-3">
                 <div class="flex-1">
@@ -59,6 +55,6 @@
 
         </form>
     </div>
-
+     <%-include("../../views/partials/user/footer")-%>
 </body>
 </html>

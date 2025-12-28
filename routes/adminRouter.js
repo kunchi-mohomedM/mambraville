@@ -10,6 +10,7 @@ const adminOrderController = require("../controller/admin/adminOrderController")
 const couponController = require("../controller/admin/couponController")
 const offerController = require("../controller/admin/offerController")
 const {deleteCategory}=require('../controller/admin/categoryController');
+const salesReportController = require("../controller/admin/salesReportController");
 const upload=require("../config/multer");
 const { userAuth } = require("../middleware/userAuth");
 
@@ -95,6 +96,11 @@ router.post('/offers/category/create', adminAuth, offerController.createCategory
 router.put('/offers/category/:id', adminAuth, offerController.updateCategoryOffer);
 router.patch('/offers/category/:id/toggle', adminAuth, offerController.toggleCategoryOfferStatus);
 router.delete('/offers/category/:id', adminAuth, offerController.deleteCategoryOffer); // Optional
+
+
+
+router.get("/sales-report/excel",adminAuth,salesReportController.downloadExcel);
+router.get("/sales-report/pdf",adminAuth,salesReportController.downloadPDF);
 
 
 module.exports = router;

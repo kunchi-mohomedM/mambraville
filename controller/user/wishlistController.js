@@ -86,8 +86,6 @@ const removeFromWishlist = async (req, res) => {
     const userId = req.session.user;
     const { productId } = req.body;
 
-    console.log(productId)
-
     await Wishlist.updateOne(
       { userId },
       { $pull: { items: { productId } } }

@@ -104,18 +104,20 @@
     </div>
 
     <!-- Export Buttons -->
-    <div class="flex justify-end gap-3 mt-6">
-        <button 
-        onclick="exportToExcel()"
-        class="bg-green-600 hover:bg-green-700 text-white px-5 py-2 rounded-lg">
-            <i class="fas fa-file-excel mr-2"></i> Export Excel
-        </button>
-        <button 
-        onclick="exportToPDF()"
-        class="bg-red-600 hover:bg-red-700 text-white px-5 py-2 rounded-lg">
-           <i class="fas fa-file-pdf mr-2"></i> Export PDF
-        </button>
-    </div>
+   <div class="flex justify-end gap-3 mt-6">
+  <a
+    href="/admin/sales-report/excel?filter=<%= filter %>&fromDate=<%= fromDate %>&toDate=<%= toDate %>"
+    class="bg-green-600 text-white px-5 py-2 rounded-lg">
+    <i class="fas fa-file-excel mr-2"></i> Export Excel
+  </a>
+
+  <a
+    href="/admin/sales-report/pdf?filter=<%= filter %>&fromDate=<%= fromDate %>&toDate=<%= toDate %>"
+    class="bg-red-600 text-white px-5 py-2 rounded-lg">
+    <i class="fas fa-file-pdf mr-2"></i> Export PDF
+  </a>
+</div>
+
 
 </main>
 
@@ -128,34 +130,7 @@
             window.location.href = '/admin/logout';
         }
 
-        function exportToExcel(){
-          const table = document.querySelector("table");
-          const wb = XLSX.utils.table_to_book(table,{sheet :"Sales Report"});
-          XLSX.writeFile(wb,"Sales_Report.XLSX");
-        }
-
-
-        function exportToPDF(){
-          const { jsPDF }=windoow.jsPDF;
-          const doc = new jsPDF();
-
-          doc.text("Sales Report = Gadgetry Mambraville" , 14, 15);
-          doc.setFontSize(10);
-          doc.text(`Generated on: ${new Date().toLocaleDateString()}`, 14, 22);
-        
-
-
-        doc.autoTable({
-            html: 'table',
-            startY: 30,
-            theme: 'grid',
-            headStyles: { fillColor: [0, 0, 0] }, // Black header to match your theme
-            styles: { fontSize: 9 }
-        });
-
-        doc.save("Sales_Report.pdf");
-      }
-
+      
     </script>
 </body>
 </html>

@@ -12,8 +12,10 @@ const loadproductpage=async(req,res)=>{
         let limit = parseInt(req.query.limit) || 4;
         let skip = (page-1)*limit;
 
-        if(req.query.search){
-            query.productName = {$regex:req.query.search,$options :"i"};
+        if(req.query.search?.trim()){
+            query.productName = {
+                $regex:req.query.search.trim(),
+                $options :"i"};
         }
         
 
