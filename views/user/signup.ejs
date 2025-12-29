@@ -123,9 +123,9 @@
                 const confirm_password = document.getElementById("confirm_password");
 
                 // Full Name Validation (Only letters and spaces)
-                const fullnameRegex = /^[A-Za-z\s]+$/;
+                const fullnameRegex = /^[A-Za-z\s]{1,15}$/;
                 if (!fullname.value.match(fullnameRegex)) {
-                    swal("Error", "Full Name should contain only letters and spaces!", "error");
+                    swal("Error", "Full Name should contain only letters,spaces and maximum 15 character length!", "error");
                     return;
                 }
 

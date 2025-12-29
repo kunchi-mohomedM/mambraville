@@ -6,6 +6,7 @@
     <title>Your Cart</title>
     <script src="https://cdn.tailwindcss.com"></script>
 
+
 </head>
 <body class="bg-gray-100">
 
@@ -13,30 +14,27 @@
         <%-include("../../views/partials/user/header")-%>
     </header>
 
-   <% if (typeof mssg !== "undefined" && mssg) { %>
+  <% if (mssg) { %>
   <div class="max-w-4xl mx-auto mb-8 px-4">
-    <div class="flex items-center gap-4 p-5 bg-red-50 border-l-4 border-red-500 rounded-r-xl shadow-md 
-                animate__animated animate__fadeInDown animate__faster">
-      
-      <!-- Icon -->
+    <div class="flex items-center gap-4 p-5 rounded-xl shadow-md border-l-4
+                <%= alertType === 'error' ? 'bg-red-50 border-red-500' : 'bg-yellow-50 border-yellow-500' %>">
+
       <div class="flex-shrink-0">
-        <svg class="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-             xmlns="http://www.w3.org/2000/svg">
+        <svg class="w-8 h-8 <%= alertType === 'error' ? 'text-red-600' : 'text-yellow-600' %>" 
+             fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                 d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
         </svg>
       </div>
 
-      <!-- Message Text -->
       <div class="flex-1">
-        <p class="text-lg font-semibold text-red-800"><%= mssg %></p>
+        <p class="text-lg font-semibold <%= alertType === 'error' ? 'text-red-800' : 'text-yellow-800' %>">
+          <%= mssg %>
+        </p>
       </div>
 
-      <!-- Optional: Dismiss Button -->
-      <button 
-        onclick="this.closest('.max-w-4xl').remove()" 
-        class="flex-shrink-0 text-red-600 hover:text-red-800 transition-colors duration-200"
-        aria-label="Dismiss alert">
+      <button onclick="this.closest('.max-w-4xl').remove()" 
+              class="text-gray-500 hover:text-gray-700">
         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
         </svg>
@@ -156,6 +154,21 @@
     <% } %>
 
 </div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<% if (typeof stockError !== "undefined") { %>
+<script>
+  Swal.fire({
+    icon: "error",
+    title: "Out of Stock",
+    text: "<%= stockError %>",
+    confirmButtonColor: "#d33"
+  });
+</script>
+<% } %>
+
 
 </body>
 </html>

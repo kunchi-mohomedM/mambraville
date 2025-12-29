@@ -242,11 +242,11 @@ const verifyOtp = async (req, res) => {
 async function creditReferralBonuses(newUserId, referredByUserId = null) {
   const signupBonus = referredByUserId ? 50 : 0;
 
-  // Step 1: Create or update new user's wallet with bonus
+  
   const existingWallet = await Wallet.findOne({ userId: newUserId });
 
   if (!existingWallet) {
-    // Wallet doesn't exist → create with initial balance = signup bonus
+   
     const newUserTransactions = signupBonus ? [{
       amount: signupBonus,
       type: "credit",
@@ -260,7 +260,7 @@ async function creditReferralBonuses(newUserId, referredByUserId = null) {
       transactions: newUserTransactions
     });
   } else {
-    // Wallet exists (very rare in signup, but safe to handle)
+   
     if (signupBonus > 0) {
       await Wallet.updateOne(
         { userId: newUserId },
@@ -279,12 +279,12 @@ async function creditReferralBonuses(newUserId, referredByUserId = null) {
     }
   }
 
-  // Step 2: Credit referrer (100) if applicable
+  
   if (referredByUserId) {
     const referrer = await User.findById(referredByUserId);
     if (!referrer) return;
 
-    // Prevent duplicate rewards
+    
     const alreadyReferred = referrer.referredUsers?.some(
       (ref) => ref.userId.toString() === newUserId.toString()
     );
@@ -306,7 +306,7 @@ async function creditReferralBonuses(newUserId, referredByUserId = null) {
       }
     );
 
-    // Record referral
+    
     await User.findByIdAndUpdate(referredByUserId, {
       $push: { referredUsers: { userId: newUserId } }
     });

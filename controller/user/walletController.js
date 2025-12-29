@@ -11,7 +11,7 @@ try {
    const user = await User.findById(userId);
 
    let wallet = await Wallet.findOne({ userId })
-    console.log(wallet);
+    
     if (!wallet) {
       wallet = await Wallet.create({
         userId,
@@ -45,7 +45,7 @@ const createWalletOrder = async (req, res) => {
     }
 
     const options = {
-      amount: amount * 100, // paise
+      amount: amount * 100, 
       currency: "INR",
       receipt: "wallet_" + Date.now()
     };
@@ -76,7 +76,7 @@ const verifyWalletPayment = async (req, res) => {
 
     const userId = req.session.user;
 
-    // Verify signature
+  
     const sign = razorpay_order_id + "|" + razorpay_payment_id;
     const expectedSign = crypto
       .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET)

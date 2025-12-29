@@ -7,6 +7,8 @@
     <title>E-commerce Product Listing</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 </head>
 
 <body class="bg-gray-100">
@@ -406,11 +408,21 @@
                             button.classList.add("bg-green-600");
                             button.querySelector("span").innerText = "Go to Cart";
                         } else {
-                            alert("Failed to add item to cart.");
+                             Swal.fire({
+      icon: 'error',
+      title: 'Out of Stock',
+      text: 'This product is currently unavailable.',
+      confirmButtonColor: '#7c3aed'
+    });
                         }
                     } catch (error) {
                         console.error(error);
-                        alert("Something went wrong.");
+                         Swal.fire({
+    icon: 'error',
+    title: 'Oops!',
+    text: 'Something went wrong. Please try again.',
+    confirmButtonColor: '#7c3aed'
+  });
                     }
                 });
             });

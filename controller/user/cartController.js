@@ -93,11 +93,20 @@ const loadCart = async (req, res) => {
     const userId = req.session.user;
     if (!userId) return res.redirect("/login");
 
-    const error = req.query.error;
+  
+
+const error = req.query.error;
+    const customMessage = req.query.message ? decodeURIComponent(req.query.message) : null;
+
     let mssg = null;
+    let alertType = "warning"; // default
 
     if (error === "stock") {
       mssg = "Cannot add more than available stock";
+      alertType = "warning";
+    } else if (error === "checkout_blocked") {
+      mssg = customMessage || "Some items in your cart are unavailable. Please remove or update them before checkout.";
+      alertType = "error";
     }
 
     let cart = await Cart.findOne({ userId }).populate({
@@ -175,6 +184,8 @@ const loadCart = async (req, res) => {
         cartTotal,
       },
       mssg,
+      alertType,
+       
     });
   } catch (error) {
     console.error("Error occur while loading cart:", error);

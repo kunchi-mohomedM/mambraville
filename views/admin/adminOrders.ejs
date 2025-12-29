@@ -116,7 +116,7 @@
                                             <%= order.orderId %>
                                         </td>
                                         <td class="p-3 border">
-                                            <%= order.userId.fullname %>
+                                            <%= order.userId ? order.userId.fullname : "User Deleted" %>
                                         </td>
                                         <td class="p-3 border">
                                             <%= new Date(order.orderedAt).toLocaleDateString() %>
@@ -195,7 +195,7 @@
   const clearBtn = document.getElementById("clearSearchBtn");
 
   if (searchInput && clearBtn) {
-    // Show clear button if search exists
+   
     clearBtn.classList.toggle("hidden", !searchInput.value);
 
     // Toggle while typing
