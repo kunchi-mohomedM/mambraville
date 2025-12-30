@@ -19,11 +19,12 @@ const walletTransactionSchema = new Schema({
     enum: [
       "Order Refund",
       "Order Cancel Refund",
+      "Order Item Cancellation Refund",
       "Wallet Topup",
       "Order Payment",
-      "Admin Adjustment","Referral Bonus",     // New user gets 50
-    "Referral Reward",    // Referrer gets 100
-    "Signup Bonus"        // Optional: for future non-referral signup bonus
+      "Admin Adjustment",
+      "Referral Bonus",     
+    "Referral Reward",    
     ],
     required: true
   },

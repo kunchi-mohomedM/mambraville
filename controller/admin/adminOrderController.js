@@ -193,33 +193,46 @@ const verifyReturn = async (req, res) => {
 const cancelOrderByAdmin = async (req, res) => {
   try {
     const { orderId } = req.params;
-    if (!mongoose.Types.ObjectId.isValid(orderId)) return res.redirect("/admin/orders");
-    const order = await Order.findById(orderId);
-    if (!order) return res.redirect("/admin/orders");
 
+    if (!mongoose.Types.ObjectId.isValid(orderId)) {
+      return res.redirect("/admin/orders");
+    }
+
+    const order = await Order.findById(orderId);
+    if (!order) {
+      return res.redirect("/admin/orders");
+    }
+
+    
     if (order.status === "Delivered") {
-      
       return res.redirect(`/admin/orders/${orderId}`);
     }
 
+    
     for (const item of order.items) {
       if (item.status !== "Cancelled") {
-        await Product.findByIdAndUpdate(item.productId, { $inc: { quantity: item.qty } });
+        await Product.findByIdAndUpdate(
+          item.productId,
+          { $inc: { quantity: item.qty } }
+        );
+
         item.status = "Cancelled";
-        item.cancelReason = item.cancelReason || "Cancelled by admin";
+        item.cancelReason = "Cancelled by admin";
       }
     }
 
     order.status = "Cancelled";
-    order.cancelReason = order.cancelReason || "Cancelled by admin";
+    order.cancelReason = "Cancelled by admin";
+
     await order.save();
 
     return res.redirect("/admin/orders");
-  } catch (err) {
-    console.error("admin cancelOrderByAdmin error:", err);
-    return res.status(500).send("Server error");
+  } catch (error) {
+    console.error("admin cancelOrderByAdmin error:", error);
+    return res.redirect("/admin/orders");
   }
 };
+
 
 const listReturnRequests = async (req, res) => {
   try {
@@ -267,12 +280,12 @@ const approveReturn = async (req, res) => {
   item.status = "Returned";
   item.returnApprovedAt = new Date();
 
-  // Restock product
+  
   await Product.findByIdAndUpdate(item.productId, {
     $inc: { quantity: item.qty }
   });
 
-  // ✅ CORRECT refund amount
+  
   const refundAmount = Number(item.subtotal);
 
   if (!Number.isFinite(refundAmount) || refundAmount <= 0) {
@@ -284,7 +297,7 @@ const approveReturn = async (req, res) => {
     return res.redirect("/admin/orders/returns");
   }
 
-  // ✅ Update wallet
+ 
   await Wallet.findOneAndUpdate(
     { userId: order.userId },
     {
@@ -302,7 +315,7 @@ const approveReturn = async (req, res) => {
     { upsert: true, new: true }
   );
 
-  // Update order status if all items returned/cancelled
+ 
   const allReturned = order.items.every(
     i => i.status === "Returned" || i.status === "Cancelled"
   );

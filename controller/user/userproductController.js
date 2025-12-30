@@ -69,6 +69,14 @@ const loadUserProducts = async (req, res) => {
       .skip(skip)
       .limit(limit);
 
+      
+
+  products = products.map(product => {
+  product.isOutOfStock = product.quantity <= 0;
+  return product;
+});
+
+
     const categoryOffers = await CategoryOffer.find({ isActive: true }).lean();
 
     const categoryOfferMap = {};

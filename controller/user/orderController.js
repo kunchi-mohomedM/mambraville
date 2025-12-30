@@ -210,7 +210,7 @@ const placeOrder = async (req, res) => {
       subtotalAmount += itemSubtotal;
     }
 
-    // === COUPON VALIDATION (if provided) ===
+   
     if (couponCode) {
       const coupon = await Coupon.findOne({
         code: couponCode,
@@ -442,7 +442,6 @@ const verifyPayment = async (req, res) => {
       .digest("hex");
 
     if (expectedSign !== razorpay_signature) {
-      console.log("entering here............................................");
       return res.json({
         success: false,
         redirect: `/order/payment-failed/${order._id}`,
@@ -650,67 +649,97 @@ const cancelItem = async (req, res) => {
       return res.redirect("/order-summary");
     }
 
-    item.status = "Cancelled";
-    item.cancelReason = reason;
-
-    await Product.findByIdAndUpdate(item.productId, {
-      $inc: { quantity: item.qty },
-    });
-
-
-      
-
-
-    if (order.paymentStatus === "Paid") {
-      const refundAmount = item.finalPrice * item.qty;
-
-      let wallet = await Wallet.findOne({ userId });
-
-     if (!wallet) {
-        wallet = new Wallet({
-          userId,
-          balance: 0,
-          transactions: []
-        });
-      }
-   
-
-      wallet.balance += refundAmount;
-
-        wallet.transactions.push({
-        amount: refundAmount,
-        type: "credit",
-        reason: "Order Cancel Refund",
-        orderId: order._id,
-        description: `Refund for cancelled item`
-      });
-
-      await wallet.save();
-
-order.totalAmount = Math.max(
-    0,
-    Number(order.totalAmount) - refundAmount
-  );
+    // Optional: restrict cancellation based on status
+    if (!["Pending", "Confirmed", "Processing", "Shipped"].includes(item.status)) {
+      return res.redirect("/order-summary"); // or show error
     }
 
-    
+    const itemAmount = item.subtotal; // Use subtotal which is finalPrice * qty
+    let refundAmount = itemAmount;
 
+    // Check if coupon was applied
+    const couponApplied = order.coupon && order.coupon.discountAmount > 0;
+    const originalCouponDiscount = order.coupon?.discountAmount || 0;
+    const minPurchaseForCoupon = order.coupon?.minPurchase || 0;
 
-    if (order.items.every((i) => i.status === "Cancelled")) {
+    // Calculate new subtotal after cancellation
+    const newSubtotal = order.subtotalAmount - itemAmount;
+
+    let newCouponDiscount = originalCouponDiscount;
+
+    if (couponApplied) {
+      if (newSubtotal < minPurchaseForCoupon) {
+        // Coupon no longer valid → remove discount entirely
+        // Subtract ENTIRE coupon discount from this item's refund
+        newCouponDiscount = 0;
+        refundAmount = Math.max(0, itemAmount - originalCouponDiscount);
+
+        console.log(`Coupon invalidated. Reduced refund by ₹${originalCouponDiscount}`);
+      }
+      // Else: remaining subtotal >= min → keep full coupon, refund full item amount
+    }
+
+    // Update item
+    item.status = "Cancelled";
+    item.cancelReason = reason || "No reason provided";
+
+    // Restore product stock
+    await Product.findByIdAndUpdate(item.productId, {
+      $inc: { quantity: item.qty }
+    });
+
+    // Update order fields
+    order.subtotalAmount = newSubtotal;
+
+    if (order.coupon) {
+      order.coupon.discountAmount = newCouponDiscount;
+      if (newCouponDiscount === 0) {
+        // Optional: null out entire coupon if discount is now zero
+        order.coupon = null;
+      }
+    }
+
+    // Update couponDiscountAmount (if you use it separately)
+    order.couponDiscountAmount = newCouponDiscount;
+
+    // Recalculate totalAmount
+    order.totalAmount = newSubtotal - newCouponDiscount;
+
+    // If all items cancelled
+    if (order.items.every(i => i.status === "Cancelled")) {
       order.status = "Cancelled";
     }
 
-     
-
     await order.save();
 
-    res.redirect(`/order-summary`);
+    // Process refund (only for paid orders)
+    if (order.paymentStatus === "Paid" && refundAmount > 0) {
+      let wallet = await Wallet.findOne({ userId });
+      if (!wallet) {
+        wallet = new Wallet({ userId, balance: 0, transactions: [] });
+      }
+
+      wallet.balance += refundAmount;
+      wallet.transactions.push({
+        amount: refundAmount,
+        type: "credit",
+        reason: "Order Item Cancellation Refund",
+        orderId: order._id,
+        description: newCouponDiscount === 0 && originalCouponDiscount > 0
+          ? `Refund after coupon adjustment`
+          : `Refund for cancelled item`
+      });
+
+      await wallet.save();
+    }
+
+    res.redirect(`/order-summary?message=Item cancelled successfully`);
+
   } catch (err) {
-    console.log(err);
-    res.status(500).send("Error");
+    console.error("Error cancelling order item:", err);
+    res.status(500).send("Error cancelling item");
   }
 };
-
 const returnItem = async (req, res) => {
   try {
     const { orderId, itemId } = req.params;

@@ -192,12 +192,25 @@
         <button
             class="toggle-cart-btn mt-3 w-full text-center rounded-full py-2 font-medium text-white
                    transition
-                   <%= product.inCart ? 'bg-green-600 hover:bg-green-700' : 'bg-purple-600 hover:bg-purple-700' %>"
+                   <%= product.inCart 
+                ? 'bg-green-600 hover:bg-green-700 cursor-pointer' 
+                : (product.quantity <= 0 
+                    ? 'bg-red-600 hover:bg-red-700 cursor-not-allowed' 
+                    : 'bg-purple-600 hover:bg-purple-700 cursor-pointer') %>"
             data-product-id="<%= product._id %>"
-            data-in-cart="<%= product.inCart %>">
+            data-in-cart="<%= product.inCart %>"
+            <%= product.quantity <= 0 ? 'disabled' : '' %>>
 
             <i class="fas fa-shopping-cart text-xs mr-1"></i>
-            <span><%= product.inCart ? 'Go to Cart' : 'Add to Cart' %></span>
+            <span>
+  <% if (product.inCart) { %>
+    Go to Cart
+  <% } else if (product.quantity <= 0) { %>
+    Out of Stock
+  <% } else { %>
+    Add to Cart
+  <% } %>
+</span>
         </button>
 
     </div>
@@ -387,6 +400,13 @@
         document.addEventListener("DOMContentLoaded", () => {
             document.querySelectorAll(".toggle-cart-btn").forEach(button => {
                 button.addEventListener("click", async () => {
+
+                    if (button.disabled || button.classList.contains("bg-red-600")) {
+                e.preventDefault();
+                return;
+            }
+
+
                     if (isLoggedIn === "false") {
                         window.location.href = "/login";
                         return;
@@ -404,10 +424,17 @@
                         const response = await fetch(`/add-to-cart/${productId}`, { method: "GET" });
                         if (response.ok) {
                             button.dataset.inCart = "true";
-                            button.classList.remove("bg-purple-600");
-                            button.classList.add("bg-green-600");
+                            button.classList.remove("bg-purple-600","hover:bg-purple-700");
+                            button.classList.add("bg-green-600","hover:bg-green-700");
                             button.querySelector("span").innerText = "Go to Cart";
+                            button.disabled = false;
                         } else {
+                    button.classList.remove("bg-purple-600", "hover:bg-purple-700");
+                    button.classList.add("bg-red-600", "hover:bg-red-700");
+                    button.querySelector("span").innerText = "Out of Stock";
+                    button.disabled = true;
+
+
                              Swal.fire({
       icon: 'error',
       title: 'Out of Stock',

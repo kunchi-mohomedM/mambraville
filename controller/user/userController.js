@@ -88,7 +88,7 @@ const signUp = async (req, res) => {
   try {
     const { fullname, email, password, confirm_password, referral_code:referralId } = req.body;
 
-    // Check if user already exists
+   
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       return res.render("signup", {
@@ -120,7 +120,7 @@ const signUp = async (req, res) => {
       referredUserId = referredUser._id;
     }
 
-    // OTP-based signup (email + password)
+    
     if (password) {
       if (password !== confirm_password) {
         return res.render("signup", { message: "Passwords do not match" });
@@ -133,22 +133,22 @@ const signUp = async (req, res) => {
         return res.json({ success: false, message: "Failed to send OTP email" });
       }
 
-      console.log("OTP:", otp); // Remove in production!
+      console.log("OTP:", otp); 
 
-      // Store in session for verification
+     
       req.session.userData = {
         fullname,
         email,
         password,
         referralId: referralId?.trim() || null,
-        referredUserId // Important: store the referrer's _id
+        referredUserId 
       };
       req.session.userOtp = otp;
 
       return res.render("otp_page", { email });
     }
 
-    // Google signup (no password → immediate)
+    
     const newReferralId = await generateUniqueReferralId();
 
     const newUser = new User({
@@ -210,7 +210,7 @@ const verifyOtp = async (req, res) => {
 
     const referralId = await generateUniqueReferralId();
 
-    // Create new user
+    
     const newUser = new User({
       fullname: userData.fullname,
       email: userData.email,
@@ -221,10 +221,9 @@ const verifyOtp = async (req, res) => {
 
     await newUser.save();
 
-    // Now safely credit referral bonuses AFTER successful verification
+    
     await creditReferralBonuses(newUser._id, userData.referredUserId || null);
 
-    // Cleanup session
     delete req.session.userOtp;
     delete req.session.userData;
 

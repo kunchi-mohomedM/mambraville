@@ -20,6 +20,11 @@ try {
       });
     }
 
+
+    wallet.transactions.sort(
+      (a, b) => b.createdAt - a.createdAt
+    );
+    
     res.render("wallet",{
         wallet,
         user

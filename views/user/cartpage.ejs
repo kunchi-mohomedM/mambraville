@@ -14,7 +14,7 @@
         <%-include("../../views/partials/user/header")-%>
     </header>
 
-  <% if (mssg) { %>
+  <% if (typeof mssg !== 'undefined' && mssg) { %>
   <div class="max-w-4xl mx-auto mb-8 px-4">
     <div class="flex items-center gap-4 p-5 rounded-xl shadow-md border-l-4
                 <%= alertType === 'error' ? 'bg-red-50 border-red-500' : 'bg-yellow-50 border-yellow-500' %>">

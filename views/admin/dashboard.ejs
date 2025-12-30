@@ -20,9 +20,19 @@
                 <h1 class="text-2xl font-bold">Dashboard</h1>
                 
             </header>
+
+
             
             <!-- Content -->
             <main class="flex-1 overflow-y-auto p-6 bg-white m-4 rounded-lg shadow">
+
+
+              
+            <% if (typeof errorMessage !== 'undefined' && errorMessage) { %>
+  <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
+    <strong>Error:</strong> <%= errorMessage %>
+  </div>
+<% } %>
 
     <!-- Page Title -->
     <h2 class="text-2xl font-bold text-gray-800 mb-6">Sales Report</h2>
@@ -48,25 +58,26 @@
 
 
     <!-- Summary Cards -->
-    <div class="grid grid-cols-4 gap-4 mb-8">
-  <div class="bg-gray-100 p-4 rounded">
-    <p>Total Orders</p>
-    <h2 class="text-xl font-bold"><%= report.totalOrders %></h2>
+   <div class="grid grid-cols-1 md:grid-cols-5 gap-6 mb-8">
+  <div class="bg-blue-100 p-6 rounded-lg text-center">
+    <p class="text-gray-600">Total Orders</p>
+    <h3 class="text-2xl font-bold"><%= totalOrders %></h3>
   </div>
-
-  <div class="bg-gray-100 p-4 rounded">
-    <p>Gross Sales</p>
-    <h2 class="text-xl font-bold">₹ <%= grossSales %></h2>
+  <div class="bg-green-100 p-6 rounded-lg text-center">
+    <p class="text-gray-600">Gross Sales</p>
+    <h3 class="text-2xl font-bold">₹ <%= grossSales %></h3>
   </div>
-
-  <div class="bg-gray-100 p-4 rounded">
-    <p>Coupon Discount</p>
-    <h2 class="text-xl font-bold">₹ <%= report.couponDiscount %></h2>
+  <div class="bg-yellow-100 p-6 rounded-lg text-center">
+    <p class="text-gray-600">Total Discount</p>
+    <h3 class="text-2xl font-bold">₹ <%= totalDiscount %></h3>
   </div>
-
-  <div class="bg-gray-100 p-4 rounded">
-    <p>Net Sales</p>
-    <h2 class="text-xl font-bold">₹ <%= report.netSales %></h2>
+  <div class="bg-purple-100 p-6 rounded-lg text-center">
+    <p class="text-gray-600">Net Sales</p>
+    <h3 class="text-2xl font-bold">₹ <%= netSales %></h3>
+  </div>
+  <div class="bg-red-100 p-6 rounded-lg text-center">
+    <p class="text-gray-600">Total Refunds</p>
+    <h3 class="text-2xl font-bold">₹ <%= totalRefunds %></h3>
   </div>
 </div>
 
@@ -102,6 +113,80 @@
 </table>
 
     </div>
+
+    <!-- Top 10 Products -->
+<h2 class="text-2xl font-bold text-gray-800 mt-12 mb-6">Top 10 Best Selling Products</h2>
+<div class="overflow-x-auto bg-white rounded-lg shadow mb-8">
+  <table class="w-full border">
+    <thead class="bg-gray-200">
+      <tr>
+        <th class="p-4 text-left">#</th>
+        <th class="p-4 text-left">Product</th>
+        <th class="p-4 text-center">Image</th>
+        <th class="p-4 text-right">Qty Sold</th>
+        <th class="p-4 text-right">Revenue</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% if (topProducts.length === 0) { %>
+        <tr>
+          <td colspan="5" class="text-center p-8">No products sold in this period</td>
+        </tr>
+      <% } else { %>
+        <% topProducts.forEach((product, index) => { %>
+          <tr class="border-t hover:bg-gray-50">
+            <td class="p-4"><%= index + 1 %></td>
+            <td class="p-4 font-medium"><%= product.name || 'Unknown Product' %></td>
+            <td class="p-4 text-center">
+              <% if (product.image) { %>
+                <img src="<%= product.image %>" alt="<%= product.name %>" class="w-16 h-16 object-cover rounded mx-auto">
+              <% } else { %>
+                <div class="w-16 h-16 bg-gray-200 rounded mx-auto flex items-center justify-center">
+                  <i class="fas fa-image text-gray-400"></i>
+                </div>
+              <% } %>
+            </td>
+            <td class="p-4 text-right font-semibold"><%= product.totalQty %></td>
+            <td class="p-4 text-right">₹ <%= product.totalRevenue.toFixed(2) %></td>
+          </tr>
+        <% }) %>
+      <% } %>
+    </tbody>
+  </table>
+</div>
+
+<!-- Top 10 Customers -->
+<h2 class="text-2xl font-bold text-gray-800 mb-6">Top 10 Customers</h2>
+<div class="overflow-x-auto bg-white rounded-lg shadow mb-8">
+  <table class="w-full border">
+    <thead class="bg-gray-200">
+      <tr>
+        <th class="p-4 text-left">#</th>
+        <th class="p-4 text-left">Customer Name</th>
+        <th class="p-4 text-left">Email</th>
+        <th class="p-4 text-right">Orders</th>
+        <th class="p-4 text-right">Total Spent</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% if (topCustomers.length === 0) { %>
+        <tr>
+          <td colspan="5" class="text-center p-8">No customer data in this period</td>
+        </tr>
+      <% } else { %>
+        <% topCustomers.forEach((customer, index) => { %>
+          <tr class="border-t hover:bg-gray-50">
+            <td class="p-4"><%= index + 1 %></td>
+            <td class="p-4 font-medium"><%= customer.name %></td>
+            <td class="p-4"><%= customer.email %></td>
+            <td class="p-4 text-right"><%= customer.orderCount %></td>
+            <td class="p-4 text-right font-semibold">₹ <%= customer.totalSpent.toFixed(2) %></td>
+          </tr>
+        <% }) %>
+      <% } %>
+    </tbody>
+  </table>
+</div>
 
     <!-- Export Buttons -->
    <div class="flex justify-end gap-3 mt-6">

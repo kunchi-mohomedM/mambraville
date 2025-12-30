@@ -96,9 +96,15 @@
 
           <!-- Cancel Entire Order (optional) -->
           <% if(order.status !== "Cancelled") { %>
-            <form action="/admin/order/cancel/<%= order._id %>" method="POST" class="mb-2">
-              <button type="submit" class="px-4 py-2 bg-red-600 text-white rounded">Cancel Entire Order</button>
-            </form>
+            <form action="/admin/orders/<%= order._id %>/cancel" method="POST">
+  <button
+    type="submit"
+    class="px-4 py-2 bg-red-600 text-white rounded"
+  >
+    Cancel Entire Order
+  </button>
+</form>
+
           <% } %>
 
           <!-- Update Order Status -->
