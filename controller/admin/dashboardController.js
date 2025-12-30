@@ -56,7 +56,7 @@ const loadDashboard = async (req, res) => {
       Order.find(anyOrderInPeriod)
         .sort({ orderedAt: -1 })
         .limit(10)
-        .populate('userId', 'name email phone')
+        .populate('userId', 'fullname email phone')
         .select('orderId items subtotalAmount couponDiscountAmount totalAmount status paymentMethod orderedAt address')
         .lean(),
 
@@ -211,7 +211,7 @@ const loadDashboard = async (req, res) => {
         { $unwind: '$user' },
         {
           $project: {
-            name: '$user.name',
+            name: '$user.fullname',
             email: '$user.email',
             totalSpent: 1,
             orderCount: 1
@@ -264,7 +264,7 @@ const loadDashboard = async (req, res) => {
       ])
     ]);
 
-    // 4. Process overall stats
+    
     const stats = overallStats[0] || {};
 
     const totalOrders = stats.totalOrders?.[0]?.count || 0;
@@ -275,7 +275,7 @@ const loadDashboard = async (req, res) => {
     const netSales = grossSales - totalDiscount;
     const totalRefunds = stats.refunds?.[0]?.totalRefunds || 0;
 
-    // 5. Generate tableData for Sales Report Table
+    
     let tableData = [];
 
     if (filter === 'daily') {
@@ -311,7 +311,7 @@ const loadDashboard = async (req, res) => {
       }];
     }
 
-    // 6. Render dashboard
+    
     res.render('dashboard', {
       latestOrders: latestOrders || [],
       totalOrders,
