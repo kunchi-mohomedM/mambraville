@@ -3,7 +3,7 @@ const ExcelJS = require("exceljs");
 const PDFDocument = require("pdfkit");
 const path = require("path");
 
-// 🔁 Date filter logic (reused)
+//  Date filter logic (reused)
 function getDateRange(filter, fromDate, toDate) {
   let startDate = new Date();
   let endDate = new Date();
@@ -248,7 +248,7 @@ async function fetchSalesData(startDate, endDate) {
 }
 
 /* =========================
-   📗 EXCEL DOWNLOAD - Enhanced & Structured
+    EXCEL DOWNLOAD 
 ========================= */
 const downloadExcel = async (req, res) => {
   try {
@@ -460,7 +460,7 @@ const downloadExcel = async (req, res) => {
 };
 
 /* =========================
-   📕 PDF DOWNLOAD - Enhanced & Structured
+    PDF DOWNLOAD 
 ========================= */
 const downloadPDF = async (req, res) => {
   try {

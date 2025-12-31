@@ -177,6 +177,8 @@ const error = req.query.error;
     }));
 
     await cart.save();
+    
+   
 
     return res.render("cartpage", {
       cart: {

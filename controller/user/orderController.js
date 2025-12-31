@@ -47,14 +47,12 @@ const loadCheckout = async (req, res) => {
       }
     }
 
-    // If any item is invalid → block checkout and send message
+    
     if (hasInvalidItem) {
       const message = errorMessages.join("; ") + ". Please update your cart.";
       return res.redirect(`/cart?error=checkout_blocked&message=${encodeURIComponent(message)}`);
     }
 
-    // Proceed only if all items are valid
-    // ... rest of your checkout logic (addresses, coupons, etc.)
     const user = await User.findById(userId).lean();
     const addresses = user?.address || [];
 
@@ -154,21 +152,21 @@ const placeOrder = async (req, res) => {
       return res.json({ success: false, message: "Your cart is empty" });
     }
 
-    // === DECLARE ALL SHARED VARIABLES AT THE TOP ===
+    
     let orderItems = [];
     let subtotalAmount = 0;
     let couponDiscountAmount = parseFloat(couponDiscount) || 0;
     let totalAmount = 0;
     let couponData = null;
 
-    // Category offers map
+   
     const categoryOffers = await CategoryOffer.find({ isActive: true }).lean();
     const categoryOfferMap = {};
     categoryOffers.forEach(offer => {
       categoryOfferMap[offer.categoryId.toString()] = offer.discountPercentage;
     });
 
-    // === VALIDATE PRODUCTS & CALCULATE PRICES (Always run this) ===
+    
     for (const item of cart.items) {
       const product = item.productId;
 
@@ -649,70 +647,69 @@ const cancelItem = async (req, res) => {
       return res.redirect("/order-summary");
     }
 
-    // Optional: restrict cancellation based on status
+    
     if (!["Pending", "Confirmed", "Processing", "Shipped"].includes(item.status)) {
-      return res.redirect("/order-summary"); // or show error
+      return res.redirect("/order-summary"); 
     }
 
-    const itemAmount = item.subtotal; // Use subtotal which is finalPrice * qty
+    const itemAmount = item.subtotal; 
     let refundAmount = itemAmount;
 
-    // Check if coupon was applied
+   
     const couponApplied = order.coupon && order.coupon.discountAmount > 0;
     const originalCouponDiscount = order.coupon?.discountAmount || 0;
     const minPurchaseForCoupon = order.coupon?.minPurchase || 0;
 
-    // Calculate new subtotal after cancellation
+    
     const newSubtotal = order.subtotalAmount - itemAmount;
 
     let newCouponDiscount = originalCouponDiscount;
 
     if (couponApplied) {
       if (newSubtotal < minPurchaseForCoupon) {
-        // Coupon no longer valid → remove discount entirely
-        // Subtract ENTIRE coupon discount from this item's refund
+       
         newCouponDiscount = 0;
         refundAmount = Math.max(0, itemAmount - originalCouponDiscount);
 
         console.log(`Coupon invalidated. Reduced refund by ₹${originalCouponDiscount}`);
       }
-      // Else: remaining subtotal >= min → keep full coupon, refund full item amount
+     
     }
 
-    // Update item
+    
     item.status = "Cancelled";
     item.cancelReason = reason || "No reason provided";
 
-    // Restore product stock
+    
     await Product.findByIdAndUpdate(item.productId, {
       $inc: { quantity: item.qty }
     });
 
-    // Update order fields
+   
     order.subtotalAmount = newSubtotal;
 
     if (order.coupon) {
       order.coupon.discountAmount = newCouponDiscount;
       if (newCouponDiscount === 0) {
-        // Optional: null out entire coupon if discount is now zero
+        
         order.coupon = null;
       }
     }
 
-    // Update couponDiscountAmount (if you use it separately)
+    
     order.couponDiscountAmount = newCouponDiscount;
 
-    // Recalculate totalAmount
+    
     order.totalAmount = newSubtotal - newCouponDiscount;
 
-    // If all items cancelled
+    
     if (order.items.every(i => i.status === "Cancelled")) {
       order.status = "Cancelled";
     }
 
     await order.save();
 
-    // Process refund (only for paid orders)
+    
     if (order.paymentStatus === "Paid" && refundAmount > 0) {
       let wallet = await Wallet.findOne({ userId });
       if (!wallet) {

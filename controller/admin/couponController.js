@@ -102,7 +102,72 @@ const deleteCoupon = async (req, res) => {
     }
 };
 
+const loadEditcoupon = async(req,res)=>{
+  try {
+    const couponId=req.params.id;
+        const coupon=await Coupon.findById(couponId)
+        if(!coupon){
+            return res.status(404).send("Coupon not found") 
+        }
+        console.log(coupon)
+        return res.render("editCoupon",{coupon: {
+    code: coupon.code,
+    discountType: coupon.discountType,
+    discountValue: coupon.discountValue,
+    minPurchase: coupon.minPurchase,
+    maxDiscount: coupon.maxDiscount,
+    expiryDate: coupon.expiryDate 
+      ? coupon.expiryDate.toISOString().split('T')[0] 
+      : ''
+  }})
+  } catch (error) {
+    console.log("Error occured while loading Editcoupon",error)
+  }
+}
 
+const editCoupon = async (req, res) => {
+  try {
+    const { couponId, code, discountType, discountValue, minPurchase, maxDiscount, expiryDate } = req.body;
+
+    if (!couponId) {
+      return res.status(400).json({ error: "Coupon ID is required" });
+    }
+
+    const updateData = {
+      code: code.toUpperCase().trim(),
+      discountType,
+      discountValue: Number(discountValue),
+      minPurchase: Number(minPurchase),
+      maxDiscount: Number(maxDiscount),
+      expiryDate: new Date(expiryDate)  
+    };
+
+    const updatedCoupon = await Coupon.findByIdAndUpdate(couponId, updateData, {
+      new: true,
+      runValidators: true
+    });
+
+    if (!updatedCoupon) {
+      return res.status(404).json({ error: "Coupon not found" });
+    }
+
+    res.json({ message: "Coupon updated successfully!" });
+
+  } catch (error) {
+    console.error("Error editing coupon:", error);
+
+    if (error.code === 11000) {
+      return res.status(400).json({ error: "Coupon code already exists" });
+    }
+
+    if (error.name === "ValidationError") {
+      const messages = Object.values(error.errors).map(err => err.message);
+      return res.status(400).json({ error: messages.join(", ") });
+    }
+
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
 
 
 
@@ -112,6 +177,8 @@ module.exports = {
     loadAddCoupon,
     addCoupon,
     deleteCoupon,
+    loadEditcoupon,
+    editCoupon
     
 
 }

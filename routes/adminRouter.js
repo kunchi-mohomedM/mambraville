@@ -83,6 +83,8 @@ router.get("/coupon",adminAuth,couponController.loadCouponManagement);
 router.get("/addCoupon",adminAuth,couponController.loadAddCoupon);
 router.post("/addCoupon",adminAuth,couponController.addCoupon);
 router.get('/coupon/delete/:id',adminAuth,couponController.deleteCoupon);
+router.get('/editCoupon/:id',adminAuth,couponController.loadEditcoupon)
+router.post('/editCoupon',adminAuth,couponController.editCoupon)
 
 
 
