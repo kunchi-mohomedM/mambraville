@@ -684,6 +684,18 @@ const updateUserName = async (req, res) => {
   }
 };
 
+
+const loadAboutpage = async(req,res)=>{
+  try {
+    
+    res.render('aboutPage',{ 
+      user: req.session.user || null
+    })
+  } catch (error) {
+    console.log(error)
+  }
+}
+
 module.exports = {
   loadHomepage,
   pageNotFound,
@@ -703,4 +715,5 @@ module.exports = {
   loadChangePassword,
   changePassword,
   updateUserName,
+  loadAboutpage
 };
