@@ -127,41 +127,69 @@
     <div class="container mx-auto mt-10">
       <h2 class="text-2xl font-semibold mb-6">Your Wishlist</h2>
 
-      <% if (wishlist.items.length===0) { %>
-      <p class="text-gray-500">Your wishlist is empty.</p>
+      <% if (wishlist.items.length === 0) { %>
+      <p class="text-gray-500 text-center py-12">Your wishlist is empty.</p>
       <% } else { %>
 
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
-        <% wishlist.items.forEach(item=> { %>
-        <div class="bg-white p-4 shadow rounded">
-          <img
-            src="<%= item.productId?.productImage?.[0]?.url || '/images/default.jpg' %>"
-            class="w-full h-40 object-cover"
-          />
+      <div
+        class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-5 sm:gap-6"
+      >
+        <% wishlist.items.forEach(item => { %>
+        <div
+          class="bg-white rounded-lg shadow-md overflow-hidden flex flex-col h-full min-h-[380px] sm:min-h-[420px]"
+        >
+          <!-- Product Image - fixed aspect ratio -->
+          <div class="relative pt-[100%] sm:pt-[85%] bg-gray-50">
+            <img
+              src="<%= item.productId?.productImage?.[0]?.url || '/images/default.jpg' %>"
+              alt="<%= item.productId?.productName || 'Product' %>"
+              class="absolute inset-0 w-full h-full object-contain p-4"
+            />
+          </div>
 
-          <h3 class="font-semibold mt-3">
-            <%= (item && item.productId && item.productId.productName) ?
-            item.productId.productName : "Product not available" %>
-          </h3>
+          <!-- Content area - grows to push buttons down -->
+          <div class="flex flex-col flex-grow p-4">
+            <!-- Product Name - limited lines -->
+            <h3
+              class="font-semibold text-gray-800 text-base sm:text-lg line-clamp-2 min-h-[3rem] mb-2"
+            >
+              <%= item.productId?.productName || "Product not available" %>
+            </h3>
 
-          <p class="text-gray-600">
-            ₹ <%= (item && item.productId && item.productId.price) ?
-            item.productId.price : "-" %>
-          </p>
+            <!-- Price -->
+            <div class="flex items-center gap-2.5 mt-1 mb-2">
+              <p class="text-purple-700 font-bold text-lg sm:text-xl">
+                ₹<%= item.productId?.discountedPrice || "-" %>
+              </p>
 
-          <button
-            onclick="moveToCart('<%= item && item.productId ? item.productId._id : '' %>')"
-            class="mt-2 bg-green-600 text-white w-full py-2 rounded"
-          >
-            Move to Cart
-          </button>
+              <% if (item.productId?.discountPercent > 0) { %>
+              <p class="text-gray-500 text-sm line-through">
+                ₹<%= item.productId?.originalPrice %>
+              </p>
+              
+  
+              <% } %>
+            </div>
 
-          <button
-            onclick="removeWishlist('<%= item && item.productId ? item.productId._id : '' %>')"
-            class="mt-2 bg-red-500 text-white w-full py-2 rounded"
-          >
-            Remove
-          </button>
+            <!-- Spacer to push buttons to bottom -->
+            <div class="flex-grow"></div>
+
+            <!-- Buttons - always at bottom -->
+            <div class="space-y-2 mt-3">
+              <button
+                onclick="moveToCart('<%= item.productId?._id || '' %>')"
+                class="bg-green-600 hover:bg-green-700 text-white w-full py-2.5 rounded-md font-medium transition text-sm sm:text-base"
+              >
+                Move to Cart
+              </button>
+              <button
+                onclick="removeWishlist('<%= item.productId?._id || '' %>')"
+                class="bg-red-500 hover:bg-red-600 text-white w-full py-2.5 rounded-md font-medium transition text-sm sm:text-base"
+              >
+                Remove
+              </button>
+            </div>
+          </div>
         </div>
         <% }) %>
       </div>
@@ -170,7 +198,7 @@
     </div>
   </div>
 </div>
- <%-include("../../views/partials/user/footer")-%>
+<%-include("../../views/partials/user/footer")-%>
 <script>
   function removeWishlist(id) {
     fetch("/wishlist/remove", {

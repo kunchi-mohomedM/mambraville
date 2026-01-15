@@ -4,33 +4,62 @@ const Product = require("../../models/productSchema");
 const Cart = require("../../models/cartSchema")
 
 
-const loadWishlist=async(req,res)=>{
-
+const loadWishlist = async (req, res) => {
     try {
         const userId = req.session.user;
-        if(!userId) return res.redirect("/login")
+        if (!userId) return res.redirect("/login");
 
-        const wishlist = await Wishlist.findOne({ userId })
-        .populate("items.productId").
-        lean();
+        let wishlist = await Wishlist.findOne({ userId })
+            .populate({
+                path: "items.productId",
+                select: "productName productImage price discount quantity status isDeleted"
+            })
+            .lean();
 
-        if(!wishlist){
-          return res.render("wishList",{ wishlist :{items : [] } });
+        if (!wishlist) {
+            return res.render("wishlist", { wishlist: { items: [] } });
         }
 
-        const validItems = wishlist.items.filter( i => i.productId && i.productId._id );
-
-        if(validItems.length !== wishlist.items.length){
-          await Wishlist.updateOne({userId},{$set : {items : validItems } });
-          wishlist.items = validItems;
-        }
-
-        return res.render("wishlist",{ wishlist });
         
-        } catch (error) {
+        const validItems = wishlist.items.filter(
+            item => item.productId && !item.productId.isDeleted
+        );
 
-         console.log("loadwishlist error:",error);
-         return res.status(500).send("Internal Server Error");
+        
+        wishlist.items = validItems.map(item => {
+            const product = item.productId;
+
+            const discountValue = (product.price * (product.discount || 0)) / 100;
+            const discountedPrice = Math.round(product.price - discountValue);
+
+            return {
+                ...item,
+                productId: {
+                    ...product,
+                    discountedPrice,
+                    originalPrice: product.price,
+                    discountPercent: product.discount || 0
+                }
+            };
+        });
+
+       
+        if (validItems.length !== wishlist.items.length) {  
+            const validProductIds = wishlist.items.map(item => item.productId._id);
+
+            await Wishlist.updateOne(
+                { userId },
+                { $set: { items: validProductIds } }  
+            );
+
+            console.log(`Cleaned ${wishlist.items.length - validItems.length} invalid wishlist item(s)`);
+        }
+
+        return res.render("wishlist", { wishlist });
+
+    } catch (error) {
+        console.error("loadWishlist error:", error);
+        return res.status(500).send("Internal Server Error");
     }
 };
 
