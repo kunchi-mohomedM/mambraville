@@ -1,13 +1,31 @@
 const Coupon = require("../../models/couponSchema")
 
-const loadCouponManagement = async(req,res) =>{
+const loadCouponManagement = async (req, res) => {
     try {
-        
-        const Coupons = await Coupon.find({});
+        const page = parseInt(req.query.page) || 1;
+        const limit = 10;
+        const skip = (page - 1) * limit;
 
-        res.render("couponManagement",{Coupons})
+       
+        const [total, Coupons] = await Promise.all([
+            Coupon.countDocuments({}),
+            Coupon.find({})
+                .skip(skip)
+                .limit(limit)
+        ]);
+
+        const totalPages = total === 0 ? 1 : Math.ceil(total / limit);
+        
+
+        res.render("couponManagement", {
+            Coupons,
+            page,
+            totalPages
+        });
+
     } catch (error) {
-        console.log(error)
+        console.log(error);
+        res.status(500).send("Server Error");
     }
 }
 
