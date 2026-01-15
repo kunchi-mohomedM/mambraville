@@ -46,6 +46,7 @@ router.post("/update-username",userAuth,userController.updateUserName);
 router.get("/change-password",userAuth,userController.loadChangePassword);
 router.post("/change-password",userAuth,userController.changePassword);
 router.get("/addressmanagement",userAuth,userController.loadaddressmanagement)
+router.get("/aboutPage",userController.loadAboutpage);
 
 //address operations
 router.post("/add-address",userAuth,addressController.addAddress);
@@ -91,6 +92,9 @@ router.post('/wishlist/remove',userAuth,wishlistController.removeFromWishlist)
 router.get('/wallet',userAuth,walletController.loadWallet)
 router.post("/wallet/create-order", userAuth, walletController.createWalletOrder);
 router.post("/wallet/verify-payment", userAuth, walletController.verifyWalletPayment);
+
+
+
 
 
 
