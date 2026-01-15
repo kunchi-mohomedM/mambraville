@@ -134,9 +134,6 @@ const placeOrder = async (req, res) => {
 
     const { addressId, paymentMethod, couponCode, couponDiscount } = req.body;
 
-    
- 
-
     if (!addressId) {
       return res.json({ success: false, message: "Please select an address" });
     }
@@ -223,9 +220,6 @@ const placeOrder = async (req, res) => {
       subtotalAmount += itemSubtotal;
     }
 
-
-
-
     if (couponCode) {
       const coupon = await Coupon.findOne({
         code: couponCode,
@@ -248,8 +242,6 @@ const placeOrder = async (req, res) => {
         });
       }
 
-
-
       couponDiscountAmount =
         coupon.discountType === "percentage"
           ? Math.round((subtotalAmount * coupon.discountValue) / 100)
@@ -266,6 +258,22 @@ const placeOrder = async (req, res) => {
     }
 
     totalAmount = subtotalAmount - couponDiscountAmount;
+
+    const COD_LIMIT = 100000;
+
+    if (paymentMethod === "cod" && totalAmount > COD_LIMIT) {
+      return res.json({
+        success: false,
+        message: "Cash on Delivery is not Available for orders above ₹1,00,000",
+      });
+    }
+
+    if (totalAmount <= 0) {
+      return res.json({
+        success: false,
+        message: "Invalid order amount",
+      });
+    }
 
     let wallet = await Wallet.findOne({ userId });
     if (!wallet) {
@@ -383,6 +391,20 @@ const placeOrder = async (req, res) => {
     }
 
     if (paymentMethod === "razorpay") {
+
+      if (totalAmount > 500000) {
+        return res.json({
+          success: false,
+          message: "Online payment is not allowed above ₹5,00,000",
+        });
+      }
+
+       const razorpayOrder = await razorpay.orders.create({
+        amount: totalAmount * 100,
+        currency: "INR",
+        receipt: "MAM" + Date.now(),
+      });
+
       const order = new Order({
         orderId: "MAM" + Date.now(),
         userId,
@@ -403,17 +425,9 @@ const placeOrder = async (req, res) => {
         status: "Pending",
         coupon: couponData,
         couponDiscountAmount,
+        razorpayOrderId:razorpayOrder.id,
       });
 
-      await order.save();
-
-      const razorpayOrder = await razorpay.orders.create({
-        amount: totalAmount * 100,
-        currency: "INR",
-        receipt: order.orderId,
-      });
-
-      order.razorpayOrderId = razorpayOrder.id;
       await order.save();
 
       return res.json({
