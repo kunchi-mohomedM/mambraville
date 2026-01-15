@@ -1,134 +1,189 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>E-commerce Store</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.5.2/flowbite.js"
-        integrity="sha512-LThUFuq6Y8DTeSxG7VgJQu+3slKAhZ1u3z1EJdZESaVuQIEJ7TXC/DV8xNNEDFW01iWF4tUuzeC4RdiyrRPdRw=="
-        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.5.2/flowbite.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 
-<body class="bg-gray-100">
+<body class="bg-gray-50 antialiased">
 
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
-        integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg=="
-        crossorigin="anonymous" referrerpolicy="no-referrer" />
-
-    <header class="bg-white shadow-sm">
-        <%-include("../../views/partials/user/header")-%>
+    <header class="bg-white shadow-sm sticky top-0 z-50">
+        <%- include("../../views/partials/user/header") -%>
     </header>
 
-    <!-- Main Content -->
-    <main class="container mx-auto px-4 py-8">
+    <main class="container mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-10">
+
         <!-- Hero Carousel -->
-
-
-        <div id="default-carousel" class="relative w-full" data-carousel="slide">
-            <!-- Carousel wrapper -->
-            <div class="relative h-56 overflow-hidden rounded-lg md:h-96">
-                <!-- Item 1 -->
-                <div class="hidden duration-700 ease-in-out" data-carousel-item>
-                    <img src="\images\pngtree-innovative-3d-mobile-mockup-paired-with-web-development-banner-and-laptop-picture-image_5592791.jpg"
-                        class="absolute block w-full -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2" alt="...">
+        <div id="default-carousel" class="relative w-full mb-10 rounded-xl sm:rounded-2xl overflow-hidden shadow-lg" data-carousel="slide" data-carousel-interval="5000">
+            <div class="relative aspect-[4/3] sm:aspect-[16/9] md:aspect-[21/9] overflow-hidden">
+                <div class="hidden duration-700 ease-in-out" data-carousel-item="active">
+                    <img src="/images/pngtree-innovative-3d-mobile-mockup-paired-with-web-development-banner-and-laptop-picture-image_5592791.jpg"
+                         class="absolute inset-0 w-full h-full object-cover" alt="Banner 1">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent flex items-end pb-6 sm:pb-10 pl-4 sm:pl-8">
+                        <div class="text-white max-w-md">
+                            <h2 class="text-2xl sm:text-4xl md:text-5xl font-bold drop-shadow-md">New Season Arrivals</h2>
+                            <p class="mt-2 text-base sm:text-lg drop-shadow">Discover the latest trends now</p>
+                        </div>
+                    </div>
                 </div>
-                <!-- Item 2 -->
                 <div class="hidden duration-700 ease-in-out" data-carousel-item>
-                    <img src="\images\f3832e180145769.6505ae76214ca.jpg"
-                        class="absolute block w-full -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2" alt="...">
+                    <img src="/images/f3832e180145769.6505ae76214ca.jpg"
+                         class="absolute inset-0 w-full h-full object-cover" alt="Banner 2">
                 </div>
-                <!-- Item 3 -->
                 <div class="hidden duration-700 ease-in-out" data-carousel-item>
-                    <img src="\images\banner_new1-min.jpg"
-                        class="absolute block w-full -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2" alt="...">
+                    <img src="/images/banner_new1-min.jpg"
+                         class="absolute inset-0 w-full h-full object-cover" alt="Banner 3">
                 </div>
             </div>
-            <!-- Slider indicators -->
-            <div class="absolute z-30 flex -translate-x-1/2 bottom-5 left-1/2 space-x-3 rtl:space-x-reverse">
-                <button type="button" class="w-3 h-3 rounded-full" aria-current="true" aria-label="Slide 1"
-                    data-carousel-slide-to="0"></button>
-                <button type="button" class="w-3 h-3 rounded-full" aria-current="false" aria-label="Slide 2"
-                    data-carousel-slide-to="1"></button>
-                <button type="button" class="w-3 h-3 rounded-full" aria-current="false" aria-label="Slide 3"
-                    data-carousel-slide-to="2"></button>
+
+            <div class="absolute z-30 flex -translate-x-1/2 bottom-4 sm:bottom-6 left-1/2 space-x-3 sm:space-x-4">
+                <button type="button" class="w-3 h-3 sm:w-3.5 sm:h-3.5 rounded-full bg-white/70 hover:bg-white focus:bg-white transition" data-carousel-slide-to="0" aria-current="true"></button>
+                <button type="button" class="w-3 h-3 sm:w-3.5 sm:h-3.5 rounded-full bg-white/70 hover:bg-white focus:bg-white transition" data-carousel-slide-to="1"></button>
+                <button type="button" class="w-3 h-3 sm:w-3.5 sm:h-3.5 rounded-full bg-white/70 hover:bg-white focus:bg-white transition" data-carousel-slide-to="2"></button>
             </div>
-            <!-- Slider controls -->
-            <button type="button"
-                class="absolute top-0 start-0 z-30 flex items-center justify-center h-full px-4 cursor-pointer group focus:outline-none"
-                data-carousel-prev>
-                <span
-                    class="inline-flex items-center justify-center w-10 h-10 rounded-full bg-white/30 dark:bg-gray-800/30 group-hover:bg-white/50 dark:group-hover:bg-gray-800/60 group-focus:ring-4 group-focus:ring-white dark:group-focus:ring-gray-800/70 group-focus:outline-none">
-                    <svg class="w-4 h-4 text-white dark:text-gray-800 rtl:rotate-180" aria-hidden="true"
-                        xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
-                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M5 1 1 5l4 4" />
-                    </svg>
-                    <span class="sr-only">Previous</span>
+
+            <button type="button" class="absolute top-0 start-0 z-30 flex items-center justify-center h-full px-3 sm:px-4 cursor-pointer group focus:outline-none" data-carousel-prev>
+                <span class="inline-flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-black/30 group-hover:bg-black/50 transition">
+                    <i class="fas fa-chevron-left text-white text-lg sm:text-xl"></i>
                 </span>
             </button>
-            <button type="button"
-                class="absolute top-0 end-0 z-30 flex items-center justify-center h-full px-4 cursor-pointer group focus:outline-none"
-                data-carousel-next>
-                <span
-                    class="inline-flex items-center justify-center w-10 h-10 rounded-full bg-white/30 dark:bg-gray-800/30 group-hover:bg-white/50 dark:group-hover:bg-gray-800/60 group-focus:ring-4 group-focus:ring-white dark:group-focus:ring-gray-800/70 group-focus:outline-none">
-                    <svg class="w-4 h-4 text-white dark:text-gray-800 rtl:rotate-180" aria-hidden="true"
-                        xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
-                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="m1 9 4-4-4-4" />
-                    </svg>
-                    <span class="sr-only">Next</span>
+            <button type="button" class="absolute top-0 end-0 z-30 flex items-center justify-center h-full px-3 sm:px-4 cursor-pointer group focus:outline-none" data-carousel-next>
+                <span class="inline-flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-black/30 group-hover:bg-black/50 transition">
+                    <i class="fas fa-chevron-right text-white text-lg sm:text-xl"></i>
                 </span>
             </button>
         </div>
 
-
-        <!-- Features Section -->
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8 p-4">
-            <div class="flex flex-col items-center bg-white rounded-lg p-4 shadow-sm">
-                <div class="w-12 h-12 flex items-center justify-center bg-blue-100 rounded-full mb-2">
-                    <i class="fas fa-truck text-blue-600"></i>
+        <!-- Features -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6 mb-10 sm:mb-16">
+            <div class="flex flex-col items-center bg-white rounded-xl p-5 sm:p-6 shadow-sm hover:shadow-md transition-shadow">
+                <div class="w-12 h-12 sm:w-14 sm:h-14 flex items-center justify-center bg-blue-100 rounded-full mb-3 sm:mb-4">
+                    <i class="fas fa-truck text-blue-600 text-xl sm:text-2xl"></i>
                 </div>
-                <h3 class="text-sm font-medium text-center">Free Shipping</h3>
+                <h3 class="text-sm sm:text-base font-medium text-center">Free Shipping</h3>
             </div>
-            <div class="flex flex-col items-center bg-white rounded-lg p-4 shadow-sm">
-                <div class="w-12 h-12 flex items-center justify-center bg-blue-100 rounded-full mb-2">
-                    <i class="fas fa-undo text-blue-600"></i>
+            <div class="flex flex-col items-center bg-white rounded-xl p-5 sm:p-6 shadow-sm hover:shadow-md transition-shadow">
+                <div class="w-12 h-12 sm:w-14 sm:h-14 flex items-center justify-center bg-blue-100 rounded-full mb-3 sm:mb-4">
+                    <i class="fas fa-undo-alt text-blue-600 text-xl sm:text-2xl"></i>
                 </div>
-                <h3 class="text-sm font-medium text-center">Money Guarantee</h3>
+                <h3 class="text-sm sm:text-base font-medium text-center">Money-back Guarantee</h3>
             </div>
-            <div class="flex flex-col items-center bg-white rounded-lg p-4 shadow-sm">
-                <div class="w-12 h-12 flex items-center justify-center bg-blue-100 rounded-full mb-2">
-                    <i class="fas fa-headset text-blue-600"></i>
+            <div class="flex flex-col items-center bg-white rounded-xl p-5 sm:p-6 shadow-sm hover:shadow-md transition-shadow">
+                <div class="w-12 h-12 sm:w-14 sm:h-14 flex items-center justify-center bg-blue-100 rounded-full mb-3 sm:mb-4">
+                    <i class="fas fa-headset text-blue-600 text-xl sm:text-2xl"></i>
                 </div>
-                <h3 class="text-sm font-medium text-center">24/7 Customer Support</h3>
+                <h3 class="text-sm sm:text-base font-medium text-center">24/7 Support</h3>
             </div>
-            <div class="flex flex-col items-center bg-white rounded-lg p-4 shadow-sm">
-                <div class="w-12 h-12 flex items-center justify-center bg-blue-100 rounded-full mb-2">
-                    <i class="fas fa-credit-card text-blue-600"></i>
+            <div class="flex flex-col items-center bg-white rounded-xl p-5 sm:p-6 shadow-sm hover:shadow-md transition-shadow">
+                <div class="w-12 h-12 sm:w-14 sm:h-14 flex items-center justify-center bg-blue-100 rounded-full mb-3 sm:mb-4">
+                    <i class="fas fa-shield-alt text-blue-600 text-xl sm:text-2xl"></i>
                 </div>
-                <h3 class="text-sm font-medium text-center">Secure Payment</h3>
+                <h3 class="text-sm sm:text-base font-medium text-center">Secure Payment</h3>
             </div>
         </div>
 
-        <!-- New Arrivals Section -->
-        <div class="mb-8">
-            <div class="flex justify-between items-center mb-4">
-                <h2 class="text-xl font-bold">New arrivals</h2>
-                <a href="#" class="text-blue-600 text-sm font-medium">View all</a>
+        <!-- New Arrivals -->
+        <section class="mb-10 sm:mb-16">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-5 sm:mb-6 gap-3">
+                <h2 class="text-2xl sm:text-3xl font-bold">New Arrivals</h2>
+                <a href="/products-user" class="text-purple-600 hover:text-purple-800 text-sm sm:text-base font-medium">View all →</a>
             </div>
+            <div class="grid grid-cols-1 xs:grid-cols-2 md:grid-cols-3 gap-5 sm:gap-6">
+                <% newArrivals.forEach(product => { %>
+                <div class="group bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-200 relative flex flex-col">
 
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <% newArrivals.forEach(product=>{ %>
-                    <!-- Product Card 1 -->
-   <div class="group bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all overflow-hidden border relative">
+                    <!-- Discount Badge -->
+                    <% if (product.discountPercent && product.discountPercent > 0) { %>
+                    <div class="absolute top-3 left-3 z-10">
+                        <span class="bg-orange-600 text-white text-xs font-bold px-2.5 py-1 rounded-full shadow-sm">
+                            <%= product.discountPercent %>% OFF
+                        </span>
+                    </div>
+                    <% } %>
 
-    <!-- Discount Badge -->
-    <% if (product.discountPercent && product.discountPercent > 0) { %>
+                    <!-- Wishlist -->
+                    <div class="absolute top-3 right-3 z-10">
+                        <% if (product.inCart) { %>
+                        <div class="bg-white/90 p-2.5 rounded-full shadow-md cursor-not-allowed">
+                            <i class="fa-solid fa-heart text-gray-300 opacity-60 text-xl"></i>
+                        </div>
+                        <% } else { %>
+                        <a href="/wishlist/toggle/<%= product._id %>"
+                           class="wishlist-btn bg-white p-2.5 rounded-full shadow-md hover:shadow-lg transition-all duration-300 active:scale-95 inline-flex items-center justify-center">
+                            <i class="fa-heart text-xl transition-colors duration-300 <%= product.inWishlist ? 'fa-solid text-red-500' : 'fa-regular text-gray-500 hover:text-red-400' %>"></i>
+                        </a>
+                        <% } %>
+                    </div>
+
+                    <!-- Image -->
+                    <div class="relative pt-[100%] sm:pt-[85%] bg-gray-50 overflow-hidden">
+                        <img src="<%= product.productImage[0]?.url %>"
+                             onclick="window.location.href='/productdetails/<%= product._id %>'"
+                             class="absolute inset-0 w-full h-full object-contain p-4 group-hover:scale-105 transition-transform duration-500 cursor-pointer" />
+                    </div>
+
+                    <!-- Details -->
+                    <div class="p-4 flex flex-col flex-grow">
+                        <h3 class="font-semibold text-sm sm:text-base text-gray-800 line-clamp-2 min-h-[2.5rem] mb-1">
+                            <%= product.productName %>
+                        </h3>
+
+                        <div class="flex items-center gap-2.5 mt-1 mb-2">
+                            <p class="text-purple-700 font-bold text-lg sm:text-xl">
+                                ₹<%= product.discountedPrice %>
+                            </p>
+                            <% if (product.discountPercent && product.discountPercent > 0) { %>
+                            <p class="text-gray-500 text-sm line-through">
+                                ₹<%= product.originalPrice %>
+                            </p>
+                            <% } %>
+                        </div>
+
+                        <div class="flex items-center gap-1 mb-3">
+                            <i class="fas fa-star text-yellow-400 text-sm"></i>
+                            <span class="text-gray-500 text-xs">5</span>
+                        </div>
+
+                        <button class="toggle-cart-btn mt-auto w-full rounded-full py-2.5 font-medium text-white transition-all
+                                       <%= product.inCart 
+                                           ? 'bg-green-600 hover:bg-green-700' 
+                                           : (product.quantity <= 0 
+                                               ? 'bg-red-600 cursor-not-allowed' 
+                                               : 'bg-purple-600 hover:bg-purple-700') %>"
+                                data-product-id="<%= product._id %>"
+                                data-in-cart="<%= product.inCart %>"
+                                <%= product.quantity <= 0 ? 'disabled' : '' %>>
+
+                            <i class="fas fa-shopping-cart text-sm mr-2"></i>
+                            <span>
+                                <% if (product.inCart) { %>Go to Cart
+                                <% } else if (product.quantity <= 0) { %>Out of Stock
+                                <% } else { %>Add to Cart<% } %>
+                            </span>
+                        </button>
+                    </div>
+                </div>
+                <% }) %>
+            </div>
+        </section>
+
+        <!-- Trending Products -->
+        <section class="mb-10 sm:mb-16">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-5 sm:mb-6 gap-3">
+                <h2 class="text-2xl sm:text-3xl font-bold">Trending Products</h2>
+                <a href="/products-user" class="text-purple-600 hover:text-purple-800 text-sm sm:text-base font-medium">View all →</a>
+            </div>
+            <div class="grid grid-cols-2 sm:grid-cols-3 gap-4 sm:gap-6">
+                <% trendingProducts.forEach(product => { %>
+                <div class="group bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-200 relative flex flex-col">
+                    <% if (product.discountPercent && product.discountPercent > 0) { %>
         <div class="absolute top-3 left-3 z-10">
-            <span class="bg-orange-600 text-white text-xs font-bold px-2 py-1 rounded-full shadow">
+            <span class="bg-orange-600 text-white text-xs font-bold px-2.5 py-1 rounded-full shadow-sm">
                 <%= product.discountPercent %>% OFF
             </span>
         </div>
@@ -137,13 +192,13 @@
     <!-- Wishlist / Heart Icon -->
     <div class="absolute top-3 right-3 z-10">
         <% if (product.inCart) { %>
-            <div class="bg-white/90 p-2 rounded-full shadow-md cursor-not-allowed">
+            <div class="bg-white/90 p-2.5 rounded-full shadow-md cursor-not-allowed">
                 <i class="fa-solid fa-heart text-gray-300 opacity-60 text-xl"></i>
             </div>
         <% } else { %>
             <a href="/wishlist/toggle/<%= product._id %>"
-               class="wishlist-btn bg-white p-2 rounded-full shadow-md hover:shadow-lg 
-                      transition-all duration-300 active:scale-90 inline-flex">
+               class="wishlist-btn bg-white p-2.5 rounded-full shadow-md hover:shadow-lg 
+                      transition-all duration-300 active:scale-95 inline-flex items-center justify-center">
 
                 <i class="
                     fa-heart text-xl transition-colors duration-300
@@ -157,195 +212,90 @@
     </div>
 
     <!-- Product Image -->
-    <div class="w-full h-44 bg-gray-50 flex items-center justify-center overflow-hidden">
+    <div class="relative pt-[85%] sm:pt-[75%] bg-gray-50 overflow-hidden">
         <img src="<%= product.productImage[0]?.url %>"
              onclick="window.location.href='/productdetails/<%= product._id %>'"
-             class="w-full h-full object-contain p-3 group-hover:scale-105 transition cursor-pointer" />
+             class="absolute inset-0 w-full h-full object-contain p-4 group-hover:scale-105 transition-transform duration-500 cursor-pointer" />
     </div>
 
     <!-- Product Details -->
-    <div class="p-4">
-
-        <!-- Product Name -->
-        <h3 class="font-semibold text-sm text-gray-800 h-10 overflow-hidden leading-tight">
+    <div class="p-4 flex flex-col flex-grow">
+        <h3 class="font-semibold text-sm sm:text-base text-gray-800 line-clamp-2 min-h-[2.5rem] mb-1">
             <%= product.productName %>
         </h3>
 
-        <!-- Price Section -->
-        <div class="flex gap-2 items-center mt-1">
-            <!-- Discounted Price -->
-            <p class="text-purple-700 font-bold text-lg">
-                ₹<%=product.discountedPrice %>
+        <div class="flex items-center gap-2.5 mt-1 mb-2">
+            <p class="text-purple-700 font-bold text-lg sm:text-xl">
+                ₹<%= product.discountedPrice %>
             </p>
-
-            <% if (product.discountPercent && product.discountPercent  > 0) { %>
-                <!-- Original Price -->
-                <p class="text-gray-500 text-sm mt-1 line-through">
-                    ₹<%= product.originalPrice %>
-                </p>
-            <% } %>
-        </div>
-
-        <!-- Rating (Static for now) -->
-        <div class="flex items-center gap-1 mt-1">
-            <i class="fas fa-star text-yellow-400 text-xs"></i>
-            <span class="text-gray-500 text-xs">(5)</span>
-        </div>
-
-        <!-- Add to Cart Button -->
-        <button
-            class="toggle-cart-btn mt-3 w-full text-center rounded-full py-2 font-medium text-white
-                   transition
-                   <%= product.inCart ? 'bg-green-600 hover:bg-green-700' : 'bg-purple-600 hover:bg-purple-700' %>"
-            data-product-id="<%= product._id %>"
-            data-in-cart="<%= product.inCart %>">
-
-            <i class="fas fa-shopping-cart text-xs mr-1"></i>
-            <span><%= product.inCart ? 'Go to Cart' : 'Add to Cart' %></span>
-        </button>
-
-    </div>
-</div>
-
-<% }) %>
-
-                
-
-            </div>
-        </div>
-
-        <!-- Trending Products Section -->
-        <div class="mb-8">
-            <div class="flex justify-between items-center mb-4">
-                <h2 class="text-xl font-bold">Trending products</h2>
-                <a href="#" class="text-blue-600 text-sm font-medium">View all</a>
-            </div>
-
-            <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
-                <%trendingProducts.forEach(product=>{%>
-                   <div class="group bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all overflow-hidden border relative">
-
-    <!-- Discount Badge -->
-    <% if (product.discountPercent && product.discountPercent > 0) { %>
-        <div class="absolute top-3 left-3 z-10">
-            <span class="bg-orange-600 text-white text-xs font-bold px-2 py-1 rounded-full shadow">
-                <%= product.discountPercent %>% OFF
-            </span>
-        </div>
-    <% } %>
-
-    <!-- Wishlist / Heart Icon -->
-    <div class="absolute top-3 right-3 z-10">
-        <% if (product.inCart) { %>
-            <div class="bg-white/90 p-2 rounded-full shadow-md cursor-not-allowed">
-                <i class="fa-solid fa-heart text-gray-300 opacity-60 text-xl"></i>
-            </div>
-        <% } else { %>
-            <a href="/wishlist/toggle/<%= product._id %>"
-               class="wishlist-btn bg-white p-2 rounded-full shadow-md hover:shadow-lg 
-                      transition-all duration-300 active:scale-90 inline-flex">
-
-                <i class="
-                    fa-heart text-xl transition-colors duration-300
-                    <%= product.inWishlist 
-                        ? 'fa-solid text-red-500'
-                        : 'fa-regular text-gray-500 hover:text-red-400'
-                    %>
-                "></i>
-            </a>
-        <% } %>
-    </div>
-
-    <!-- Product Image -->
-    <div class="w-full h-44 bg-gray-50 flex items-center justify-center overflow-hidden">
-        <img src="<%= product.productImage[0]?.url %>"
-             onclick="window.location.href='/productdetails/<%= product._id %>'"
-             class="w-full h-full object-contain p-3 group-hover:scale-105 transition cursor-pointer" />
-    </div>
-
-    <!-- Product Details -->
-    <div class="p-4">
-
-        <!-- Product Name -->
-        <h3 class="font-semibold text-sm text-gray-800 h-10 overflow-hidden leading-tight">
-            <%= product.productName %>
-        </h3>
-
-        <!-- Price Section -->
-        <div class="flex gap-2 items-center mt-1">
-            <!-- Discounted Price -->
-            <p class="text-purple-700 font-bold text-lg">
-                ₹<%=product.discountedPrice   %>
-            </p>
-
             <% if (product.discountPercent && product.discountPercent > 0) { %>
-                <!-- Original Price -->
-                <p class="text-gray-500 text-sm mt-1 line-through">
+                <p class="text-gray-500 text-sm line-through">
                     ₹<%= product.originalPrice %>
                 </p>
             <% } %>
         </div>
 
-        <!-- Rating (Static for now) -->
-        <div class="flex items-center gap-1 mt-1">
-            <i class="fas fa-star text-yellow-400 text-xs"></i>
-            <span class="text-gray-500 text-xs">(5)</span>
+        <div class="flex items-center gap-1 mb-3">
+            <i class="fas fa-star text-yellow-400 text-sm"></i>
+            <span class="text-gray-500 text-xs">5</span>
         </div>
 
-        <!-- Add to Cart Button -->
         <button
-            class="toggle-cart-btn mt-3 w-full text-center rounded-full py-2 font-medium text-white
-                   transition
-                   <%= product.inCart ? 'bg-green-600 hover:bg-green-700' : 'bg-purple-600 hover:bg-purple-700' %>"
+            class="toggle-cart-btn mt-auto w-full rounded-full py-2.5 font-medium text-white transition-all
+                   <%= product.inCart 
+                       ? 'bg-green-600 hover:bg-green-700' 
+                       : (product.quantity <= 0 
+                           ? 'bg-red-600 cursor-not-allowed' 
+                           : 'bg-purple-600 hover:bg-purple-700') %>"
             data-product-id="<%= product._id %>"
-            data-in-cart="<%= product.inCart %>">
+            data-in-cart="<%= product.inCart %>"
+            <%= product.quantity <= 0 ? 'disabled' : '' %>>
 
-            <i class="fas fa-shopping-cart text-xs mr-1"></i>
-            <span><%= product.inCart ? 'Go to Cart' : 'Add to Cart' %></span>
+            <i class="fas fa-shopping-cart text-sm mr-2"></i>
+            <span>
+                <% if (product.inCart) { %>Go to Cart
+                <% } else if (product.quantity <= 0) { %>Out of Stock
+                <% } else { %>Add to Cart<% } %>
+            </span>
         </button>
 
     </div>
-</div>
-
-<% }) %>
-
+                </div>
+                <% }) %>
             </div>
-        </div>
+        </section>
 
         <!-- Weekly Sale Banner -->
-        <div class="bg-blue-100 rounded-lg p-6 mb-8 flex items-center justify-between">
-            <div>
-                <h3 class="text-2xl font-bold text-blue-900 mb-2">SEASONAL WEEKLY SALE 2024</h3>
-                <p class="text-blue-800 mb-4">Get up to 20% off on selected items</p>
-                <button class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-6 rounded-md">Shop
-                    Now</button>
-            </div>
-
-            <div class="hidden md:block">
-                <img src="https://images.unsplash.com/photo-1555041469-a586c61ea9bc?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=300&q=80"
-                    alt="Sale" class="h-24 w-32 object-cover rounded-md">
-            </div>
-        </div>
-
-        <!-- Special Offers Section -->
-        <div class="mb-8">
-            <div class="flex justify-between items-center mb-4">
-                <h2 class="text-xl font-bold">Special offers for you</h2>
-                <div class="flex space-x-2">
-                    <button class="w-6 h-6 rounded-full bg-red-500"></button>
-                    <button class="w-6 h-6 rounded-full bg-blue-500"></button>
-                    <button class="w-6 h-6 rounded-full bg-green-500"></button>
+        <section class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl sm:rounded-2xl p-6 sm:p-10 mb-10 sm:mb-16 shadow-md">
+            <div class="flex flex-col md:flex-row items-center justify-between gap-8">
+                <div class="text-center md:text-left">
+                    <h3 class="text-2xl sm:text-3xl md:text-4xl font-bold text-indigo-900 mb-3">SEASONAL WEEKLY SALE</h3>
+                    <p class="text-base sm:text-lg text-indigo-700 mb-5 sm:mb-6">Get up to 20% off on selected items – Limited time only!</p>
+                    <a href="/products-user" class="inline-block bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-3 px-8 rounded-full transition shadow-sm">Shop Now</a>
+                </div>
+                <div class="w-full md:w-64 lg:w-80 hidden md:block">
+                    <img src="https://images.unsplash.com/photo-1555041469-a586c61ea9bc?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+                         alt="Sale promotion" class="rounded-xl shadow-lg object-cover w-full">
                 </div>
             </div>
+        </section>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <% specialOffers.forEach(product=>{%>
-                  <div class="group bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all overflow-hidden border relative">
-
-    <!-- Discount Badge -->
-    <% if (product.discountPercent && product.discountPercent > 0) { %>
+        <!-- Special Offers -->
+        <section class="mb-10 sm:mb-16">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-5 sm:mb-6 gap-3">
+                <h2 class="text-2xl sm:text-3xl font-bold">Special Offers for You</h2>
+                <div class="flex space-x-3">
+                    <button class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-red-500 hover:ring-2 ring-red-300 transition"></button>
+                    <button class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-blue-500 hover:ring-2 ring-blue-300 transition"></button>
+                    <button class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-green-500 hover:ring-2 ring-green-300 transition"></button>
+                </div>
+            </div>
+            <div class="grid grid-cols-1 xs:grid-cols-2 md:grid-cols-3 gap-5 sm:gap-6">
+                <% specialOffers.forEach(product => { %>
+                <div class="group bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-200 relative flex flex-col">
+                   <% if (product.discountPercent && product.discountPercent > 0) { %>
         <div class="absolute top-3 left-3 z-10">
-            <span class="bg-orange-600 text-white text-xs font-bold px-2 py-1 rounded-full shadow">
+            <span class="bg-orange-600 text-white text-xs font-bold px-2.5 py-1 rounded-full shadow-sm">
                 <%= product.discountPercent %>% OFF
             </span>
         </div>
@@ -354,13 +304,13 @@
     <!-- Wishlist / Heart Icon -->
     <div class="absolute top-3 right-3 z-10">
         <% if (product.inCart) { %>
-            <div class="bg-white/90 p-2 rounded-full shadow-md cursor-not-allowed">
+            <div class="bg-white/90 p-2.5 rounded-full shadow-md cursor-not-allowed">
                 <i class="fa-solid fa-heart text-gray-300 opacity-60 text-xl"></i>
             </div>
         <% } else { %>
             <a href="/wishlist/toggle/<%= product._id %>"
-               class="wishlist-btn bg-white p-2 rounded-full shadow-md hover:shadow-lg 
-                      transition-all duration-300 active:scale-90 inline-flex">
+               class="wishlist-btn bg-white p-2.5 rounded-full shadow-md hover:shadow-lg 
+                      transition-all duration-300 active:scale-95 inline-flex items-center justify-center">
 
                 <i class="
                     fa-heart text-xl transition-colors duration-300
@@ -374,69 +324,71 @@
     </div>
 
     <!-- Product Image -->
-    <div class="w-full h-44 bg-gray-50 flex items-center justify-center overflow-hidden">
+    <div class="relative pt-[85%] sm:pt-[75%] bg-gray-50 overflow-hidden">
         <img src="<%= product.productImage[0]?.url %>"
              onclick="window.location.href='/productdetails/<%= product._id %>'"
-             class="w-full h-full object-contain p-3 group-hover:scale-105 transition cursor-pointer" />
+             class="absolute inset-0 w-full h-full object-contain p-4 group-hover:scale-105 transition-transform duration-500 cursor-pointer" />
     </div>
 
     <!-- Product Details -->
-    <div class="p-4">
-
-        <!-- Product Name -->
-        <h3 class="font-semibold text-sm text-gray-800 h-10 overflow-hidden leading-tight">
+    <div class="p-4 flex flex-col flex-grow">
+        <h3 class="font-semibold text-sm sm:text-base text-gray-800 line-clamp-2 min-h-[2.5rem] mb-1">
             <%= product.productName %>
         </h3>
 
-        <!-- Price Section -->
-        <div class="flex gap-2 items-center mt-1">
-            <!-- discountPercented Price -->
-            <p class="text-purple-700 font-bold text-lg">
-                ₹<%=product.discountedPrice %>
+        <div class="flex items-center gap-2.5 mt-1 mb-2">
+            <p class="text-purple-700 font-bold text-lg sm:text-xl">
+                ₹<%= product.discountedPrice %>
             </p>
-
             <% if (product.discountPercent && product.discountPercent > 0) { %>
-                <!-- Original Price -->
-                <p class="text-gray-500 text-sm mt-1 line-through">
+                <p class="text-gray-500 text-sm line-through">
                     ₹<%= product.originalPrice %>
                 </p>
             <% } %>
         </div>
 
-        <!-- Rating (Static for now) -->
-        <div class="flex items-center gap-1 mt-1">
-            <i class="fas fa-star text-yellow-400 text-xs"></i>
-            <span class="text-gray-500 text-xs">(5)</span>
+        <div class="flex items-center gap-1 mb-3">
+            <i class="fas fa-star text-yellow-400 text-sm"></i>
+            <span class="text-gray-500 text-xs">5</span>
         </div>
 
-        <!-- Add to Cart Button -->
         <button
-            class="toggle-cart-btn mt-3 w-full text-center rounded-full py-2 font-medium text-white
-                   transition
-                   <%= product.inCart ? 'bg-green-600 hover:bg-green-700' : 'bg-purple-600 hover:bg-purple-700' %>"
+            class="toggle-cart-btn mt-auto w-full rounded-full py-2.5 font-medium text-white transition-all
+                   <%= product.inCart 
+                       ? 'bg-green-600 hover:bg-green-700' 
+                       : (product.quantity <= 0 
+                           ? 'bg-red-600 cursor-not-allowed' 
+                           : 'bg-purple-600 hover:bg-purple-700') %>"
             data-product-id="<%= product._id %>"
-            data-in-cart="<%= product.inCart %>">
+            data-in-cart="<%= product.inCart %>"
+            <%= product.quantity <= 0 ? 'disabled' : '' %>>
 
-            <i class="fas fa-shopping-cart text-xs mr-1"></i>
-            <span><%= product.inCart ? 'Go to Cart' : 'Add to Cart' %></span>
+            <i class="fas fa-shopping-cart text-sm mr-2"></i>
+            <span>
+                <% if (product.inCart) { %>Go to Cart
+                <% } else if (product.quantity <= 0) { %>Out of Stock
+                <% } else { %>Add to Cart<% } %>
+            </span>
         </button>
 
     </div>
-</div>
-<% }) %>
+                </div>
+                <% }) %>
             </div>
-
-            <!-- Special Offer 2 -->
-
+        </section>
 
     </main>
-    <%-include("../../views/partials/user/footer")-%>
+
+    <%- include("../../views/partials/user/footer") -%>
+
     <script>
-          const isLoggedIn = ' <%= isLoggedIn ? "true" : "false" %>';
+        const isLoggedIn = '<%= isLoggedIn ? "true" : "false" %>';
 
         document.addEventListener("DOMContentLoaded", () => {
             document.querySelectorAll(".toggle-cart-btn").forEach(button => {
-                button.addEventListener("click", async () => {
+                button.addEventListener("click", async (e) => {
+                    if (button.disabled) return;
+
                     if (isLoggedIn === "false") {
                         window.location.href = "/login";
                         return;
@@ -454,18 +406,34 @@
                         const response = await fetch(`/add-to-cart/${productId}`, { method: "GET" });
                         if (response.ok) {
                             button.dataset.inCart = "true";
-                            button.classList.remove("bg-purple-600");
-                            button.classList.add("bg-green-600");
-                            button.querySelector("span").innerText = "Go to Cart";
+                            button.classList.remove("bg-purple-600", "hover:bg-purple-700");
+                            button.classList.add("bg-green-600", "hover:bg-green-700");
+                            button.querySelector("span").textContent = "Go to Cart";
                         } else {
-                            alert("Failed to add item to cart.");
+                            button.classList.remove("bg-purple-600", "hover:bg-purple-700");
+                            button.classList.add("bg-red-600", "hover:bg-red-700");
+                            button.querySelector("span").textContent = "Out of Stock";
+                            button.disabled = true;
+
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Out of Stock',
+                                text: 'This product is currently unavailable.',
+                                confirmButtonColor: '#7c3aed'
+                            });
                         }
                     } catch (error) {
                         console.error(error);
-                        alert("Something went wrong.");
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Oops!',
+                            text: 'Something went wrong. Please try again.',
+                            confirmButtonColor: '#7c3aed'
+                        });
                     }
                 });
             });
         });
-
     </script>
+</body>
+</html>

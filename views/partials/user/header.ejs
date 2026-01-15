@@ -1,62 +1,75 @@
 <script src="https://cdn.tailwindcss.com"></script>
 
-
-
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
   integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg=="
   crossorigin="anonymous" referrerpolicy="no-referrer" />
 
 <!-- Fixed Header -->
-<header class="fixed top-0 left-0 w-full bg-white shadow-md z-50">
-  <div class="container mx-auto px-6">
-    <!-- Top Section: Logo + Icons -->
-    <div class="flex justify-between items-center py-4">
+<header class="fixed top-0 left-0 right-0 bg-white shadow-md z-50">
+  <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+
+    <!-- Top row: Logo + Icons -->
+    <div class="flex items-center justify-between py-3 sm:py-4">
 
       <!-- Logo -->
-    <a href="/" class="flex items-center">
-  <div class="text-center leading-none">
-    <!-- Main name -->
-    <div class="text-2xl font-black tracking-tighter">
-      <span class="text-blue-700">Gadgetr</span><span class="text-orange-500">y</span>
-    </div>
-
-    <!-- Tagline perfectly centered below -->
-    <div class="text-[8px] font-bold tracking-widest text-gray-500 uppercase mt-0.5">
-      powered by mambra home appliances — 2004
-    </div>
-  </div>
-</a>
+      <a href="/" class="flex items-center min-w-0">
+        <div class="text-center leading-none">
+          <div class="text-xl sm:text-2xl font-black tracking-tighter whitespace-nowrap">
+            <span class="text-blue-700">Gadgetr</span><span class="text-orange-500">y</span>
+          </div>
+          <div class="text-[7px] sm:text-[8px] font-bold tracking-widest text-gray-500 uppercase mt-0.5">
+            powered by mambra home appliances — 2004
+          </div>
+        </div>
+      </a>
 
       <!-- Right Icons -->
-      <div class="flex items-center space-x-5 text-gray-700">
-        <a href="/user-profile" class="hover:text-blue-600 transition">
-          <i class="fas fa-user text-lg"></i>
+      <div class="flex items-center space-x-5 sm:space-x-6 text-gray-700">
+        <a href="/user-profile" class="hover:text-blue-600 transition p-1 -m-1">
+          <i class="fas fa-user text-lg sm:text-xl"></i>
         </a>
-        <a href="/wishlist" class="hover:text-blue-600 transition">
-          <i class="fas fa-heart text-lg"></i>
+        <a href="/wishlist" class="hover:text-blue-600 transition p-1 -m-1">
+          <i class="fas fa-heart text-lg sm:text-xl"></i>
         </a>
-        <a href="/cart" class="hover:text-blue-600 relative transition">
-          <i class="fas fa-shopping-cart text-lg"></i>
-          </a>
+        <a href="/cart" class="hover:text-blue-600 transition p-1 -m-1 relative">
+          <i class="fas fa-shopping-cart text-lg sm:text-xl"></i>
+          <!-- You can add cart count badge here later if needed -->
+          <!-- <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full px-1.5 py-0.5">3</span> -->
+        </a>
       </div>
     </div>
 
-    <!-- Bottom Nav Links -->
-    <nav class="flex justify-center space-x-8 border-t py-2 text-gray-700 font-medium">
-      <a href="/" class="hover:text-blue-600 transition">Home</a>
-      <a href="/products-user" class="hover:text-blue-600 transition">Products</a>
-      <a href="#" class="hover:text-blue-600 transition">About Us</a>
-      <a href="#" class="hover:text-blue-600 transition">Help Center</a>
-      <% if(!user) { %>
-        <a href="/login" class="text-gray-700 hover:text-blue-600 font-medium">Login</a>
-        <% }else{%>
+    <!-- Bottom Navigation -->
+    <nav class="flex justify-center overflow-x-auto border-t py-2.5 sm:py-3 -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8 scrollbar-hide">
+      <div class="flex items-center space-x-6 sm:space-x-8 lg:space-x-10 text-gray-700 font-medium text-sm sm:text-base whitespace-nowrap">
+        <a href="/" class="hover:text-blue-600 transition">Home</a>
+        <a href="/products-user" class="hover:text-blue-600 transition">Products</a>
+        <a href="#" class="hover:text-blue-600 transition">About Us</a>
+        
+
+        <% if(!user) { %>
+          <a href="/login" class="text-gray-700 hover:text-blue-600 font-medium">Login</a>
+        <% } else { %>
           <a href="/logout" class="text-gray-700 hover:text-blue-600 font-medium">Logout</a>
-          <% } %>
+        <% } %>
+      </div>
     </nav>
+
   </div>
 </header>
 
-<!-- Content below navbar -->
-<main class="mt-28 px-4">
-  <!-- Page content here -->
+<!-- Push content below fixed header -->
+<main class="pt-28 sm:pt-32 md:pt-36">
+  <!-- Your page content goes here -->
 </main>
+
+<style>
+  /* Hide scrollbar but keep scrollable */
+  .scrollbar-hide {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;     /* Firefox */
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;             /* Chrome, Safari, Opera */
+  }
+</style>

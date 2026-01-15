@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,404 +7,241 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
 </head>
 
-<body class="bg-gray-100">
+<body class="bg-gray-100 min-h-screen">
+
     <!-- Header -->
     <header class="bg-white shadow-sm">
-        <%-include("../../views/partials/user/header")-%>
+        <%- include("../../views/partials/user/header") -%>
     </header>
 
-    
-    <div class="bg-white py-4 px-4 rounded-xl shadow-md mb-6 mt-4 mx-4">
-        <form id="filterForm" action="/products-user" method="GET"
-            class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
-            <!--  Search -->
-            
-               <div class="relative w-full md:w-1/3">
-    <input
-        type="text"
-        id="searchInput"
-        name="search"
-        value="<%= queryParams.search || '' %>"
-        placeholder="Search products..."
-        class="w-full border rounded-full py-2 pl-10 pr-10 focus:outline-none focus:ring-2 focus:ring-purple-500 text-gray-700"
-    />
+        <!-- Filter Bar -->
+        <div class="bg-white py-5 px-4 sm:px-6 rounded-xl shadow-md mb-6 mt-6">
+            <form id="filterForm" action="/products-user" method="GET"
+                  class="flex flex-col gap-4 sm:flex-row sm:items-end sm:flex-wrap">
 
-    <!-- Search icon -->
-    <i class="fa fa-search absolute left-3 top-2.5 text-gray-400"></i>
+                <!-- Search -->
+                <div class="relative flex-1 min-w-[200px]">
+                    <input type="text" id="searchInput" name="search"
+                           value="<%= queryParams.search || '' %>"
+                           placeholder="Search products..."
+                           class="w-full border border-gray-300 rounded-full py-2.5 pl-10 pr-10 
+                                  focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500
+                                  text-gray-700 placeholder-gray-400" />
 
-    <!-- Clear button -->
-    <button
-        type="button"
-        id="clearSearchBtn"
-        class="absolute right-3 top-2.5 text-gray-400 hover:text-red-500 hidden"
-    >
-        <i class="fa-solid fa-circle-xmark"></i>
-    </button>
-</div>
+                    <i class="fa fa-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
 
-          
+                    <button type="button" id="clearSearchBtn"
+                            class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-red-500 hidden">
+                        <i class="fa-solid fa-circle-xmark text-lg"></i>
+                    </button>
+                </div>
 
-            <!--  Category -->
-            <div class="flex items-center space-x-2">
-                <label for="categorySelect" class="text-sm text-gray-600 font-medium">Category:</label>
-
-                <select id="categorySelect" name="category"
-                    class="border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 text-gray-700">
-
-                    <option value="">All</option>
-
-                    <% categories.forEach(cat=> { %>
-                        <option value="<%= cat.categoryname %>" <%=queryParams.category===cat.categoryname ? 'selected'
-                            : '' %>>
-                            <%= cat.categoryname %>
-                        </option>
+                <!-- Category -->
+                <div class="flex items-center space-x-2 min-w-[180px]">
+                    <label for="categorySelect" class="text-sm text-gray-700 font-medium whitespace-nowrap">Category:</label>
+                    <select id="categorySelect" name="category"
+                            class="border border-gray-300 rounded-lg px-3 py-2.5 flex-1
+                                   focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-gray-700">
+                        <option value="">All</option>
+                        <% categories.forEach(cat => { %>
+                            <option value="<%= cat.categoryname %>" <%= queryParams.category === cat.categoryname ? 'selected' : '' %>>
+                                <%= cat.categoryname %>
+                            </option>
                         <% }) %>
+                    </select>
+                </div>
 
-                </select>
-            </div>
+                <!-- Sort -->
+                <div class="flex items-center space-x-2 min-w-[180px]">
+                    <label for="sortSelect" class="text-sm text-gray-700 font-medium whitespace-nowrap">Sort:</label>
+                    <select id="sortSelect" name="sort"
+                            class="border border-gray-300 rounded-lg px-3 py-2.5 flex-1
+                                   focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-gray-700">
+                        <option value="">Default</option>
+                        <option value="priceasc"  <%= queryParams.sort === 'priceasc'  ? 'selected' : '' %>>Price: Low to High</option>
+                        <option value="pricedesc" <%= queryParams.sort === 'pricedesc' ? 'selected' : '' %>>Price: High to Low</option>
+                        <option value="newest"    <%= queryParams.sort === 'newest'    ? 'selected' : '' %>>Newest</option>
+                        <option value="oldest"    <%= queryParams.sort === 'oldest'    ? 'selected' : '' %>>Oldest</option>
+                        <option value="popular"   <%= queryParams.sort === 'popular'   ? 'selected' : '' %>>Popular</option>
+                    </select>
+                </div>
 
+                <!-- Apply Button -->
+                <button type="submit"
+                        class="bg-purple-600 text-white px-6 py-2.5 rounded-lg hover:bg-purple-700 transition font-medium sm:self-end">
+                    Apply
+                </button>
+            </form>
+        </div>
 
-            <!-- Sort -->
-            <div class="flex items-center space-x-2">
-                <label for="sortSelect" class="text-sm text-gray-600 font-medium">Sort:</label>
-                <select id="sortSelect" name="sort"
-                    class="border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 text-gray-700">
-                    <option value="">Default</option>
-                    <option value="priceasc" <%=queryParams.sort==='priceasc' ? 'selected' : '' %>>Price: Low to High
-                    </option>
-                    <option value="pricedesc" <%=queryParams.sort==='pricedesc' ? 'selected' : '' %>>Price: High to Low
-                    </option>
-                    <option value="newest" <%=queryParams.sort==='newest' ? 'selected' : '' %>>Newest</option>
-                    <option value="oldest" <%=queryParams.sort==='oldest' ? 'selected' : '' %>>Oldest</option>
-                    <option value="popular" <%=queryParams.sort==='popular' ? 'selected' : '' %>>Popular</option>
-                </select>
-            </div>
-
-            <!-- Apply Button -->
-            <button type="submit" class="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition">
-                Apply
-            </button>
-
-        </form>
-    </div>
-
-
-
-    </div>
-    <!-- Breadcrumb -->
-    <div class="container mx-auto mt-4 px-4">
-        <nav class="text-sm">
-            <ol class="list-none p-0 flex">
-                <li class="flex items-center">
-                    <a href="#" class="text-gray-600">Home</a>
-                    <span class="mx-2 text-gray-500">/</span>
-                </li>
-                <li class="text-gray-800 font-medium">Products</li>
+        <!-- Breadcrumb -->
+        <nav class="text-sm mb-6">
+            <ol class="flex items-center space-x-2">
+                <li><a href="/" class="text-gray-600 hover:text-purple-700">Home</a></li>
+                <li class="text-gray-500">/</li>
+                <li class="text-gray-900 font-medium">Products</li>
             </ol>
         </nav>
-    </div>
-
-
-
-    <!-- Main Content -->
-    <main class="container mx-auto mt-4 px-4">
 
         <!-- Products Grid -->
-        <div class="mb-8">
-            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-                <!-- Product 1 -->
+        <div class="mb-10">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 sm:gap-6">
+
                 <% products.forEach(product => { %>
-<div class="group bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all overflow-hidden border relative">
+                <div class="group bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-200 relative flex flex-col">
 
-    <!-- Discount Badge -->
-    <% if (product.discountPercent && product.discountPercent > 0) { %>
-        <div class="absolute top-3 left-3 z-10">
-            <span class="bg-orange-600 text-white text-xs font-bold px-2 py-1 rounded-full shadow">
-                <%= product.discountPercent %>% OFF
-            </span>
-        </div>
-    <% } %>
+                    <!-- Discount Badge -->
+                    <% if (product.discountPercent && product.discountPercent > 0) { %>
+                    <div class="absolute top-3 left-3 z-10">
+                        <span class="bg-orange-600 text-white text-xs font-bold px-2.5 py-1 rounded-full shadow-sm">
+                            <%= product.discountPercent %>% OFF
+                        </span>
+                    </div>
+                    <% } %>
 
-    <!-- Wishlist / Heart Icon -->
-    <div class="absolute top-3 right-3 z-10">
-        <% if (product.inCart) { %>
-            <div class="bg-white/90 p-2 rounded-full shadow-md cursor-not-allowed">
-                <i class="fa-solid fa-heart text-gray-300 opacity-60 text-xl"></i>
-            </div>
-        <% } else { %>
-            <a href="/wishlist/toggle/<%= product._id %>"
-               class="wishlist-btn bg-white p-2 rounded-full shadow-md hover:shadow-lg 
-                      transition-all duration-300 active:scale-90 inline-flex">
+                    <!-- Wishlist -->
+                    <div class="absolute top-3 right-3 z-10">
+                        <% if (product.inCart) { %>
+                        <div class="bg-white/90 p-2.5 rounded-full shadow-md cursor-not-allowed">
+                            <i class="fa-solid fa-heart text-gray-300 opacity-60 text-xl"></i>
+                        </div>
+                        <% } else { %>
+                        <a href="/wishlist/toggle/<%= product._id %>" 
+                           class="wishlist-btn bg-white p-2.5 rounded-full shadow-md hover:shadow-lg transition-all duration-300 active:scale-95 inline-flex items-center justify-center">
+                            <i class="fa-heart text-xl transition-colors duration-300 <%= product.inWishlist ? 'fa-solid text-red-500' : 'fa-regular text-gray-500 hover:text-red-400' %>"></i>
+                        </a>
+                        <% } %>
+                    </div>
 
-                <i class="
-                    fa-heart text-xl transition-colors duration-300
-                    <%= product.inWishlist 
-                        ? 'fa-solid text-red-500'
-                        : 'fa-regular text-gray-500 hover:text-red-400'
-                    %>
-                "></i>
-            </a>
-        <% } %>
-    </div>
+                    <!-- Image -->
+                    <div class="relative pt-[85%] sm:pt-[75%] bg-gray-50 overflow-hidden">
+                        <img src="<%= product.productImage[0]?.url %>"
+                             onclick="window.location.href='/productdetails/<%= product._id %>'"
+                             class="absolute inset-0 w-full h-full object-contain p-4 group-hover:scale-105 transition-transform duration-500 cursor-pointer" />
+                    </div>
 
-    <!-- Product Image -->
-    <div class="w-full h-44 bg-gray-50 flex items-center justify-center overflow-hidden">
-        <img src="<%= product.productImage[0]?.url %>"
-             onclick="window.location.href='/productdetails/<%= product._id %>'"
-             class="w-full h-full object-contain p-3 group-hover:scale-105 transition cursor-pointer" />
-    </div>
+                    <!-- Details -->
+                    <div class="p-4 flex flex-col flex-grow">
+                        <h3 class="font-semibold text-sm sm:text-base text-gray-800 line-clamp-2 min-h-[2.5rem] mb-1">
+                            <%= product.productName %>
+                        </h3>
 
-    <!-- Product Details -->
-    <div class="p-4">
+                        <div class="flex items-center gap-2.5 mt-1 mb-2">
+                            <p class="text-purple-700 font-bold text-lg sm:text-xl">
+                                ₹<%= product.discountedPrice %>
+                            </p>
+                            <% if (product.discountPercent && product.discountPercent > 0) { %>
+                            <p class="text-gray-500 text-sm line-through">
+                                ₹<%= product.originalPrice %>
+                            </p>
+                            <% } %>
+                        </div>
 
-        <!-- Product Name -->
-        <h3 class="font-semibold text-sm text-gray-800 h-10 overflow-hidden leading-tight">
-            <%= product.productName %>
-        </h3>
+                        <div class="flex items-center gap-1 mb-3">
+                            <i class="fas fa-star text-yellow-400 text-sm"></i>
+                            <span class="text-gray-500 text-xs">5</span>
+                        </div>
 
-        <!-- Price Section -->
-        <div class="flex gap-2 items-center mt-1">
-            <!-- Discounted Price -->
-            <p class="text-purple-700 font-bold text-lg">
-                ₹<%= product.discountedPrice%>
-            </p>
+                        <button class="toggle-cart-btn mt-auto w-full rounded-full py-2.5 font-medium text-white transition-all
+                                       <%= product.inCart 
+                                           ? 'bg-green-600 hover:bg-green-700' 
+                                           : (product.quantity <= 0 
+                                               ? 'bg-red-600 cursor-not-allowed' 
+                                               : 'bg-purple-600 hover:bg-purple-700') %>"
+                                data-product-id="<%= product._id %>"
+                                data-in-cart="<%= product.inCart %>"
+                                <%= product.quantity <= 0 ? 'disabled' : '' %>>
 
-            <% if (product.discountPercent && product.discountPercent > 0) { %>
-                <!-- Original Price -->
-                <p class="text-gray-500 text-sm mt-1 line-through">
-                    ₹<%= product.originalPrice %>
-                </p>
-            <% } %>
-        </div>
+                            <i class="fas fa-shopping-cart text-sm mr-2"></i>
+                            <span>
+                                <% if (product.inCart) { %>Go to Cart
+                                <% } else if (product.quantity <= 0) { %>Out of Stock
+                                <% } else { %>Add to Cart<% } %>
+                            </span>
+                        </button>
+                    </div>
+                </div>
+                <% }) %>
 
-        <!-- Rating (Static for now) -->
-        <div class="flex items-center gap-1 mt-1">
-            <i class="fas fa-star text-yellow-400 text-xs"></i>
-            <span class="text-gray-500 text-xs">(5)</span>
-        </div>
-
-        <!-- Add to Cart Button -->
-        <button
-            class="toggle-cart-btn mt-3 w-full text-center rounded-full py-2 font-medium text-white
-                   transition
-                   <%= product.inCart 
-                ? 'bg-green-600 hover:bg-green-700 cursor-pointer' 
-                : (product.quantity <= 0 
-                    ? 'bg-red-600 hover:bg-red-700 cursor-not-allowed' 
-                    : 'bg-purple-600 hover:bg-purple-700 cursor-pointer') %>"
-            data-product-id="<%= product._id %>"
-            data-in-cart="<%= product.inCart %>"
-            <%= product.quantity <= 0 ? 'disabled' : '' %>>
-
-            <i class="fas fa-shopping-cart text-xs mr-1"></i>
-            <span>
-  <% if (product.inCart) { %>
-    Go to Cart
-  <% } else if (product.quantity <= 0) { %>
-    Out of Stock
-  <% } else { %>
-    Add to Cart
-  <% } %>
-</span>
-        </button>
-
-    </div>
-</div>
-
-<% }) %>
-
-                
             </div>
         </div>
 
         <!-- Pagination -->
-        <div class="flex justify-center items-center my-6">
-            <nav class="flex items-center space-x-1">
-                <% if (currentPage> 1) { %>
-                    <a href="?<%= new URLSearchParams({ ...queryParams, page: currentPage - 1 }).toString() %>"
-                        class="px-3 py-1 rounded border border-gray-300 text-sm">
-                        <i class="fas fa-chevron-left text-xs"></i>
-                    </a>
-                    <% } %>
+        <div class="flex justify-center my-10">
+            <nav class="inline-flex items-center rounded-lg border border-gray-300 shadow-sm">
+                <% if (currentPage > 1) { %>
+                <a href="?<%= new URLSearchParams({ ...queryParams, page: currentPage - 1 }).toString() %>"
+                   class="px-4 py-2 border-r border-gray-300 text-gray-700 hover:bg-gray-50">
+                    <i class="fas fa-chevron-left"></i>
+                </a>
+                <% } %>
 
-                        <% for (let i=1; i <=totalPages; i++) { %>
-                            <a href="?<%= new URLSearchParams({ ...queryParams, page: i }).toString() %>"
-                                class="px-3 py-1 rounded border border-gray-300 text-sm <%= i === currentPage ? 'bg-blue-600 text-white' : '' %>">
-                                <%= i %>
-                            </a>
-                            <% } %>
+                <% for (let i = 1; i <= totalPages; i++) { %>
+                <a href="?<%= new URLSearchParams({ ...queryParams, page: i }).toString() %>"
+                   class="px-4 py-2 border-r border-gray-300 text-sm <%= i === currentPage ? 'bg-purple-600 text-white' : 'text-gray-700 hover:bg-gray-50' %>">
+                    <%= i %>
+                </a>
+                <% } %>
 
-                                <% if (currentPage < totalPages) { %>
-                                    <a href="?<%= new URLSearchParams({ ...queryParams, page: currentPage + 1 }).toString() %>"
-                                        class="px-3 py-1 rounded border border-gray-300 text-sm">
-                                        <i class="fas fa-chevron-right text-xs"></i>
-                                    </a>
-                                    <% } %>
+                <% if (currentPage < totalPages) { %>
+                <a href="?<%= new URLSearchParams({ ...queryParams, page: currentPage + 1 }).toString() %>"
+                   class="px-4 py-2 text-gray-700 hover:bg-gray-50">
+                    <i class="fas fa-chevron-right"></i>
+                </a>
+                <% } %>
             </nav>
         </div>
 
-    </main>
+    </div>
 
     <!-- Footer -->
     <footer class="bg-indigo-900 text-white mt-12">
-        <%-include("../../views/partials/user/footer")-%>
+        <%- include("../../views/partials/user/footer") -%>
     </footer>
 
-
-    
     <script>
-        const filterForm = document.getElementById('filterForm');
-        document.getElementById('sortSelect').addEventListener('change', () => {
-            filterForm.submit();
-        })
-        document.getElementById('categorySelect').addEventListener('change', () => {
-            filterForm.submit()
-        })
-
-
-
-        const sortSelect = document.getElementById('sortSelect');
-
-        sortSelect.addEventListener('change', async function () {
-            const selectedValue = sortSelect.value;
-
-            try {
-                const response = await fetch(`/products-user?sort=${selectedValue}&format=json`, {
-                    method: 'GET'
-                });
-
-                if (response.ok) {
-                    try {
-                        const data = await response.json();
-                        if (data.status === 'success' && data.products) {
-                            const productContainer = document.querySelector('.grid.grid-cols-2.md\\:grid-cols-3.lg\\:grid-cols-4.gap-4');
-                            productContainer.innerHTML = '';
-
-                            data.products.forEach(product => {
-                                const productCard = document.createElement('div');
-                                productCard.className = 'bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-all';
-                                productCard.innerHTML = `
-                            <a href="#">
-                                <img onclick="window.location.href = '/productdetails/${product._id}'" 
-                                    src="${product.productImage[0]}" 
-                                    alt="Product" 
-                                    class="w-full h-40 object-cover">
-                                <div class="p-4">
-                                    <div class="flex items-center mb-2">
-                                        <div class="flex text-yellow-400">
-                                            <i class="fas fa-star text-xs"></i>
-                                            <i class="fas fa-star text-xs"></i>
-                                            <i class="fas fa-star text-xs"></i>
-                                            <i class="fas fa-star text-xs"></i>
-                                            <i class="fas fa-star text-xs"></i>
-                                        </div>
-                                        <span class="text-xs text-gray-500 ml-1">(5)</span>
-                                    </div>
-                                    <h3 class="font-medium text-sm mb-1 truncate">${product.productName}</h3>
-                                    <p class="text-gray-900 font-bold text-sm">${product.price}</p>
-                                    <button class="mt-2 w-full text-center bg-gray-200 rounded-full p-1">
-                                        <i class="fas fa-shopping-cart text-xs"></i>
-                                    </button>
-                                </div>
-                            </a>
-                        `;
-                                productContainer.appendChild(productCard);
-                            });
-                        } else {
-                            console.error('Invalid data format from server');
-                        }
-                    } catch (parseError) {
-
-                        console.error('Error parsing response as JSON:', parseError);
-
-                        window.location.href = `/products-user?sort=${selectedValue}`;
-                    }
-                } else {
-                    console.error('Error with sorting request:', response.status);
-
-                    window.location.href = `/products-user?sort=${selectedValue}`;
-                }
-            } catch (error) {
-                console.error('Fetch error:', error);
-
-                window.location.href = `/products-user?sort=${selectedValue}`;
-            }
+        // ──────────────────────────────────────────────
+        //  Filter auto-submit on select change
+        // ──────────────────────────────────────────────
+        document.getElementById('sortSelect')?.addEventListener('change', () => {
+            document.getElementById('filterForm').submit();
         });
 
-        const categorySelect = document.getElementById('categorySelect');
-
-       
-        categorySelect.addEventListener('change', async function () {
-            const selectedCategory = categorySelect.value;
-            const selectedSort = sortSelect.value;
-
-            try {
-                const response = await fetch(`/products-user?category=${selectedCategory}&sort=${selectedSort}&format=json`);
-                if (response.ok) {
-                    const data = await response.json();
-                    if (data.status === 'success' && data.products) {
-                        const productContainer = document.querySelector('.grid.grid-cols-2.md\\:grid-cols-3.lg\\:grid-cols-4.gap-4');
-                        productContainer.innerHTML = '';
-
-                        data.products.forEach(product => {
-                            const productCard = document.createElement('div');
-                            productCard.className = 'bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-all';
-                            productCard.innerHTML = `
-            <a href="#">
-              <img onclick="window.location.href = '/productdetails/${product._id}'"
-                   src="${product.productImage[0]}"
-                   alt="Product"
-                   class="w-full h-40 object-cover">
-              <div class="p-4">
-                <div class="flex items-center mb-2">
-                  <div class="flex text-yellow-400">
-                    <i class="fas fa-star text-xs"></i>
-                    <i class="fas fa-star text-xs"></i>
-                    <i class="fas fa-star text-xs"></i>
-                    <i class="fas fa-star text-xs"></i>
-                    <i class="fas fa-star text-xs"></i>
-                  </div>
-                  <span class="text-xs text-gray-500 ml-1">(5)</span>
-                </div>
-                <h3 class="font-medium text-sm mb-1 truncate">${product.productName}</h3>
-                <p class="text-gray-900 font-bold text-sm">${product.price}</p>
-                <button class="mt-2 w-full text-center bg-gray-200 rounded-full p-1">
-                  <i class="fas fa-shopping-cart text-xs"></i>
-                </button>
-              </div>
-            </a>
-          `;
-                            productContainer.appendChild(productCard);
-                        });
-                    }
-                } else {
-                    window.location.href = `/products-user?category=${selectedCategory}&sort=${selectedSort}`;
-                }
-            } catch (error) {
-                console.error('Category fetch error:', error);
-                window.location.href = `/products-user?category=${selectedCategory}&sort=${selectedSort}`;
-            }
+        document.getElementById('categorySelect')?.addEventListener('change', () => {
+            document.getElementById('filterForm').submit();
         });
 
+        // ──────────────────────────────────────────────
+        //  Search clear button
+        // ──────────────────────────────────────────────
+        const searchInput = document.getElementById("searchInput");
+        const clearBtn = document.getElementById("clearSearchBtn");
 
-    
+        if (searchInput && clearBtn) {
+            clearBtn.classList.toggle("hidden", !searchInput.value.trim());
 
+            searchInput.addEventListener("input", () => {
+                clearBtn.classList.toggle("hidden", !searchInput.value.trim());
+            });
 
-        const isLoggedIn = ' <%= isLoggedIn ? "true" : "false" %>';
+            clearBtn.addEventListener("click", () => {
+                window.location.href = "/products-user";
+            });
+        }
+
+        // ──────────────────────────────────────────────
+        //  Add to Cart / Go to Cart
+        // ──────────────────────────────────────────────
+        const isLoggedIn = '<%= isLoggedIn ? "true" : "false" %>';
 
         document.addEventListener("DOMContentLoaded", () => {
             document.querySelectorAll(".toggle-cart-btn").forEach(button => {
-                button.addEventListener("click", async () => {
-
-                    if (button.disabled || button.classList.contains("bg-red-600")) {
-                e.preventDefault();
-                return;
-            }
-
+                button.addEventListener("click", async (e) => {
+                    if (button.disabled) return;
 
                     if (isLoggedIn === "false") {
                         window.location.href = "/login";
@@ -424,61 +260,35 @@
                         const response = await fetch(`/add-to-cart/${productId}`, { method: "GET" });
                         if (response.ok) {
                             button.dataset.inCart = "true";
-                            button.classList.remove("bg-purple-600","hover:bg-purple-700");
-                            button.classList.add("bg-green-600","hover:bg-green-700");
-                            button.querySelector("span").innerText = "Go to Cart";
-                            button.disabled = false;
+                            button.classList.remove("bg-purple-600", "hover:bg-purple-700");
+                            button.classList.add("bg-green-600", "hover:bg-green-700");
+                            button.querySelector("span").textContent = "Go to Cart";
                         } else {
-                    button.classList.remove("bg-purple-600", "hover:bg-purple-700");
-                    button.classList.add("bg-red-600", "hover:bg-red-700");
-                    button.querySelector("span").innerText = "Out of Stock";
-                    button.disabled = true;
+                            button.classList.remove("bg-purple-600", "hover:bg-purple-700");
+                            button.classList.add("bg-red-600", "hover:bg-red-700");
+                            button.querySelector("span").textContent = "Out of Stock";
+                            button.disabled = true;
 
-
-                             Swal.fire({
-      icon: 'error',
-      title: 'Out of Stock',
-      text: 'This product is currently unavailable.',
-      confirmButtonColor: '#7c3aed'
-    });
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Out of Stock',
+                                text: 'This product is currently unavailable.',
+                                confirmButtonColor: '#7c3aed'
+                            });
                         }
                     } catch (error) {
                         console.error(error);
-                         Swal.fire({
-    icon: 'error',
-    title: 'Oops!',
-    text: 'Something went wrong. Please try again.',
-    confirmButtonColor: '#7c3aed'
-  });
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Oops!',
+                            text: 'Something went wrong. Please try again.',
+                            confirmButtonColor: '#7c3aed'
+                        });
                     }
                 });
             });
         });
-
-
-  const searchInput = document.getElementById("searchInput");
-  const clearBtn = document.getElementById("clearSearchBtn");
-
-  if (searchInput && clearBtn) {
-    // Show clear button if value exists on load
-    clearBtn.classList.toggle("hidden", !searchInput.value);
-
-    // Toggle while typing
-    searchInput.addEventListener("input", () => {
-      clearBtn.classList.toggle("hidden", !searchInput.value);
-    });
-
-    // Clear search + reset filters
-    clearBtn.addEventListener("click", () => {
-      window.location.href = "/products-user";
-    });
-  }
-
-
-
-
-
     </script>
-</body>
 
+</body>
 </html>
