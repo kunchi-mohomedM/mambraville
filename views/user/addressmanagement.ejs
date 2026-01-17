@@ -210,107 +210,106 @@
               Add New Address
             </button>
 
-            <form
-              id="addressForm"
-              method="POST"
-              action="/add-address"
-              class="hidden mt-4 space-y-4"
-            >
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label class="block text-sm font-medium text-gray-700"
-                    >Full Name *</label
-                  >
-                  <input
-                    type="text"
-                    name="fullname"
-                    minlength="3"
-                    pattern="^[A-Za-z]+$"
-                    title="Only letter and spaces allowed"
-                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring focus:ring-purple-200"
-                  />
-                </div>
-                <div>
-                  <label class="block text-sm font-medium text-gray-700"
-                    >Phone Number *</label
-                  >
-                  <input
-                    type="tel"
-                    name="phone"
-                    pattern="^[6-9][0-9]{9}$"
-                    title="Enter valid 10-digit Indian mobile number"
-                   
-                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
-                  />
-                </div>
-              </div>
+           <!-- Replace your current <form id="addressForm"> ... </form> with this -->
 
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label class="block text-sm font-medium text-gray-700"
-                    >Pincode *</label
-                  >
-                  <input
-                    type="text"
-                    name="pincode"
-                    pattern="^[1-9][0-9]{5}$"
-                    title="Enter valid 6-digit pincode"
-                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
-                  />
-                </div>
-              </div>
+<form id="addressForm" method="POST" action="/add-address" class="hidden mt-4 space-y-5">
 
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label class="block text-sm font-medium text-gray-700"
-                    >City/Town *</label
-                  >
-                  <input
-                    type="text"
-                    name="city"
-                    pattern="^[A-Za-z ]+$"
-                    title="City name should contain only letters"
-                    
-                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
-                  />
-                </div>
-                <div>
-                  <label class="block text-sm font-medium text-gray-700"
-                    >State *</label
-                  >
-                  <select
-                    name="state"
-                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring focus:ring-purple-200"
-                  >
-                    <option value="">Select your state</option>
-                    <option>Maharashtra</option>
-                    <option>Delhi</option>
-                    <option>Karnataka</option>
-                    <option>Kerala</option>
-                    <option>Tamilnadu</option>
-                    <option>Andra</option>
-                    <option>Telungana</option>
-                    <!-- Add more states as needed -->
-                  </select>
-                </div>
-              </div>
+  <!-- Full Name -->
+  <div>
+    <label class="block text-sm font-medium text-gray-700">Full Name *</label>
+    <input
+      type="text"
+      name="fullname"
+      minlength="3"
+      title="Only letters and spaces, minimum 3 characters"
+      class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring focus:ring-purple-200"
+      placeholder="John Doe"
+    />
+    <p class="error text-red-600 text-sm mt-1 hidden"></p>
+  </div>
 
-              <div class="flex space-x-4">
-                <button
-                  type="submit"
-                  class="w-full bg-purple-600 text-white py-2 rounded-lg hover:bg-purple-700 transition"
-                >
-                  Save Address
-                </button>
-                <button
-                  type="button"
-                  id="cancelAddressForm"
-                  class="w-full border border-gray-300 text-gray-700 py-2 rounded-lg hover:bg-gray-50 transition"
-                >
-                  Cancel
-                </button>
-              </div>
-            </form>
+  <!-- Phone -->
+  <div>
+    <label class="block text-sm font-medium text-gray-700">Phone Number *</label>
+    <input
+      type="tel"
+      name="phone"
+      maxlength="10"
+      title="Valid 10-digit Indian mobile number (starts with 6–9)"
+      class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring focus:ring-purple-200"
+      placeholder="9876543210"
+    />
+    <p class="error text-red-600 text-sm mt-1 hidden"></p>
+  </div>
+
+  <!-- Pincode -->
+  <div>
+    <label class="block text-sm font-medium text-gray-700">Pincode *</label>
+    <input
+      type="text"
+      name="pincode"
+      maxlength="6"
+      title="Valid 6-digit Indian pincode (not starting with 0)"
+      class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring focus:ring-purple-200"
+      placeholder="400001"
+    />
+    <p class="error text-red-600 text-sm mt-1 hidden"></p>
+  </div>
+
+ 
+
+  <!-- City + State side by side -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div>
+      <label class="block text-sm font-medium text-gray-700">City / Town *</label>
+      <input
+        type="text"
+        name="city"
+        title="Only letters and spaces, minimum 2 characters"
+        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring focus:ring-purple-200"
+        placeholder="Mumbai"
+      />
+      <p class="error text-red-600 text-sm mt-1 hidden"></p>
+    </div>
+
+    <div>
+      <label class="block text-sm font-medium text-gray-700">State *</label>
+      <select
+        name="state"
+        required
+        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring focus:ring-purple-200"
+      >
+        <option value="">Select State</option>
+        <option value="Andhra Pradesh">Andhra Pradesh</option>
+        <option value="Delhi">Delhi</option>
+        <option value="Karnataka">Karnataka</option>
+        <option value="Kerala">Kerala</option>
+        <option value="Maharashtra" selected>Maharashtra</option>
+        <option value="Tamil Nadu">Tamil Nadu</option>
+        <option value="Telangana">Telangana</option>
+        <!-- Add more Indian states here -->
+      </select>
+      <p class="error text-red-600 text-sm mt-1 hidden"></p>
+    </div>
+  </div>
+
+  <!-- Buttons -->
+  <div class="flex space-x-4 pt-4">
+    <button
+      type="submit"
+      class="w-full bg-purple-600 text-white py-3 rounded-lg hover:bg-purple-700 font-medium transition"
+    >
+      Save Address
+    </button>
+    <button
+      type="button"
+      id="cancelAddressForm"
+      class="w-full border border-gray-400 text-gray-700 py-3 rounded-lg hover:bg-gray-50 transition"
+    >
+      Cancel
+    </button>
+  </div>
+</form>
           </div>
         </div>
       </div>
@@ -331,40 +330,98 @@
         toggleButton.classList.remove("hidden");
       });
 
-      const form = document.getElementById("addressForm");
+     
+// ... keep your toggle logic the same ...
 
-      form.addEventListener("submit", (e) => {
-        const phone = form.phone.value.trim();
-        const pincode = form.pincode.value.trim();
-        const name = form.fullname.value.trim();
-        const city = form.city.value.trim();
+const form = document.getElementById("addressForm");
 
-        if (!/^[A-Za-z ]{3,}$/.test(name)) {
-          alert(
-            "Full name must contain only letters and at least 3 characters"
-          );
-          e.preventDefault();
-          return;
-        }
+  function showError(input, message) {
+    const errorEl = input.parentElement.querySelector(".error");
+    errorEl.textContent = message;
+    errorEl.classList.remove("hidden");
+    input.classList.add("border-red-500");
+    input.classList.remove("border-green-500");
+  }
 
-        if (!/^[6-9][0-9]{9}$/.test(phone)) {
-          alert("Enter a valid 10-digit Indian mobile number");
-          e.preventDefault();
-          return;
-        }
+  function clearError(input) {
+    const errorEl = input.parentElement.querySelector(".error");
+    errorEl.textContent = "";
+    errorEl.classList.add("hidden");
+    input.classList.remove("border-red-500");
+    input.classList.add("border-green-500");
+  }
 
-        if (!/^[1-9][0-9]{5}$/.test(pincode)) {
-          alert("Enter a valid 6-digit pincode");
-          e.preventDefault();
-          return;
-        }
+  // Optional: live validation on blur
+  form.querySelectorAll("input, select").forEach(field => {
+    field.addEventListener("blur", () => {
+      validateField(field);
+    });
+  });
 
-        if (!/^[A-Za-z ]+$/.test(city)) {
-          alert("City name must contain only letters");
-          e.preventDefault();
-          return;
-        }
-      });
+  function validateField(field) {
+    clearError(field);
+
+    if (!field.value.trim() && field.required) {
+      showError(field, "This field is required");
+      return false;
+    }
+
+    if (field.name === "fullname") {
+      if (field.value.trim().length < 3 || !/^[A-Za-z ]+$/.test(field.value.trim())) {
+        showError(field, "Only letters & spaces, minimum 3 characters");
+        return false;
+      }
+    }
+
+    if (field.name === "phone") {
+      if (!/^[6-9]\d{9}$/.test(field.value.trim())) {
+        showError(field, "Enter valid 10-digit Indian mobile number");
+        return false;
+      }
+    }
+
+    if (field.name === "pincode") {
+      if (!/^[1-9]\d{5}$/.test(field.value.trim())) {
+        showError(field, "Enter valid 6-digit Indian pincode");
+        return false;
+      }
+    }
+
+    if (field.name === "city") {
+      if (!/^[A-Za-z ]{2,}$/.test(field.value.trim())) {
+        showError(field, "Only letters and spaces, minimum 2 characters");
+        return false;
+      }
+    }
+
+    if (field.name === "state") {
+      if (!field.value) {
+        showError(field, "Please select a state");
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  form.addEventListener("submit", (e) => {
+    let isValid = true;
+
+    // Validate all fields
+    form.querySelectorAll("input, select").forEach(field => {
+      if (!validateField(field)) {
+        isValid = false;
+      }
+    });
+
+    if (!isValid) {
+      e.preventDefault();          
+      alert("Please fix the errors shown in red."); 
+    }
+  });
+
+
+
     </script>
   </body>
 </html>
