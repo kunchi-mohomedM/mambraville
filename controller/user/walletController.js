@@ -20,14 +20,30 @@ try {
       });
     }
 
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 5; 
+    const skip = (page - 1) * limit;
+
 
     wallet.transactions.sort(
       (a, b) => b.createdAt - a.createdAt
     );
+
+    const totalTransactions = wallet.transactions.length;
+    const paginatedTransactions = wallet.transactions.slice(skip, skip + limit);
+
+    const totalPages = Math.ceil(totalTransactions / limit);
     
     res.render("wallet",{
         wallet,
-        user
+       transactions: paginatedTransactions,
+        user,
+        page,
+      totalPages,
+      limit,
+      hasNext: page < totalPages,
+      hasPrev: page > 1,
+      totalTransactions
     })
 } catch (error) {
     console.log(error)
