@@ -19,64 +19,76 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
         <!-- Filter Bar -->
-        <div class="sticky top-0 z-30 bg-white py-5 px-4 sm:px-6 rounded-xl shadow-md mb-6 mt-6">
-            <form id="filterForm" action="/products-user" method="GET"
-                  class="flex flex-col gap-4 sm:flex-row sm:items-end sm:flex-wrap">
+       <!-- Filter Bar -->
+<div class="sticky top-0 z-30 bg-white py-5 px-4 sm:px-6 rounded-xl shadow-md mb-6 mt-6">
+  <form id="filterForm" action="/products-user" method="GET"
+        class="flex flex-col gap-4 sm:flex-row sm:items-end sm:flex-wrap">
 
-                <!-- Search -->
-                <div class="relative flex-1 min-w-[200px]">
-                    <input type="text" id="searchInput" name="search"
-                           value="<%= queryParams.search || '' %>"
-                           placeholder="Search products..."
-                           class="w-full border border-gray-300 rounded-full py-2.5 pl-10 pr-10 
-                                  focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500
-                                  text-gray-700 placeholder-gray-400" />
+    <!-- Search -->
+    <div class="relative flex-1 min-w-[200px]">
+      <input type="text" id="searchInput" name="search"
+             value="<%= queryParams.search || '' %>"
+             placeholder="Search products..."
+             class="w-full border border-gray-300 rounded-full py-2.5 pl-10 pr-10 
+                    focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500
+                    text-gray-700 placeholder-gray-400" />
 
-                    <i class="fa fa-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+      <i class="fa fa-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
 
-                    <button type="button" id="clearSearchBtn"
-                            class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-red-500 hidden">
-                        <i class="fa-solid fa-circle-xmark text-lg"></i>
-                    </button>
-                </div>
+      <button type="button" id="clearSearchBtn"
+              class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-red-500 hidden">
+        <i class="fa-solid fa-circle-xmark text-lg"></i>
+      </button>
+    </div>
 
-                <!-- Category -->
-                <div class="flex items-center space-x-2 min-w-[180px]">
-                    <label for="categorySelect" class="text-sm text-gray-700 font-medium whitespace-nowrap">Category:</label>
-                    <select id="categorySelect" name="category"
-                            class="border border-gray-300 rounded-lg px-3 py-2.5 flex-1
-                                   focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-gray-700">
-                        <option value="">All</option>
-                        <% categories.forEach(cat => { %>
-                            <option value="<%= cat.categoryname %>" <%= queryParams.category === cat.categoryname ? 'selected' : '' %>>
-                                <%= cat.categoryname %>
-                            </option>
-                        <% }) %>
-                    </select>
-                </div>
+    <!-- Category -->
+    <div class="flex items-center space-x-2 min-w-[180px]">
+      <label for="categorySelect" class="text-sm text-gray-700 font-medium whitespace-nowrap">Category:</label>
+      <select id="categorySelect" name="category"
+              class="border border-gray-300 rounded-lg px-3 py-2.5 flex-1
+                     focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-gray-700">
+        <option value="">All</option>
+        <% categories.forEach(cat => { %>
+          <option value="<%= cat.categoryname %>" <%= queryParams.category === cat.categoryname ? 'selected' : '' %>>
+            <%= cat.categoryname %>
+          </option>
+        <% }) %>
+      </select>
+    </div>
 
-                <!-- Sort -->
-                <div class="flex items-center space-x-2 min-w-[180px]">
-                    <label for="sortSelect" class="text-sm text-gray-700 font-medium whitespace-nowrap">Sort:</label>
-                    <select id="sortSelect" name="sort"
-                            class="border border-gray-300 rounded-lg px-3 py-2.5 flex-1
-                                   focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-gray-700">
-                        <option value="">Default</option>
-                        <option value="priceasc"  <%= queryParams.sort === 'priceasc'  ? 'selected' : '' %>>Price: Low to High</option>
-                        <option value="pricedesc" <%= queryParams.sort === 'pricedesc' ? 'selected' : '' %>>Price: High to Low</option>
-                        <option value="newest"    <%= queryParams.sort === 'newest'    ? 'selected' : '' %>>Newest</option>
-                        <option value="oldest"    <%= queryParams.sort === 'oldest'    ? 'selected' : '' %>>Oldest</option>
-                        <option value="popular"   <%= queryParams.sort === 'popular'   ? 'selected' : '' %>>Popular</option>
-                    </select>
-                </div>
+    <!-- Sort -->
+    <div class="flex items-center space-x-2 min-w-[180px]">
+      <label for="sortSelect" class="text-sm text-gray-700 font-medium whitespace-nowrap">Sort:</label>
+      <select id="sortSelect" name="sort"
+              class="border border-gray-300 rounded-lg px-3 py-2.5 flex-1
+                     focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-gray-700">
+        <option value="">Default</option>
+        <option value="priceasc"  <%= queryParams.sort === 'priceasc'  ? 'selected' : '' %>>Price: Low to High</option>
+        <option value="pricedesc" <%= queryParams.sort === 'pricedesc' ? 'selected' : '' %>>Price: High to Low</option>
+        <option value="newest"    <%= queryParams.sort === 'newest'    ? 'selected' : '' %>>Newest</option>
+        <option value="oldest"    <%= queryParams.sort === 'oldest'    ? 'selected' : '' %>>Oldest</option>
+        <option value="popular"   <%= queryParams.sort === 'popular'   ? 'selected' : '' %>>Popular</option>
+      </select>
+    </div>
 
-                <!-- Apply Button -->
-                <button type="submit"
-                        class="bg-purple-600 text-white px-6 py-2.5 rounded-lg hover:bg-purple-700 transition font-medium sm:self-end">
-                    Apply
-                </button>
-            </form>
-        </div>
+    <!-- Buttons group -->
+    <div class="flex flex-col sm:flex-row gap-3 sm:self-end">
+      <!-- Clear Filters Button -->
+      <button type="button" id="clearFiltersBtn"
+              class="bg-white border border-gray-400 text-gray-700 px-6 py-2.5 rounded-lg 
+                     hover:bg-gray-50 hover:border-gray-500 transition font-medium min-w-[120px]">
+        Clear Filters
+      </button>
+
+      <!-- Apply Button -->
+      <button type="submit"
+              class="bg-purple-600 text-white px-6 py-2.5 rounded-lg hover:bg-purple-700 transition font-medium min-w-[120px]">
+        Apply
+      </button>
+    </div>
+
+  </form>
+</div>
 
         <!-- Breadcrumb -->
         <nav class="text-sm mb-6">
@@ -204,9 +216,14 @@
     </footer>
 
     <script>
-        // ──────────────────────────────────────────────
-        //  Filter auto-submit on select change
-        // ──────────────────────────────────────────────
+
+
+document.getElementById('clearFiltersBtn')?.addEventListener('click', () => {
+  window.location.href = "/products-user";
+});
+
+
+       
         document.getElementById('sortSelect')?.addEventListener('change', () => {
             document.getElementById('filterForm').submit();
         });
@@ -215,9 +232,7 @@
             document.getElementById('filterForm').submit();
         });
 
-        // ──────────────────────────────────────────────
-        //  Search clear button
-        // ──────────────────────────────────────────────
+  
         const searchInput = document.getElementById("searchInput");
         const clearBtn = document.getElementById("clearSearchBtn");
 
@@ -233,9 +248,6 @@
             });
         }
 
-        // ──────────────────────────────────────────────
-        //  Add to Cart / Go to Cart
-        // ──────────────────────────────────────────────
         const isLoggedIn = '<%= isLoggedIn ? "true" : "false" %>';
 
         document.addEventListener("DOMContentLoaded", () => {
