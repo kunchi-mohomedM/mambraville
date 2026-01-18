@@ -133,7 +133,9 @@
                     <img src="<%= first.image %>" class="w-12 h-12 object-cover rounded">
 
                     <div class="flex flex-col">
-                        <span class="font-medium"><%= first.name %></span>
+                        <span class="font-medium line-clamp-2 max-w-[180px] md:max-w-[220px]">
+    <%= first.name %>
+</span>
 
                         <% if (order.items.length > 1) { %>
                             <span class="text-xs text-gray-500">
