@@ -152,12 +152,13 @@ const loadproductdetails = async (req, res) => {
   try {
     const productId = req.params.id;
    
+
    
     let productDoc = await Products.findOne({
       _id: productId,
       isDeleted: false
     });
-
+    
     if (!productDoc) {
       return res.redirect("/products-user");
     }

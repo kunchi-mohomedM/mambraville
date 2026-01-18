@@ -45,7 +45,7 @@ const addTocart = async (req, res) => {
     }
 
     if (product.quantity <= 0) {
-      return res.status(400).send("Out of stock");
+      return res.status(400).json({success:false,message:"Out of stock"})
     }
 
     let cart = await Cart.findOne({ userId });
