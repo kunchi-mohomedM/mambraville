@@ -1,16 +1,7 @@
 const mongoose = require("mongoose");
 const {Schema} = mongoose;
 
-const addressSchema=new Schema({
-            fullname:{type:String,required:true},
-            phone:{type:String,required:true},
-            pincode:{type:String,required:true},
-            addressLine:{type:String,required:true},
-            locality:{type:String,required:true},
-            city:{type:String,required:true},
-            state:{type:String,required:true},
-            isDefault:{type:Boolean,default:false}
-},{_id:true});
+
 
 const userSchema = new Schema({
     fullname:{
@@ -50,7 +41,7 @@ const userSchema = new Schema({
         }
     ],
 
-    address:[addressSchema],
+   
     
     
 },{timestamps:true})

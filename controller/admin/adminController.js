@@ -2,6 +2,7 @@ const Admin=require("../../models/adminModel");
 const bcrypt=require("bcryptjs");
 const Users= require('../../models/userSchema')
 
+
 const loadlogin=async(req,res)=>{
     try {
         res.render("adminlogin")
@@ -49,6 +50,12 @@ const toggleBlockUser = async (req, res) => {
         
         user.isBlocked = !user.isBlocked;
         await user.save();
+
+        if (user.isBlocked) {
+            // We don't destroy session here (hard without session store)
+            // → middleware will handle it on next request
+            console.log(`User ${userId} blocked → sessions will be cleared on next action`);
+        }
 
         return res.status(200).json({
             success: true,
