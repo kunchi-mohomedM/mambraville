@@ -2,7 +2,7 @@ const Order = require('../../models/orderSchema'); // Adjust path if needed
 
 const loadDashboard = async (req, res) => {
   try {
-    // 1. Get filter parameters
+    // Get filter parameters
     const { filter = 'daily', fromDate, toDate } = req.query;
 
     // Default date range: Today
@@ -11,7 +11,7 @@ const loadDashboard = async (req, res) => {
     startDate.setHours(0, 0, 0, 0);
     endDate.setHours(23, 59, 59, 999);
 
-    // 2. Calculate date range based on filter
+    // Calculate date range based on filter
     if (filter === 'daily') {
       // Today only
     } else if (filter === 'weekly') {
@@ -42,7 +42,7 @@ const loadDashboard = async (req, res) => {
       orderedAt: { $gte: startDate, $lte: endDate }
     };
 
-    // 3. Run all queries in parallel
+    //  Run all queries in parallel
     const [
       latestOrders,
       overallStats,
