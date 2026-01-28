@@ -430,23 +430,27 @@ const emailverification = async (req, res) => {
     const user = await User.findOne({ email });
     if (!user) {
       return res.render("forgotemailpage", {
-        message: "User with this email is does not exists",
+        message: "No account found with this email address.",
       });
     }
     const otp = generateOtp();
-
-    const emailSent = await sendVerificationEmail(email, otp);
     console.log(otp);
+    
+    
+    const emailSent = await sendVerificationEmail(email, otp);
+   
     if (!emailSent) {
-      return res.json("email-error");
+      return res.render("forgotemailpage", { message: "Failed to send email" });
     }
     req.session.userOtp = otp;
 
     res.render("passwordrecovery", { email });
 
-    console.log(user);
+    
   } catch (error) {
     console.error("error");
+    res.render("forgotemailpage", {
+      message: "Something went wrong. Please try again later.",})
   }
 };
 
@@ -460,6 +464,7 @@ const loadLogin = async (req, res) => {
 
 const loadresetpassword = async (req, res) => {
   try {
+    
     res.render("passwordrecovery");
   } catch (error) {
     console.log("Error occured while forgot password recovery email page");
@@ -480,7 +485,7 @@ const login = async (req, res) => {
     const user = await User.findOne({
       email: email.toLowerCase(),
     });
-    //console.log(user)
+    
 
     if (!user) {
       return res.status(401).render("signin", {
@@ -521,6 +526,7 @@ const login = async (req, res) => {
   }
 };
 
+
 const resetpasswordverification = async (req, res) => {
   try {
     const { newPassword, otp, userEmail } = req.body;
@@ -538,13 +544,19 @@ const resetpasswordverification = async (req, res) => {
     }
     const passwordHash = await securePassword(newPassword);
     user.password = passwordHash;
-    await user.save();
+    await user.save({ validateBeforeSave: false });
     return res
       .status(200)
       .json({ success: true, message: "Password changed successfully" });
   } catch (error) {
-    console.log("Error occured while reset password.");
-  }
+  console.error("Reset password error:", error);
+  // Optional: send real error to client in development only
+  return res.status(500).json({
+    success: false,
+    message: "Server error while resetting password",
+    error: process.env.NODE_ENV === 'development' ? error.message : undefined
+  });
+}
 };
 
 const logout = (req, res) => {
@@ -560,6 +572,7 @@ const logout = (req, res) => {
 
 const forgotpassword = async (req, res) => {
   try {
+    
     res.render("forgotemailpage");
   } catch (error) {
     console.log("Error occured while forgot password recovery email page");
@@ -706,14 +719,17 @@ module.exports = {
   logout,
   verifyOtp,
   resendOtp,
-  emailverification,
-  loadresetpassword,
-  forgotpassword,
-  resetpasswordverification,
+  
+  
+  
   loaduserprofile,
   loadaddressmanagement,
   loadChangePassword,
   changePassword,
   updateUserName,
-  loadAboutpage
+  loadAboutpage,
+    forgotpassword,
+    resetpasswordverification,
+    loadresetpassword,
+    emailverification,
 };

@@ -99,7 +99,7 @@ const error = req.query.error;
     const customMessage = req.query.message ? decodeURIComponent(req.query.message) : null;
 
     let mssg = null;
-    let alertType = "warning"; // default
+    let alertType = "warning"; 
 
     if (error === "stock") {
       mssg = "Cannot add more than available stock";

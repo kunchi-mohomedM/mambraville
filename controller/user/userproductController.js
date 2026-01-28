@@ -10,9 +10,8 @@ const loadUserProducts = async (req, res) => {
    
     let query = { isDeleted: false };
 
-    // Pagination variables
     let page = parseInt(req.query.page) || 1;
-    let limit = parseInt(req.query.limit) || 15;
+    let limit = parseInt(req.query.limit) || 4;
     let skip = (page - 1) * limit;
 
     let categoryDoc = null;
@@ -28,13 +27,16 @@ const loadUserProducts = async (req, res) => {
       }
     }
 
-    // Filtering by price range
+    
     if (req.query.minPrice || req.query.maxPrice) {
       query.price = {};
       if (req.query.minPrice) query.price.$gte = Number(req.query.minPrice);
       if (req.query.maxPrice) query.price.$lte = Number(req.query.maxPrice);
     }
 
+
+    
+    
     // Searching
     if (req.query.search) {
       query.productName = { $regex: req.query.search, $options: "i" }; 
@@ -63,14 +65,14 @@ const loadUserProducts = async (req, res) => {
     }
 
     const totalProducts = await Products.countDocuments(query);
+   
 
     let products = await Products.find(query)
       .sort(sortOptions)
       .skip(skip)
       .limit(limit);
 
-      
-
+     
   products = products.map(product => {
   product.isOutOfStock = product.quantity <= 0;
   return product;
