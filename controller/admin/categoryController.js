@@ -82,18 +82,41 @@ const loadaddCategory = async(req,res)=>{
     }
 }
 
-const editCategory = async(req,res)=>{
+const editCategory = async (req, res) => {
     try {
-        const {categoryId,categoryname,categorydesc}=req.body;
-       
-        const updatedCategory=await Category.findByIdAndUpdate(categoryId , {categoryname , description:categorydesc});
-        res.redirect("/admin/category?mssg=Category edited successfully.");
-    } catch (error) {
-        console.error("Error editing category: ",error);
-        res.redirect('/admin/category?mssg=Entered Category name already exists.Try again.')
-    }
-}
+        const { categoryId, categoryname, categorydesc } = req.body;
 
+        if (!categoryname || typeof categoryname !== 'string' || categoryname.trim() === '') {
+            return res.redirect(`/admin/editCategory/${categoryId}?alert=warning&msg=Category name cannot be empty`);
+        }
+
+        const trimmedName = categoryname.trim();
+
+        const existingCategory = await Category.findOne({
+            categoryname: { $regex: new RegExp(`^${trimmedName}$`, 'i') },
+            _id: { $ne: categoryId }
+        });
+
+        if (existingCategory) {
+            return res.redirect(`/admin/editCategory/${categoryId}?alert=warning&msg=Category name already exists. Please choose another name.`);
+        }
+
+        await Category.findByIdAndUpdate(categoryId, {
+            categoryname: trimmedName,
+            description: categorydesc ? categorydesc.trim() : ''
+        });
+
+        // Success → back to list
+        res.redirect("/admin/category?alert=success&msg=Category updated successfully.");
+        
+    } catch (error) {
+        console.error("Error editing category: ", error);
+        
+        // Redirect back to edit page with error
+        const redirectUrl = `/admin/editCategory/${req.body.categoryId || ''}?alert=error&msg=Error updating category. Please try again.`;
+        res.redirect(redirectUrl);
+    }
+};
 const deleteCategory=async(req,res)=>{
     try{
         const categoryId=req.params.id;

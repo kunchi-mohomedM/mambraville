@@ -89,53 +89,69 @@
         </div>
     </div>
     
-       <script>
+      <script>
     const form = document.getElementById('categoryForm');
+
     form.addEventListener('submit', async function (e) {
-        e.preventDefault(); // Prevent default form submission
+        e.preventDefault();
+
         const categoryName = document.getElementById('category-name').value.trim();
-        const categoryDesc = document.getElementById('category-desc').value.trim();
         const nameError = document.getElementById('name-error');
 
-        // Client-side validation
         if (!categoryName) {
             nameError.classList.remove('hidden');
             return;
-        } else {
-            nameError.classList.add('hidden');
         }
+        nameError.classList.add('hidden');
 
-        // SweetAlert confirmation before editing
+        // Confirmation modal
         const result = await Swal.fire({
-            title: 'Are you sure?',
-            text: "Do you want to save the changes?",
+            title: 'Confirm Update',
+            text: "Do you want to save the changes to this category?",
             icon: 'question',
             showCancelButton: true,
-            confirmButtonColor: '#3085d6',
+            confirmButtonColor: '#6b21a8',
             cancelButtonColor: '#d33',
-            confirmButtonText: 'Yes, save it!'
+            confirmButtonText: 'Yes, Update',
+            cancelButtonText: 'Cancel'
         });
 
         if (result.isConfirmed) {
-            form.submit(); // Proceed with form submission
+            form.submit();   // ← normal POST → server handles redirect
         }
     });
 
-    // Show success message if redirected with ?mssg=
+    // Show alert from URL params (after redirect)
     const urlParams = new URLSearchParams(window.location.search);
-    const message = urlParams.get('mssg');
-    if (message) {
+    const alertType = urlParams.get('alert');
+    const msg = urlParams.get('msg');
+
+    if (msg && alertType) {
+        let icon = 'success';
+        let color = '#10b981'; // green default
+
+        if (alertType === 'warning') {
+            icon = 'warning';
+            color = '#d97706'; // amber
+        } else if (alertType === 'error') {
+            icon = 'error';
+            color = '#dc2626'; // red
+        }
+
         Swal.fire({
-            icon: 'success',
-            title: message,
-            showConfirmButton: false,
-            timer: 1800
+            icon: icon,
+            title: alertType === 'success' ? 'Success' : alertType.charAt(0).toUpperCase() + alertType.slice(1),
+            text: msg,
+            confirmButtonColor: color,
+            confirmButtonText: alertType === 'success' ? 'OK' : 'Got it',
+            timer: alertType === 'success' ? 2200 : undefined,
+            timerProgressBar: alertType === 'success'
         });
     }
 
     function logout() {
         window.location.href = '/admin/logout';
     }
-    </script>
+</script>
 </body>
 </html>
