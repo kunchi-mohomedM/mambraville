@@ -28,6 +28,21 @@ const productSchema = new Schema({
         type:Number,
         default:0,
     },
+    sellingPrice:{
+        type:Number,
+        required:true,
+        min:0,
+    },activeDiscountPercent: {
+      type: Number,
+      default: 0,
+      min: 0,
+      max: 100,
+    },
+    discountAppliedBy: {
+      type: String,
+      enum: ["none", "product", "category"],
+      default: "none",
+    },
     quantity:{
         type:Number,
         required:true,
@@ -49,6 +64,9 @@ const productSchema = new Schema({
         default:"Available"
     },   
 }, {timestamps:true});
+
+productSchema.index({ sellingPrice: 1 });
+productSchema.index({ category: 1, sellingPrice: 1 });
 
 const Product = mongoose.model("Product",productSchema);
 module.exports = Product;
