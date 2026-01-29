@@ -642,6 +642,10 @@ const loadChangePassword = async (req, res) => {
     const userId = req.session.user;
     const user = await User.findById(userId);
 
+    if (!user) {
+      return res.redirect("/pageNotFound");
+    }
+
     res.render("changepassword2", {
       error: null,
       success: null,
@@ -656,17 +660,41 @@ const loadChangePassword = async (req, res) => {
 const changePassword = async (req, res) => {
   try {
     const userId = req.session.user;
-    const { newPassword, confirmPassword } = req.body;
+    const {currentPassword, newPassword, confirmPassword } = req.body;
+
+    const user = await User.findById(userId).select('+password');
+
+    if (!user) {
+      return res.redirect("/pageNotFound");
+    }
+
+    const isMatch = await bcrypt.compare(currentPassword, user.password);
+    if (!isMatch) {
+      return res.render("changepassword2", {
+        error: "Current password is incorrect!",
+        success: null,
+        activePage: "change-password",
+      });
+    }
 
     if (newPassword !== confirmPassword) {
       return res.render("changepassword2", {
-        error: "Password do not match!",
+        error: "New password and confirmation do not match!",
         success: null,
+        activePage:"change-password"
+      });
+    }
+
+    const isSameAsCurrent = await bcrypt.compare(newPassword, user.password);
+    if (isSameAsCurrent) {
+      return res.render("changepassword2", {
+        error: "New password must be different from current password!",
+        success: null,
+        activePage: "change-password",
       });
     }
 
     const hashedPassword = await bcrypt.hash(newPassword, 10);
-
     await User.findByIdAndUpdate(userId, { password: hashedPassword });
 
     return res.render("changepassword2", {
