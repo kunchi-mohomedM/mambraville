@@ -551,6 +551,7 @@ const loadOrderDetails = async (req, res) => {
     if (!userId) return res.redirect("/login");
 
     const order = await Order.findById(orderId).lean();
+    console.log(order)
 
     if (!order) return res.redirect("/");
 

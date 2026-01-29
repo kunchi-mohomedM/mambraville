@@ -83,6 +83,32 @@
           </div>
         </div>
 
+        <!-- Delivery Address -->
+<div class="p-6 border-b border-gray-200 bg-gray-50">
+  <h3 class="text-lg font-semibold text-gray-800 mb-3">Delivery Address</h3>
+  
+  <div class="text-gray-700 leading-relaxed space-y-1">
+    <p class="font-medium"><%= order.address.fullname %></p>
+    <p><%= order.address.addressLine1 %></p>
+    <% if (order.address.addressLine2 && order.address.addressLine2.trim() !== '') { %>
+      <p><%= order.address.addressLine2 %></p>
+    <% } %>
+    <p>
+      <%= order.address.city %>, 
+      <%= order.address.state %> 
+      <% if (order.address.pincode) { %>- <%= order.address.pincode %><% } %>
+    </p>
+    <p class="mt-2">
+      <span class="font-medium">Phone:</span> <%= order.address.phone %>
+    </p>
+    <% if (order.address.landmark && order.address.landmark.trim() !== '') { %>
+      <p class="text-gray-600 text-sm mt-1">
+        Landmark: <%= order.address.landmark %>
+      </p>
+    <% } %>
+  </div>
+</div>
+
         <!-- Order Items Table -->
         <div class="p-6">
           <h2 class="text-xl font-semibold mb-4 text-gray-800">Order Items</h2>
