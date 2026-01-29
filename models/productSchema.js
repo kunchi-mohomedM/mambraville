@@ -28,21 +28,6 @@ const productSchema = new Schema({
         type:Number,
         default:0,
     },
-    sellingPrice:{
-        type:Number,
-        required:true,
-        min:0,
-    },activeDiscountPercent: {
-      type: Number,
-      default: 0,
-      min: 0,
-      max: 100,
-    },
-    discountAppliedBy: {
-      type: String,
-      enum: ["none", "product", "category"],
-      default: "none",
-    },
     quantity:{
         type:Number,
         required:true,
