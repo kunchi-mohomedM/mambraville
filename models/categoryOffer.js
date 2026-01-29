@@ -4,12 +4,13 @@ const categoryOfferSchema = new mongoose.Schema({
   categoryId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Category',
-    required: true
+    required: true,
+    index:true
   },
   discountPercentage: {
     type: Number,
     required: true,
-    min: 1,
+    min: 0,
     max: 100
   },
   startDate: {
@@ -35,6 +36,9 @@ const categoryOfferSchema = new mongoose.Schema({
 });
 
 
+
+
+categoryOfferSchema.index({ categoryId: 1, isActive: 1 });
 categoryOfferSchema.index({ categoryId: 1, startDate: 1, endDate: 1 });
 
 categoryOfferSchema.methods.isCurrentlyValid = function() {
