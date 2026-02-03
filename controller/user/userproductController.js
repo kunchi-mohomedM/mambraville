@@ -26,23 +26,23 @@ const loadUserProducts = async (req, res) => {
       }
     }
 
-    // Search filter
+    
     if (req.query.search) {
       matchStage.productName = { $regex: req.query.search, $options: "i" };
     }
 
-    // Get active category offers
+   
     const categoryOffers = await CategoryOffer.find({ isActive: true }).lean();
     const categoryOfferMap = {};
     categoryOffers.forEach((offer) => {
       categoryOfferMap[offer.categoryId.toString()] = offer.discountPercentage;
     });
 
-    // Build aggregation pipeline
+   
     const pipeline = [
       { $match: matchStage },
 
-      // Add category discount lookup
+     
       {
         $addFields: {
           categoryDiscount: {
@@ -205,8 +205,6 @@ const loadproductdetails = async (req, res) => {
   try {
     const productId = req.params.id;
 
-
-
     let productDoc = await Products.findOne({
       _id: productId,
       isDeleted: false
@@ -229,14 +227,15 @@ const loadproductdetails = async (req, res) => {
 
 
     let cartItems = [];
-    if (req.session.user) {
-      const cart = await Cart.findOne({
-        userId: req.session.user
-      }).lean();
+    let wishlistItems = [];
 
-      cartItems = cart
-        ? cart.items.map(i => i.productId.toString())
-        : [];
+    if (req.session.user) {
+      const cart = await Cart.findOne({ userId: req.session.user}).lean();
+      cartItems = cart ? cart.items.map(i => i.productId.toString()) : [];
+   
+      const wishlist = await Wishlist.findOne({ userId: req.session.user }).lean();
+      wishlistItems = wishlist ? wishlist.items.map(i => i.productId.toString()) : [];
+   
     }
 
 
@@ -244,8 +243,12 @@ const loadproductdetails = async (req, res) => {
       products: [productDoc],
       categoryOfferMap,
       cartItems,
-      wishlistItems: []
+      wishlistItems
     });
+
+
+    product.inCart = cartItems.includes(product._id.toString());
+    product.inWishlist = wishlistItems.includes(product._id.toString());
 
 
     const category = await Category.findById(product.category).lean();
@@ -271,7 +274,8 @@ const loadproductdetails = async (req, res) => {
     res.render("productdetails", {
       product,
       category,
-      relatedProducts
+      relatedProducts,
+      isLoggedIn: !!req.session.user
     });
 
   } catch (error) {

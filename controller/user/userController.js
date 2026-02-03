@@ -434,9 +434,7 @@ const emailverification = async (req, res) => {
       });
     }
     const otp = generateOtp();
-    console.log(otp);
-    
-    
+    console.log(otp)
     const emailSent = await sendVerificationEmail(email, otp);
    
     if (!emailSent) {

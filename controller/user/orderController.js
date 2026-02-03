@@ -150,7 +150,7 @@ const placeOrder = async (req, res) => {
       return res.json({ success: false, message: "User not found" });
     }
 
-    const selectedAddress = user.address.id(addressId);
+    const selectedAddress = user?.address?.id(addressId);
     if (!selectedAddress) {
       return res.json({ success: false, message: "Invalid address selected" });
     }
