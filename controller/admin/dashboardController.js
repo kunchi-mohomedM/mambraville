@@ -188,7 +188,7 @@ const loadDashboard = async (req, res) => {
         }
       ]),
 
-      // Top 10 Customers (by total spent)
+      // Top 10 Customers 
       Order.aggregate([
         { $match: successfulOrderMatch },
         {

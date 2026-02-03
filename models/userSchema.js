@@ -1,51 +1,87 @@
 const mongoose = require("mongoose");
-const {Schema} = mongoose;
+const { Schema } = mongoose;
 
 
 
 const userSchema = new Schema({
-    fullname:{
-        type:String,
-        required:true
+    fullname: {
+        type: String,
+        required: true
     },
-    email:{
-        type:String,
-        required:true,
-        unique:false,
+    email: {
+        type: String,
+        required: true,
+        unique: false,
     },
-    googleId:{
-        type:String,
+    googleId: {
+        type: String,
     },
-    password:{
-        type:String,
-        required:false,
+    password: {
+        type: String,
+        required: false,
     },
-    isBlocked:{
-        type :Boolean,
-        default:false
+    isBlocked: {
+        type: Boolean,
+        default: false
     },
-    referralId:{
-        type:String,
-        unique:true,
-        sparse:true
+    referralId: {
+        type: String,
+        unique: true,
+        sparse: true
     },
 
-    referredBy:{
-        type:String,
-        default:null
+    referredBy: {
+        type: String,
+        default: null
     },
-    referredUsers:[
+    referredUsers: [
         {
-            userId:{type : mongoose.Schema.Types.ObjectId,ref:"User"},
-            date:{type : Date , default : Date.now }
+            userId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+            date: { type: Date, default: Date.now }
         }
     ],
+    address: [
+        {
+            fullname: {
+                type: String,
+                required: true
+            },
+            phone: {
+                type: String,
+                required: true
+            },
+            pincode: {
+                type: String,
+                required: true
+            },
+            addressLine: {
+                type: String,
+                required: true
+            },
+            locality: {
+                type: String,
+                required: true
+            },
+            city: {
+                type: String,
+                required: true
+            },
+            state: {
+                type: String,
+                required: true
+            },
+            isDefault: {
+                type: Boolean,
+                default: false
+            }
+        }
+    ]
 
-   
-    
-    
-},{timestamps:true})
 
 
-const User = mongoose.model("User",userSchema);
+
+}, { timestamps: true })
+
+
+const User = mongoose.model("User", userSchema);
 module.exports = User

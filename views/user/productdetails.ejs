@@ -130,10 +130,24 @@
   <% } %>
 
   <!-- Wishlist button remains unchanged -->
-  <button onclick="toggleWishlist('<%= product._id %>')"
-          class="w-14 h-14 flex items-center justify-center rounded-lg border transition-all <%= product.inWishlist ? 'bg-red-50 border-red-400' : 'bg-white border-gray-300 hover:border-gray-400' %>">
-    <i class="<%= product.inWishlist ? 'fas' : 'far' %> fa-heart text-xl <%= product.inWishlist ? 'text-red-500' : 'text-gray-600' %>"></i>
-  </button>
+
+<!-- In product details page – replace the current button with: -->
+
+<!-- Wishlist button -->
+<button 
+  id="wishlist-btn"
+  class="w-14 h-14 flex items-center justify-center rounded-lg border transition-all duration-200 shadow-sm
+         <%= product.inCart ? 'opacity-50 cursor-not-allowed' : 'hover:shadow-md active:scale-95' %>
+         <%= product.inWishlist ? 'bg-red-50 border-red-400' : 'bg-white border-gray-300 hover:border-red-400' %>"
+  data-product-id="<%= product._id %>"
+  data-in-wishlist="<%= product.inWishlist ? 'true' : 'false' %>"
+  <%= product.inCart ? 'disabled' : '' %>>
+
+  <i id="wishlist-icon" 
+     class="text-2xl transition-colors duration-200
+            <%= product.inWishlist ? 'fas fa-heart text-red-500' : 'far fa-heart text-gray-600' %>">
+  </i>
+</button>
 </div>
 
                 <!-- Delivery Info -->
@@ -228,6 +242,8 @@
     <%= product.inCart ? 'Go to Cart' : 
         (product.quantity <= 0 ? 'Out of Stock' : 'Add to Cart') %>
   </span>
+
+  
 </button>
   </div>
 </div>
@@ -467,6 +483,95 @@ document.addEventListener('DOMContentLoaded', () => {
             console.log('Toggling wishlist for:', productId);
             // Example: window.location.href = `/wishlist/toggle/${productId}`;
         }
+
+
+      document.addEventListener('DOMContentLoaded', () => {
+  const wishlistBtn = document.getElementById('wishlist-btn');
+  if (!wishlistBtn) return;
+
+  wishlistBtn.addEventListener('click', async (e) => {
+    if (wishlistBtn.disabled) {
+      if (wishlistBtn.dataset.inWishlist === 'true') {
+        // Optional: tell user why it's disabled
+        Swal.fire({
+          icon: 'info',
+          title: 'Already in Cart',
+          text: 'This product is in your cart. Wishlist is disabled.',
+          toast: true,
+          position: 'top-end',
+          showConfirmButton: false,
+          timer: 2200
+        });
+      }
+      return;
+    }
+
+    const productId = wishlistBtn.dataset.productId;
+    const isCurrentlyInWishlist = wishlistBtn.dataset.inWishlist === 'true';
+
+    // Visual feedback
+    wishlistBtn.disabled = true;
+    const icon = document.getElementById('wishlist-icon');
+    icon.classList.add('fa-beat'); // nice little animation (font awesome 6+)
+
+    try {
+      const response = await fetch(`/wishlist/toggle/${productId}`, {
+        method: 'GET',
+        headers: { 'Accept': 'application/json' }
+      });
+
+      if (!response.ok) throw new Error('Toggle failed');
+
+      // Toggle state
+      const nowInWishlist = !isCurrentlyInWishlist;
+
+      // Update data attribute
+      wishlistBtn.dataset.inWishlist = nowInWishlist ? 'true' : 'false';
+
+      // Update UI
+      if (nowInWishlist) {
+        wishlistBtn.classList.add('bg-red-50', 'border-red-400');
+        wishlistBtn.classList.remove('bg-white', 'border-gray-300', 'hover:border-red-400');
+        icon.classList.remove('far', 'text-gray-600');
+        icon.classList.add('fas', 'text-red-500');
+        Swal.fire({
+          icon: 'success',
+          title: 'Added to Wishlist',
+          toast: true,
+          position: 'top-end',
+          showConfirmButton: false,
+          timer: 1600
+        });
+      } else {
+        wishlistBtn.classList.remove('bg-red-50', 'border-red-400');
+        wishlistBtn.classList.add('bg-white', 'border-gray-300', 'hover:border-red-400');
+        icon.classList.remove('fas', 'text-red-500');
+        icon.classList.add('far', 'text-gray-600');
+        Swal.fire({
+          icon: 'info',
+          title: 'Removed from Wishlist',
+          toast: true,
+          position: 'top-end',
+          showConfirmButton: false,
+          timer: 1600
+        });
+      }
+    } catch (err) {
+      console.error(err);
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Could not update wishlist. Try again.',
+        toast: true,
+        position: 'top-end',
+        timer: 2400
+      });
+    } finally {
+      wishlistBtn.disabled = false;
+      icon.classList.remove('fa-beat');
+    }
+  });
+});
     </script>
 
 </body>
