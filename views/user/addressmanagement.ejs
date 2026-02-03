@@ -9,6 +9,8 @@
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
     />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   </head>
   <body class="bg-gray-50">
     <header class="bg-white shadow-sm">
@@ -315,7 +317,7 @@
       </div>
     </div>
     <%-include("../../views/partials/user/footer")-%>
-    <script>
+   <script>
       const toggleButton = document.getElementById("toggleAddressForm");
       const addressForm = document.getElementById("addressForm");
       const cancelButton = document.getElementById("cancelAddressForm");
@@ -328,100 +330,110 @@
       cancelButton.addEventListener("click", () => {
         addressForm.classList.add("hidden");
         toggleButton.classList.remove("hidden");
+        // Optional: clear form on cancel
+        addressForm.reset();
+        document.querySelectorAll('.error').forEach(el => el.classList.add('hidden'));
       });
 
-     
-// ... keep your toggle logic the same ...
+      // ────────────────────────────────────────────────
+      //              Validation + SweetAlert
+      // ────────────────────────────────────────────────
 
-const form = document.getElementById("addressForm");
+      const form = document.getElementById("addressForm");
 
-  function showError(input, message) {
-    const errorEl = input.parentElement.querySelector(".error");
-    errorEl.textContent = message;
-    errorEl.classList.remove("hidden");
-    input.classList.add("border-red-500");
-    input.classList.remove("border-green-500");
-  }
-
-  function clearError(input) {
-    const errorEl = input.parentElement.querySelector(".error");
-    errorEl.textContent = "";
-    errorEl.classList.add("hidden");
-    input.classList.remove("border-red-500");
-    input.classList.add("border-green-500");
-  }
-
-  // Optional: live validation on blur
-  form.querySelectorAll("input, select").forEach(field => {
-    field.addEventListener("blur", () => {
-      validateField(field);
-    });
-  });
-
-  function validateField(field) {
-    clearError(field);
-
-    if (!field.value.trim() && field.required) {
-      showError(field, "This field is required");
-      return false;
-    }
-
-    if (field.name === "fullname") {
-      if (field.value.trim().length < 3 || !/^[A-Za-z ]+$/.test(field.value.trim())) {
-        showError(field, "Only letters & spaces, minimum 3 characters");
-        return false;
+      function showError(input, message) {
+        const errorEl = input.parentElement.querySelector(".error");
+        errorEl.textContent = message;
+        errorEl.classList.remove("hidden");
+        input.classList.add("border-red-500", "focus:border-red-500");
+        input.classList.remove("border-green-500");
       }
-    }
 
-    if (field.name === "phone") {
-      if (!/^[6-9]\d{9}$/.test(field.value.trim())) {
-        showError(field, "Enter valid 10-digit Indian mobile number");
-        return false;
+      function clearError(input) {
+        const errorEl = input.parentElement.querySelector(".error");
+        errorEl.textContent = "";
+        errorEl.classList.add("hidden");
+        input.classList.remove("border-red-500");
+        input.classList.add("border-green-500");
       }
-    }
 
-    if (field.name === "pincode") {
-      if (!/^[1-9]\d{5}$/.test(field.value.trim())) {
-        showError(field, "Enter valid 6-digit Indian pincode");
-        return false;
+      function validateField(field) {
+        clearError(field);
+
+        if (!field.value.trim() && field.required) {
+          showError(field, "This field is required");
+          return false;
+        }
+
+        if (field.name === "fullname") {
+          if (field.value.trim().length < 3 || !/^[A-Za-z ]+$/.test(field.value.trim())) {
+            showError(field, "Only letters & spaces, minimum 3 characters");
+            return false;
+          }
+        }
+
+        if (field.name === "phone") {
+          if (!/^[6-9]\d{9}$/.test(field.value.trim())) {
+            showError(field, "Enter valid 10-digit Indian mobile number");
+            return false;
+          }
+        }
+
+        if (field.name === "pincode") {
+          if (!/^[1-9]\d{5}$/.test(field.value.trim())) {
+            showError(field, "Enter valid 6-digit Indian pincode");
+            return false;
+          }
+        }
+
+        if (field.name === "city") {
+          if (!/^[A-Za-z ]{2,}$/.test(field.value.trim())) {
+            showError(field, "Only letters and spaces, minimum 2 characters");
+            return false;
+          }
+        }
+
+        if (field.name === "state") {
+          if (!field.value) {
+            showError(field, "Please select a state");
+            return false;
+          }
+        }
+
+        return true;
       }
-    }
 
-    if (field.name === "city") {
-      if (!/^[A-Za-z ]{2,}$/.test(field.value.trim())) {
-        showError(field, "Only letters and spaces, minimum 2 characters");
-        return false;
-      }
-    }
+      // Live validation on blur
+      form.querySelectorAll("input, select").forEach(field => {
+        field.addEventListener("blur", () => {
+          validateField(field);
+        });
+      });
 
-    if (field.name === "state") {
-      if (!field.value) {
-        showError(field, "Please select a state");
-        return false;
-      }
-    }
+      // Form submit validation with SweetAlert
+      form.addEventListener("submit", (e) => {
+        let isValid = true;
 
-    return true;
-  }
+        form.querySelectorAll("input, select").forEach(field => {
+          if (!validateField(field)) {
+            isValid = false;
+          }
+        });
 
-  form.addEventListener("submit", (e) => {
-    let isValid = true;
+        if (!isValid) {
+          e.preventDefault();
 
-    // Validate all fields
-    form.querySelectorAll("input, select").forEach(field => {
-      if (!validateField(field)) {
-        isValid = false;
-      }
-    });
-
-    if (!isValid) {
-      e.preventDefault();          
-      alert("Please fix the errors shown in red."); 
-    }
-  });
-
-
-
+          Swal.fire({
+            icon: 'warning',
+            title: 'Please fix the errors',
+            text: 'Check the fields marked in red and correct them before submitting.',
+            confirmButtonColor: '#8b5cf6', // purple-500
+            confirmButtonText: 'Got it',
+            toast: false,
+            position: 'center'
+          });
+        }
+      });
     </script>
   </body>
 </html>
