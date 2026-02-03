@@ -30,22 +30,27 @@ const MAX_QTY = 5;
 const addTocart = async (req, res) => {
   try {
     const userId = req.session.user;
-    if (!userId) return res.redirect("/login");
+    if (!userId) {
+      return res.status(401).json({ success: false, message: "Please login" });
+      // or redirect if you prefer: return res.redirect("/login");
+    }
 
     const productId = req.params.id;
-    if (!productId) return res.redirect("/products-user");
+    if (!productId) {
+      return res.status(400).json({ success: false, message: "Invalid product" });
+    }
 
     const product = await Product.findById(productId);
     if (!product || product.isDeleted) {
-      return res.redirect("/products-user");
+      return res.status(404).json({ success: false, message: "Product not found" });
     }
 
     if (product.status === "Discontinued") {
-      return res.status(400).send("Product discontinued");
+      return res.status(400).json({ success: false, message: "Product discontinued" });
     }
 
     if (product.quantity <= 0) {
-      return res.status(400).json({success:false,message:"Out of stock"})
+      return res.status(400).json({ success: false, message: "Out of stock" });
     }
 
     let cart = await Cart.findOne({ userId });
@@ -59,11 +64,17 @@ const addTocart = async (req, res) => {
 
     if (existingItem) {
       if (existingItem.qty >= MAX_QTY) {
-        return res.status(400).send(`Maximum ${MAX_QTY} units allowed`);
+        return res.status(400).json({ 
+          success: false, 
+          message: `Maximum ${MAX_QTY} units allowed` 
+        });
       }
 
       if (existingItem.qty + 1 > product.quantity) {
-        return res.status(400).send("Stock limit reached");
+        return res.status(400).json({ 
+          success: false, 
+          message: "Stock limit reached" 
+        });
       }
 
       existingItem.qty += 1;
@@ -76,14 +87,36 @@ const addTocart = async (req, res) => {
 
     await cart.save();
 
+    // Remove from wishlist if present
     await Wishlist.updateOne(
       { userId },
       { $pull: { items: { productId: product._id } } }
     );
 
-    return res.redirect("/cart");
+    // ─── For AJAX calls ───
+  
+if (req.headers['accept']?.includes('application/json') || req.xhr) {
+  return res.json({
+    success: true,
+    message: "Added to cart successfully",
+    inCart: true,           // ← new
+    cartItemCount: cart.items.length   // optional – if you show cart badge in header
+  });
+}
+
+// fallback for non-AJAX (direct browser GET)
+return res.redirect("/cart");
+
   } catch (error) {
     console.error("Add to cart error:", error);
+    
+    if (req.headers['accept']?.includes('application/json') || req.xhr) {
+      return res.status(500).json({ 
+        success: false, 
+        message: "Server error" 
+      });
+    }
+    
     return res.status(500).send("Internal server error");
   }
 };
