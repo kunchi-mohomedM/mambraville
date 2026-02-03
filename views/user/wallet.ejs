@@ -10,6 +10,12 @@
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
     />
+
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   </head>
 
   <body class="bg-gray-50">
@@ -256,86 +262,133 @@
 
   <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
   <script>
-    const modal = document.getElementById("addMoneyModal");
-    const amountInput = document.getElementById("walletAmount");
+      const modal = document.getElementById("addMoneyModal");
+      const amountInput = document.getElementById("walletAmount");
 
-    document.getElementById("openAddMoney").addEventListener("click", () => {
-      modal.classList.remove("hidden");
-    });
-
-    function closeAddMoney() {
-      modal.classList.add("hidden");
-      amountInput.value = "";
-    }
-
-    function setAmount(amount) {
-      amountInput.value = amount;
-    }
-
-    async function payWallet() {
-      const amount = Number(amountInput.value);
-
-      if (!amount || amount < 1) {
-        alert("Please enter a valid amount");
-        return;
-      }
-
-      const response = await fetch("/wallet/create-order", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ amount }),
+      document.getElementById("openAddMoney").addEventListener("click", () => {
+        modal.classList.remove("hidden");
+        amountInput.focus();
       });
 
-      const data = await response.json();
-
-      if (!data.success) {
-        alert("Unable to create payment");
-        return;
+      function closeAddMoney() {
+        modal.classList.add("hidden");
+        amountInput.value = "";
       }
 
-      const options = {
-        key: data.key,
-        amount: data.order.amount,
-        currency: "INR",
-        name: "Mambraville Wallet",
-        description: "Add money to wallet",
-        order_id: data.order.id,
+      function setAmount(amount) {
+        amountInput.value = amount;
+      }
 
-        handler: async function (response) {
-         
-          const verifyRes = await fetch("/wallet/verify-payment", {
+      async function payWallet() {
+        const amount = Number(amountInput.value.trim());
+
+        if (!amount || amount < 1) {
+          Swal.fire({
+            icon: 'warning',
+            title: 'Invalid Amount',
+            text: 'Please enter a valid amount (minimum ₹1)',
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 3000
+          });
+          return;
+        }
+
+        try {
+          const response = await fetch("/wallet/create-order", {
             method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              razorpay_order_id: response.razorpay_order_id,
-              razorpay_payment_id: response.razorpay_payment_id,
-              razorpay_signature: response.razorpay_signature,
-              amount: amount,
-            }),
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ amount }),
           });
 
-          const verifyData = await verifyRes.json();
+          const data = await response.json();
 
-          if (verifyData.success) {
-            alert("Wallet credited successfully!");
-            window.location.reload()
-          } else {
-            alert("Payment verification failed");
+          if (!data.success) {
+            Swal.fire({
+              icon: 'error',
+              title: 'Payment Error',
+              text: data.message || "Unable to create payment order. Please try again.",
+              toast: true,
+              position: 'top-end',
+              timer: 4000
+            });
+            return;
           }
-        },
 
-        theme: {
-          color: "#4F46E5",
-        },
-      };
+          const options = {
+            key: data.key,
+            amount: data.order.amount,
+            currency: "INR",
+            name: "Mambraville Wallet",
+            description: "Add money to wallet",
+            order_id: data.order.id,
+            handler: async function (response) {
+              try {
+                const verifyRes = await fetch("/wallet/verify-payment", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({
+                    razorpay_order_id: response.razorpay_order_id,
+                    razorpay_payment_id: response.razorpay_payment_id,
+                    razorpay_signature: response.razorpay_signature,
+                    amount: amount,
+                  }),
+                });
 
-      const rzp = new Razorpay(options);
-      rzp.open();
-      closeAddMoney();
-    }
-  </script>
+                const verifyData = await verifyRes.json();
+
+                if (verifyData.success) {
+                  Swal.fire({
+                    icon: 'success',
+                    title: 'Success!',
+                    text: '₹' + amount + ' added to your wallet successfully.',
+                    toast: false,
+                    timer: 2800,
+                    showConfirmButton: false,
+                    position: 'center'
+                  }).then(() => {
+                    window.location.reload();
+                  });
+                } else {
+                  Swal.fire({
+                    icon: 'error',
+                    title: 'Verification Failed',
+                    text: verifyData.message || "Payment verification failed. Please contact support.",
+                    toast: true,
+                    position: 'top-end',
+                    timer: 5000
+                  });
+                }
+              } catch (err) {
+                Swal.fire({
+                  icon: 'error',
+                  title: 'Error',
+                  text: 'Something went wrong during verification.',
+                  toast: true,
+                  position: 'top-end'
+                });
+              }
+            },
+            theme: {
+              color: "#4F46E5",
+            },
+          };
+
+          const rzp = new Razorpay(options);
+          rzp.open();
+          closeAddMoney();
+
+        } catch (err) {
+          Swal.fire({
+            icon: 'error',
+            title: 'Network Error',
+            text: 'Failed to connect. Please check your internet connection.',
+            toast: true,
+            position: 'top-end',
+            timer: 4000
+          });
+        }
+      }
+    </script>
 </html>

@@ -590,7 +590,7 @@ const loaduserprofile = async (req, res) => {
     const wallet = await Wallet.findOne({ userId }).lean();
 
     const addresses = user.address || [];
-
+    
     const defaultAddress = addresses.find((a) => a.isDefault);
 
     res.render("userprofile", {

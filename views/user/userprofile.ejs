@@ -9,6 +9,13 @@
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
     />
+
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
   </head>
 
   <body class="bg-gray-50">
@@ -113,15 +120,7 @@
                     <span>My Wishlist</span>
                   </a>
                 </li>
-                <li>
-                  <a
-                    href="#"
-                    class="flex items-center text-gray-700 hover:text-indigo-600"
-                  >
-                    <i class="fas fa-user-friends mr-3 w-5 text-gray-600"></i>
-                    <span>Refer Friends</span>
-                  </a>
-                </li>
+                
                 <li>
                   <a
                     href="/change-password"
@@ -230,44 +229,78 @@
       </div>
     </div>
     <%-include("../../views/partials/user/footer")-%>
+    <script>
+      function enableEdit() {
+        document.getElementById("name-view").classList.add("hidden");
+        document.getElementById("name-edit").classList.remove("hidden");
+      }
+
+      function cancelEdit() {
+        document.getElementById("name-view").classList.remove("hidden");
+        document.getElementById("name-edit").classList.add("hidden");
+      }
+
+      async function saveName() {
+        const newName = document.getElementById("edit-name-input").value.trim();
+
+        if (newName.length < 3) {
+          Swal.fire({
+            icon: 'warning',
+            title: 'Oops...',
+            text: 'Name must be at least 3 characters long.',
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 3000
+          });
+          return;
+        }
+
+        try {
+          const response = await fetch("/update-username", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ fullname: newName }),
+          });
+
+          const result = await response.json();
+
+          if (result.success) {
+            document.getElementById("current-name").innerText = newName;
+            cancelEdit();
+
+            Swal.fire({
+              icon: 'success',
+              title: 'Updated!',
+              text: 'Your name has been updated successfully.',
+              toast: true,
+              position: 'top-end',
+              showConfirmButton: false,
+              timer: 2500
+            });
+          } else {
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: result.message || 'Something went wrong. Please try again.',
+              toast: true,
+              position: 'top-end',
+              timer: 3500
+            });
+          }
+        } catch (err) {
+          Swal.fire({
+            icon: 'error',
+            title: 'Network Error',
+            text: 'Could not connect to the server. Please check your internet.',
+            toast: true,
+            position: 'top-end',
+            timer: 4000
+          });
+        }
+      }
+    </script>
   </body>
 
-  <script>
-    function enableEdit() {
-      document.getElementById("name-view").classList.add("hidden");
-      document.getElementById("name-edit").classList.remove("hidden");
-    }
-
-    function cancelEdit() {
-      document.getElementById("name-view").classList.remove("hidden");
-      document.getElementById("name-edit").classList.add("hidden");
-    }
-
-    async function saveName() {
-      const newName = document.getElementById("edit-name-input").value.trim();
-
-      if (newName.length < 3) {
-        alert("Name must be at least 3 characters.");
-        return;
-      }
-
-      const response = await fetch("/update-username", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ fullname: newName }),
-      });
-
-      const result = await response.json();
-
-      if (result.success) {
-        document.getElementById("current-name").innerText = newName;
-
-        cancelEdit(); // switch back to view mode
-
-        alert("Username updated successfully!");
-      } else {
-        alert(result.message || "Something went wrong");
-      }
-    }
-  </script>
+  
 </html>
