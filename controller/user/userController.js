@@ -353,9 +353,12 @@ const loadHomepage = async (req, res) => {
     const categories = await Category.find({ isListed: true });
 
     
-    const categoryOffers = await CategoryOffer.find({
-      isActive: true
-    }).lean();
+    const now = new Date();
+const categoryOffers = await CategoryOffer.find({
+  isActive: true,
+  startDate: { $lte: now },
+  endDate: { $gte: now }
+}).lean();
 
     const categoryOfferMap = {};
     categoryOffers.forEach(offer => {

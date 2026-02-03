@@ -32,7 +32,13 @@ const loadUserProducts = async (req, res) => {
     }
 
    
-    const categoryOffers = await CategoryOffer.find({ isActive: true }).lean();
+    const now = new Date();
+const categoryOffers = await CategoryOffer.find({
+  isActive: true,
+  startDate: { $lte: now },
+  endDate: { $gte: now }
+}).lean();
+
     const categoryOfferMap = {};
     categoryOffers.forEach((offer) => {
       categoryOfferMap[offer.categoryId.toString()] = offer.discountPercentage;
@@ -215,9 +221,12 @@ const loadproductdetails = async (req, res) => {
     }
 
 
-    const categoryOffers = await CategoryOffer.find({
-      isActive: true
-    }).lean();
+    const now = new Date();
+const categoryOffers = await CategoryOffer.find({
+  isActive: true,
+  startDate: { $lte: now },
+  endDate: { $gte: now }
+}).lean();
 
     const categoryOfferMap = {};
     categoryOffers.forEach(offer => {
