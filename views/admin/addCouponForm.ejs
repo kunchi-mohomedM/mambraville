@@ -15,19 +15,55 @@
   <body class="bg-gray-100">
     <div class="flex h-screen">
       <!-- Sidebar (unchanged) -->
-      <div class="w-64 bg-gradient-to-b from-black to-purple-900 text-white">
-        <!-- Sidebar content remains the same -->
-        <div class="p-4 flex items-center justify-center">
-          <img src="/logo.png" alt="Mambraville" class="h-12" />
+      <div id="sidebar"
+        class="w-64 bg-gradient-to-b from-black to-purple-900 text-white fixed inset-y-0 left-0 transform -translate-x-full 
+               md:relative md:translate-x-0 transition-transform duration-300 ease-in-out z-20 h-screen">
+
+        <!-- LOGO BLOCK -->
+        <div class="p-6 flex items-center justify-center border-b border-purple-800/40">
+          <div class="text-center leading-tight select-none">
+            <h1 class="text-2xl font-extrabold tracking-tight">
+              <span class="text-blue-400">Gadgetr</span>
+              <span class="text-orange-400">y</span>
+            </h1>
+            <p class="text-[9px] font-semibold uppercase tracking-widest text-gray-300 mt-1">
+              powered by mambra home appliances — 2004
+            </p>
+          </div>
         </div>
-        <nav class="mt-6">
-          <!-- Navigation links -->
+
+        <!-- NAVIGATION -->
+        <nav class="mt-4 space-y-1">
+          <a href="/admin/dashboard" class="nav-link flex items-center px-6 py-3 hover:bg-purple-800/70 rounded-lg transition">
+            <i class="fas fa-home w-5 mr-3"></i><span>Dashboard</span>
+          </a>
+          <a href="/admin/products" class="nav-link flex items-center px-6 py-3 hover:bg-purple-800/70 rounded-lg transition">
+            <i class="fas fa-box w-5 mr-3"></i><span>Products</span>
+          </a>
+          <a href="/admin/users" class="nav-link flex items-center px-6 py-3 hover:bg-purple-800/70 rounded-lg transition">
+            <i class="fas fa-users w-5 mr-3"></i><span>Users</span>
+          </a>
+          <a href="/admin/orders" class="nav-link flex items-center px-6 py-3 hover:bg-purple-800/70 rounded-lg transition">
+            <i class="fas fa-shopping-cart w-5 mr-3"></i><span>Orders</span>
+          </a>
+          <a href="/admin/category" class="nav-link flex items-center px-6 py-3 hover:bg-purple-800/70 rounded-lg transition">
+            <i class="fas fa-tags w-5 mr-3"></i><span>Category</span>
+          </a>
+          <a href="/admin/coupon" class="nav-link flex items-center px-6 py-3 hover:bg-purple-800/70 rounded-lg transition bg-purple-900 text-white font-semibold">
+            <i class="fas fa-ticket-alt w-5 mr-3"></i><span>Coupons</span>
+          </a>
+          <a href="/admin/offers" class="nav-link flex items-center px-6 py-3 hover:bg-purple-800/70 rounded-lg transition">
+            <i class="fas fa-gift w-5 mr-3"></i><span>Offers</span>
+          </a>
+          <a href="/admin/brands" class="nav-link flex items-center px-6 py-3 hover:bg-purple-800/70 rounded-lg transition">
+            <i class="fas fa-copyright w-5 mr-3"></i><span>Brands</span>
+          </a>
         </nav>
-        <div class="absolute bottom-4 left-0 w-64 px-6">
-          <button
-            onclick="logout()"
-            class="bg-white text-black py-2 px-4 rounded-full w-full font-medium"
-          >
+
+        <!-- LOGOUT BUTTON -->
+        <div class="absolute bottom-5 left-0 w-full px-6">
+          <button onclick="logout()"
+            class="bg-white text-black py-2 px-4 rounded-full w-full font-semibold shadow-sm hover:bg-gray-200 transition">
             Logout
           </button>
         </div>
