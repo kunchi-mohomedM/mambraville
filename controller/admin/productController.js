@@ -163,7 +163,7 @@ const loadeditproduct=async(req,res)=>{
         const categories=await Category.find({})
         const brands=await brand.find({})
         const product = await Product.findById(productId)
-        console.log(product)
+        
         if(!product){
             return res.status(404).send("Product not found");
         }
@@ -177,9 +177,17 @@ const loadeditproduct=async(req,res)=>{
 const editproduct = async (req, res) => {
     try {
         const productId = req.params.id;
-        const { productName, description, price, discount = 0, quantity, category, brand } = req.body;
+        const { productName, 
+            description, 
+            price, 
+            discount = 0, 
+            quantity, 
+            category, 
+            brand 
+        } = req.body;
 
        
+
         const imageIndices = Array.isArray(req.body.imageIndices)
             ? req.body.imageIndices.map(Number)
             : req.body.imageIndices ? [Number(req.body.imageIndices)] : [];
