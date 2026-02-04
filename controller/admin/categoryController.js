@@ -2,26 +2,25 @@ const Category = require("../../models/categorySchema");
 
 
 
-const categoryInfo = async(req,res)=>{
+const categoryInfo = async (req, res) => {
     try {
-        const message=req.query.mssg;
+
         const page = parseInt(req.query.page) || 1;
-        const limit = 4 ;
-        const skip = (page-1)*limit;
+        const limit = 4;
+        const skip = (page - 1) * limit;
 
         const categoryData = await Category.find({})
-        .sort({createdAt:-1})
-        .skip(skip)
-        .limit(limit);
+            .sort({ createdAt: -1 })
+            .skip(skip)
+            .limit(limit);
 
         const totalCategories = await Category.countDocuments();
-        const totalPages = Math.ceil(totalCategories/limit)
-        res.render("category",{
-            categories:categoryData,
-            currentPage:page,
-            totalPages:totalPages,
-            totalCategories:totalCategories,
-            message
+        const totalPages = Math.ceil(totalCategories / limit)
+        res.render("category", {
+            categories: categoryData,
+            currentPage: page,
+            totalPages: totalPages,
+            totalCategories: totalCategories
         });
 
 
@@ -35,16 +34,16 @@ const addCategory = async (req, res) => {
 
     const { categoryname, categorydesc } = req.body;
 
-    
 
- 
+
+
     if (!categoryname || typeof categoryname !== 'string' || categoryname.trim() === '') {
         return res.status(400).json({ error: 'Category name is required and must be a non-empty string' });
     }
 
     try {
-       
-        const existingCategory = await Category.findOne({ 
+
+        const existingCategory = await Category.findOne({
             categoryname: { $regex: new RegExp(`^${categoryname.trim()}$`, 'i') }
         });
 
@@ -52,7 +51,7 @@ const addCategory = async (req, res) => {
             return res.status(400).json({ error: 'Category already exists' });
         }
 
-       
+
         const newCategory = new Category({
             categoryname: categoryname.trim(),
             description: categorydesc ? categorydesc.trim() : ''
@@ -74,11 +73,11 @@ const addCategory = async (req, res) => {
     }
 };
 
-const loadaddCategory = async(req,res)=>{
+const loadaddCategory = async (req, res) => {
     try {
-       return res.render("addCategory",{});
+        return res.render("addCategory", {});
     } catch (error) {
-        console.error("Error occured while rendering add category page",error)
+        console.error("Error occured while rendering add category page", error)
     }
 }
 
@@ -87,7 +86,8 @@ const editCategory = async (req, res) => {
         const { categoryId, categoryname, categorydesc } = req.body;
 
         if (!categoryname || typeof categoryname !== 'string' || categoryname.trim() === '') {
-            return res.redirect(`/admin/editCategory/${categoryId}?alert=warning&msg=Category name cannot be empty`);
+            req.flash('error', 'Category name cannot be empty');
+            return res.redirect(`/admin/editCategory/${categoryId}`);
         }
 
         const trimmedName = categoryname.trim();
@@ -98,7 +98,8 @@ const editCategory = async (req, res) => {
         });
 
         if (existingCategory) {
-            return res.redirect(`/admin/editCategory/${categoryId}?alert=warning&msg=Category name already exists. Please choose another name.`);
+            req.flash('error', 'Category name already exists. Please choose another name.');
+            return res.redirect(`/admin/editCategory/${categoryId}`);
         }
 
         await Category.findByIdAndUpdate(categoryId, {
@@ -107,43 +108,46 @@ const editCategory = async (req, res) => {
         });
 
         // Success → back to list
-        res.redirect("/admin/category?alert=success&msg=Category updated successfully.");
-        
+        req.flash('success', 'Category updated successfully.');
+        res.redirect("/admin/category");
+
     } catch (error) {
         console.error("Error editing category: ", error);
-        
+
         // Redirect back to edit page with error
-        const redirectUrl = `/admin/editCategory/${req.body.categoryId || ''}?alert=error&msg=Error updating category. Please try again.`;
-        res.redirect(redirectUrl);
+        req.flash('error', 'Error updating category. Please try again.');
+        res.redirect(`/admin/editCategory/${req.body.categoryId || ''}`);
     }
 };
-const deleteCategory=async(req,res)=>{
-    try{
-        const categoryId=req.params.id;
-        await Category.findByIdAndDelete(categoryId);
-        res.redirect("/admin/category?mssg=Category deleted successfully.");
-    }catch(error){
-        console.error("Error deleting Category :",error);
-        res.redirect("/admin/category?mssg=Error deleting category.");
-    }
-};
-
-
-const loadeditcategory=async(req,res)=>{
+const deleteCategory = async (req, res) => {
     try {
-        const categoryId=req.params.id;
-        const category=await Category.findById(categoryId)
-        if(!category){
-            return res.status(404).send("Category not found") 
-        }
-        return res.render("editcategory",{category})
+        const categoryId = req.params.id;
+        await Category.findByIdAndDelete(categoryId);
+        req.flash('success', 'Category deleted successfully.');
+        res.redirect("/admin/category");
     } catch (error) {
-        console.error("Error occured while rendering edit category page",error)
+        console.error("Error deleting Category :", error);
+        req.flash('error', 'Error deleting category.');
+        res.redirect("/admin/category");
+    }
+};
+
+
+const loadeditcategory = async (req, res) => {
+    try {
+        const categoryId = req.params.id;
+        const category = await Category.findById(categoryId)
+        if (!category) {
+            return res.status(404).send("Category not found")
+        }
+        return res.render("editcategory", { category })
+    } catch (error) {
+        console.error("Error occured while rendering edit category page", error)
     }
 }
 
 
-module.exports={
+module.exports = {
     categoryInfo,
     addCategory,
     loadaddCategory,

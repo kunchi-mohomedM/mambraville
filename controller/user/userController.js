@@ -343,33 +343,60 @@ async function creditReferralBonuses(newUserId, referredByUserId = null) {
 
 const resendOtp = async (req, res) => {
   try {
-    const { email } = req.session.userData;
-    if (!email) {
-      return res
-        .status(400)
-        .json({ success: false, message: "Email not found in session" });
+    let email;
+
+    // 1. Signup flow (most common case in your current code)
+    if (req.session.userData && req.session.userData.email) {
+      email = req.session.userData.email;
     }
+    // 2. Forgot password / reset password flow
+    else if (req.session.resetEmail) {
+      email = req.session.resetEmail;
+    }
+    // 3. Neither → session expired or invalid request
+    else {
+      return res.status(400).json({
+        success: false,
+        message: "Session expired or no email found. Please try again.",
+      });
+    }
+
+    // Optional: extra safety - check if user exists (especially useful for reset flow)
+    const userExists = await User.findOne({ email });
+    if (!userExists && req.session.resetEmail) {
+      // In reset flow we already checked existence earlier → but belt & suspenders
+      delete req.session.resetEmail;
+      delete req.session.userOtp;
+      delete req.session.otpTimestamp;
+      return res.status(400).json({
+        success: false,
+        message: "No account found with this email.",
+      });
+    }
+
     const otp = generateOtp();
     req.session.userOtp = otp;
-    req.session.otpTimestamp = Date.now(); // Reset OTP timestamp on resend
+    req.session.otpTimestamp = Date.now(); // reset expiration timer
 
     const emailSent = await sendVerificationEmail(email, otp);
+
     if (emailSent) {
-      console.log("Resend OTP:", otp);
-      res
-        .status(200)
-        .json({ success: true, message: "OTP Resend Successfully" });
+      console.log(`Resent OTP to ${email}: ${otp}`);
+      return res.status(200).json({
+        success: true,
+        message: "OTP Resent Successfully",
+      });
     } else {
-      res.status(500).json({
+      return res.status(500).json({
         success: false,
-        message: "Failed to resend OTP.Please try again",
+        message: "Failed to resend OTP. Please try again.",
       });
     }
   } catch (error) {
-    console.error("Error resending OTP", error);
-    res.status(500).json({
+    console.error("Error resending OTP:", error);
+    return res.status(500).json({
       success: false,
-      message: "Internal Server Error.Please try again",
+      message: "Something went wrong. Please try again.",
     });
   }
 };

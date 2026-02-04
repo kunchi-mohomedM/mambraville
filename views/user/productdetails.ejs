@@ -1,594 +1,602 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Product Details - <%= product.productName %></title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    <!-- SweetAlert2 CSS + JS -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Product Details - <%= product.productName %>
+  </title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <!-- SweetAlert2 CSS + JS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 
 <body class="bg-gray-100 min-h-screen">
 
 
-<header class="bg-white shadow-sm sticky top-0 z-50">
+  <header class="bg-white shadow-sm sticky top-0 z-50">
     <%- include("../../views/partials/user/header") -%>
-</header>
+  </header>
 
-    <main class="container mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-10">
+  <main class="container mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-10">
 
-        <!-- Breadcrumb -->
-        <nav class="flex flex-wrap items-center text-sm text-gray-500 mb-6 gap-2">
-            <a href="/" class="hover:text-gray-700 transition">Home</a>
-            <span class="text-gray-400">/</span>
-            <a href="/products-user" class="hover:text-gray-700 transition">Products</a>
-            <span class="text-gray-400">/</span>
-            <a href="/products-user?category=<%= category.categoryname %>" class="hover:text-gray-700 transition">
-                <%= category.categoryname %>
-            </a>
-            <span class="text-gray-400">/</span>
-            <span class="text-gray-700 font-medium truncate max-w-[180px] sm:max-w-none">
-                <%= product.productName %>
+    <!-- Breadcrumb -->
+    <nav class="flex flex-wrap items-center text-sm text-gray-500 mb-6 gap-2">
+      <a href="/" class="hover:text-gray-700 transition">Home</a>
+      <span class="text-gray-400">/</span>
+      <a href="/products-user" class="hover:text-gray-700 transition">Products</a>
+      <span class="text-gray-400">/</span>
+      <a href="/products-user?category=<%= category.categoryname %>" class="hover:text-gray-700 transition">
+        <%= category.categoryname %>
+      </a>
+      <span class="text-gray-400">/</span>
+      <span class="text-gray-700 font-medium truncate max-w-[180px] sm:max-w-none">
+        <%= product.productName %>
+      </span>
+    </nav>
+
+    <!-- Product Detail Section -->
+    <div class="flex flex-col lg:flex-row gap-6 lg:gap-10 mb-12">
+
+      <!-- Images Section -->
+      <div class="w-full lg:w-1/2 flex flex-col gap-4">
+
+        <!-- Main Image (with zoom effect) -->
+        <div class="border border-gray-200 rounded-lg overflow-hidden bg-white relative cursor-zoom-in"
+          id="mainImageContainer">
+          <img id="mainProductImage" src="<%= product.productImage[0]?.url %>" alt="<%= product.productName %>"
+            class="w-full h-auto max-h-[500px] object-contain transition-transform duration-300">
+        </div>
+
+        <!-- Thumbnails -->
+        <div class="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 gap-2 sm:gap-3">
+          <% product.productImage.forEach((img, index)=> { %>
+            <button
+              class="thumbnail-btn aspect-square border border-gray-200 rounded-md overflow-hidden hover:border-blue-500 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-300 transition"
+              data-index="<%= index %>">
+              <img src="<%= img.url %>" alt="Thumbnail <%= index + 1 %>" class="w-full h-full object-contain p-1">
+            </button>
+            <% }) %>
+        </div>
+      </div>
+
+      <!-- Product Info -->
+      <div class="w-full lg:w-1/2">
+
+        <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 mb-3 leading-tight">
+          <%= product.productName %>
+        </h1>
+
+        <!-- Rating + Discount -->
+        <div class="flex flex-wrap items-center gap-3 mb-4">
+          <div class="flex text-yellow-400">
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star-half-alt"></i>
+          </div>
+          <span class="text-sm text-gray-600">(69 Reviews)</span>
+
+          <% if (product.discountPercent && product.discountPercent> 0) { %>
+            <span class="bg-orange-600 text-white text-xs font-bold px-3 py-1 rounded-full">
+              <%= product.discountPercent %>% OFF
             </span>
-        </nav>
+            <% } %>
+        </div>
 
-        <!-- Product Detail Section -->
-        <div class="flex flex-col lg:flex-row gap-6 lg:gap-10 mb-12">
+        <!-- Price -->
+        <div class="flex items-baseline gap-3 mb-6">
+          <span class="text-3xl sm:text-4xl font-bold text-gray-900">
+            ₹<%= product.discountedPrice %>
+          </span>
+          <% if (product.originalPrice && product.originalPrice !==product.discountedPrice) { %>
+            <span class="text-lg text-gray-500 line-through">
+              ₹<%= product.originalPrice %>
+            </span>
+            <% } %>
+        </div>
 
-            <!-- Images Section -->
-            <div class="w-full lg:w-1/2 flex flex-col gap-4">
+        <!-- Description -->
+        <div class="prose prose-sm sm:prose text-gray-700 mb-8 max-w-none">
+          <p>
+            <%= product.description %>
+          </p>
+        </div>
 
-                <!-- Main Image (with zoom effect) -->
-                <div class="border border-gray-200 rounded-lg overflow-hidden bg-white relative cursor-zoom-in"
-                     id="mainImageContainer">
-                    <img id="mainProductImage"
-                         src="<%= product.productImage[0]?.url %>"
-                         alt="<%= product.productName %>"
-                         class="w-full h-auto max-h-[500px] object-contain transition-transform duration-300">
-                </div>
+        <!-- Actions -->
+        <!-- Actions -->
+        <div class="flex flex-col sm:flex-row gap-4 mb-8">
+          <% if (product.inCart) { %>
+            <a href="/cart"
+              class="flex-1 bg-green-600 hover:bg-green-700 text-white text-center py-3.5 rounded-lg font-semibold transition shadow-sm">
+              Go to Cart
+            </a>
+            <% } else if (product.quantity <=0) { %>
+              <!-- Out of Stock – red + disabled -->
+              <button
+                class="add-to-cart-btn flex-1 bg-red-600 hover:bg-red-700 text-white text-center py-3.5 rounded-lg font-semibold transition shadow-sm cursor-not-allowed opacity-90"
+                data-product-id="<%= product._id %>" disabled>
+                Out of Stock
+              </button>
+              <% } else { %>
+                <!-- Normal in-stock button -->
+                <button
+                  class="add-to-cart-btn flex-1 bg-blue-600 hover:bg-blue-700 text-white text-center py-3.5 rounded-lg font-semibold transition shadow-sm"
+                  data-product-id="<%= product._id %>">
+                  Add to Cart
+                </button>
+                <% } %>
 
-                <!-- Thumbnails -->
-                <div class="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 gap-2 sm:gap-3">
-                    <% product.productImage.forEach((img, index) => { %>
-                    <button class="thumbnail-btn aspect-square border border-gray-200 rounded-md overflow-hidden hover:border-blue-500 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-300 transition"
-                            data-index="<%= index %>">
-                        <img src="<%= img.url %>" alt="Thumbnail <%= index + 1 %>"
-                             class="w-full h-full object-contain p-1">
-                    </button>
-                    <% }) %>
-                </div>
-            </div>
+                  <!-- Wishlist button remains unchanged -->
 
-            <!-- Product Info -->
-            <div class="w-full lg:w-1/2">
+                  <!-- In product details page – replace the current button with: -->
 
-                <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 mb-3 leading-tight">
-                    <%= product.productName %>
-                </h1>
-
-                <!-- Rating + Discount -->
-                <div class="flex flex-wrap items-center gap-3 mb-4">
-                    <div class="flex text-yellow-400">
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star-half-alt"></i>
-                    </div>
-                    <span class="text-sm text-gray-600">(69 Reviews)</span>
-
-                    <% if (product.discountPercent && product.discountPercent > 0) { %>
-                    <span class="bg-orange-600 text-white text-xs font-bold px-3 py-1 rounded-full">
-                        <%= product.discountPercent %>% OFF
-                    </span>
-                    <% } %>
-                </div>
-
-                <!-- Price -->
-                <div class="flex items-baseline gap-3 mb-6">
-                    <span class="text-3xl sm:text-4xl font-bold text-gray-900">
-                        ₹<%= product.discountedPrice %>
-                    </span>
-                    <% if (product.originalPrice && product.originalPrice !== product.discountedPrice) { %>
-                    <span class="text-lg text-gray-500 line-through">
-                        ₹<%= product.originalPrice %>
-                    </span>
-                    <% } %>
-                </div>
-
-                <!-- Description -->
-                <div class="prose prose-sm sm:prose text-gray-700 mb-8 max-w-none">
-                    <p><%= product.description %></p>
-                </div>
-
-                <!-- Actions -->
-               <!-- Actions -->
-<div class="flex flex-col sm:flex-row gap-4 mb-8">
-  <% if (product.inCart) { %>
-    <a href="/cart"
-       class="flex-1 bg-green-600 hover:bg-green-700 text-white text-center py-3.5 rounded-lg font-semibold transition shadow-sm">
-      Go to Cart
-    </a>
-  <% } else if (product.quantity <= 0) { %>
-    <!-- Out of Stock – red + disabled -->
-    <button 
-      class="add-to-cart-btn flex-1 bg-red-600 hover:bg-red-700 text-white text-center py-3.5 rounded-lg font-semibold transition shadow-sm cursor-not-allowed opacity-90"
-      data-product-id="<%= product._id %>"
-      disabled>
-      Out of Stock
-    </button>
-  <% } else { %>
-    <!-- Normal in-stock button -->
-    <button 
-      class="add-to-cart-btn flex-1 bg-blue-600 hover:bg-blue-700 text-white text-center py-3.5 rounded-lg font-semibold transition shadow-sm"
-      data-product-id="<%= product._id %>">
-      Add to Cart
-    </button>
-  <% } %>
-
-  <!-- Wishlist button remains unchanged -->
-
-<!-- In product details page – replace the current button with: -->
-
-<!-- Wishlist button -->
-<button 
-  id="wishlist-btn"
-  class="w-14 h-14 flex items-center justify-center rounded-lg border transition-all duration-200 shadow-sm
+                  <!-- Wishlist button -->
+                  <button id="wishlist-btn" class="w-14 h-14 flex items-center justify-center rounded-lg border transition-all duration-200 shadow-sm
          <%= product.inCart ? 'opacity-50 cursor-not-allowed' : 'hover:shadow-md active:scale-95' %>
          <%= product.inWishlist ? 'bg-red-50 border-red-400' : 'bg-white border-gray-300 hover:border-red-400' %>"
-  data-product-id="<%= product._id %>"
-  data-in-wishlist="<%= product.inWishlist ? 'true' : 'false' %>"
-  <%= product.inCart ? 'disabled' : '' %>>
+                    data-product-id="<%= product._id %>" data-in-wishlist="<%= product.inWishlist ? 'true' : 'false' %>"
+                    <%=product.inCart ? 'disabled' : '' %>>
 
-  <i id="wishlist-icon" 
-     class="text-2xl transition-colors duration-200
+                    <i id="wishlist-icon" class="text-2xl transition-colors duration-200
             <%= product.inWishlist ? 'fas fa-heart text-red-500' : 'far fa-heart text-gray-600' %>">
-  </i>
-</button>
-</div>
-
-                <!-- Delivery Info -->
-                <div class="border border-gray-200 rounded-lg divide-y">
-                    <div class="p-4 flex items-start gap-4">
-                        <i class="fas fa-truck text-gray-600 text-xl mt-1"></i>
-                        <div>
-                            <p class="font-medium">Free Delivery</p>
-                            <p class="text-sm text-gray-600">Enter your postal code for delivery availability</p>
-                        </div>
-                    </div>
-                    <div class="p-4 flex items-start gap-4">
-                        <i class="fas fa-undo text-gray-600 text-xl mt-1"></i>
-                        <div>
-                            <p class="font-medium">Return Delivery</p>
-                            <p class="text-sm text-gray-600">
-                                Free 30 Days Delivery Returns. 
-                                <a href="#" class="text-blue-600 hover:underline">Details</a>
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </div>
+                    </i>
+                  </button>
         </div>
 
-        <!-- Related Products -->
-        <section class="mb-12">
-            <h2 class="text-2xl font-bold mb-6 flex items-center gap-3">
-                <i class="fas fa-mobile-alt text-yellow-500"></i>
-                Related Items
-            </h2>
-            <div class="grid grid-cols-1 xs:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 sm:gap-6">
-               <% relatedProducts.forEach(product => { %>
-<div class="group bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-200 relative flex flex-col">
-  <% if (product.discountPercent && product.discountPercent > 0) { %>
-  <div class="absolute top-3 left-3 z-10">
-    <span class="bg-orange-600 text-white text-xs font-bold px-2.5 py-1 rounded-full shadow-sm">
-      <%= product.discountPercent %>% OFF
-    </span>
-  </div>
-  <% } %>
-
-  <div class="absolute top-3 right-3 z-10">
-    <% if (product.inCart) { %>
-    <div class="bg-white/90 p-2.5 rounded-full shadow-md cursor-not-allowed">
-      <i class="fa-solid fa-heart text-gray-300 opacity-60 text-xl"></i>
-    </div>
-    <% } else { %>
-    <a href="/wishlist/toggle/<%= product._id %>"
-       class="bg-white p-2.5 rounded-full shadow-md hover:shadow-lg transition-all duration-300 active:scale-95">
-      <i class="fa-heart text-xl <%= product.inWishlist ? 'fa-solid text-red-500' : 'fa-regular text-gray-500 hover:text-red-400' %>"></i>
-    </a>
-    <% } %>
-  </div>
-
-  <div class="relative pt-[100%] sm:pt-[85%] bg-gray-50 overflow-hidden">
-    <img src="<%= product.productImage[0]?.url %>"
-         onclick="window.location.href='/productdetails/<%= product._id %>'"
-         class="absolute inset-0 w-full h-full object-contain p-4 group-hover:scale-105 transition-transform duration-500 cursor-pointer" />
-  </div>
-
-  <div class="p-4 flex flex-col flex-grow">
-    <h3 class="font-semibold text-sm sm:text-base text-gray-800 line-clamp-2 min-h-[2.5rem] mb-2">
-      <%= product.productName %>
-    </h3>
-
-    <div class="flex items-center gap-2.5 mb-2">
-      <p class="text-purple-700 font-bold text-lg sm:text-xl">
-        ₹<%= product.discountedPrice %>
-      </p>
-      <% if (product.discountPercent && product.discountPercent > 0) { %>
-      <p class="text-gray-500 text-sm line-through">
-        ₹<%= product.originalPrice %>
-      </p>
-      <% } %>
+        <!-- Delivery Info -->
+        <div class="border border-gray-200 rounded-lg divide-y">
+          <div class="p-4 flex items-start gap-4">
+            <i class="fas fa-truck text-gray-600 text-xl mt-1"></i>
+            <div>
+              <p class="font-medium">Free Delivery</p>
+              <p class="text-sm text-gray-600">Enter your postal code for delivery availability</p>
+            </div>
+          </div>
+          <div class="p-4 flex items-start gap-4">
+            <i class="fas fa-undo text-gray-600 text-xl mt-1"></i>
+            <div>
+              <p class="font-medium">Return Delivery</p>
+              <p class="text-sm text-gray-600">
+                Free 30 Days Delivery Returns.
+                <a href="#" class="text-blue-600 hover:underline">Details</a>
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <div class="flex items-center gap-1 mb-4">
-      <i class="fas fa-star text-yellow-400 text-sm"></i>
-      <span class="text-gray-500 text-xs">5</span>
-    </div>
+    <!-- Related Products -->
+    <section class="mb-12">
+      <h2 class="text-2xl font-bold mb-6 flex items-center gap-3">
+        <i class="fas fa-mobile-alt text-yellow-500"></i>
+        Related Items
+      </h2>
+      <div class="grid grid-cols-1 xs:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 sm:gap-6">
+        <% relatedProducts.forEach(product=> { %>
+          <div
+            class="group bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-200 relative flex flex-col">
+            <% if (product.discountPercent && product.discountPercent> 0) { %>
+              <div class="absolute top-3 left-3 z-10">
+                <span class="bg-orange-600 text-white text-xs font-bold px-2.5 py-1 rounded-full shadow-sm">
+                  <%= product.discountPercent %>% OFF
+                </span>
+              </div>
+              <% } %>
 
-    <!-- ──── Updated Button ──── -->
-    <button class="add-to-cart-btn mt-auto w-full rounded-full py-2.5 font-medium text-white transition-all
+                <div class="absolute top-3 right-3 z-10">
+                  <% if (product.inCart) { %>
+                    <div class="bg-white/90 p-2.5 rounded-full shadow-md cursor-not-allowed">
+                      <i class="fa-solid fa-heart text-gray-300 opacity-60 text-xl"></i>
+                    </div>
+                    <% } else { %>
+                      <a href="/wishlist/toggle/<%= product._id %>"
+                        class="bg-white p-2.5 rounded-full shadow-md hover:shadow-lg transition-all duration-300 active:scale-95">
+                        <i
+                          class="fa-heart text-xl <%= product.inWishlist ? 'fa-solid text-red-500' : 'fa-regular text-gray-500 hover:text-red-400' %>"></i>
+                      </a>
+                      <% } %>
+                </div>
+
+                <div class="relative pt-[100%] sm:pt-[85%] bg-gray-50 overflow-hidden">
+                  <img src="<%= product.productImage[0]?.url %>"
+                    onclick="window.location.href='/productdetails/<%= product._id %>'"
+                    class="absolute inset-0 w-full h-full object-contain p-4 group-hover:scale-105 transition-transform duration-500 cursor-pointer" />
+                </div>
+
+                <div class="p-4 flex flex-col flex-grow">
+                  <h3 class="font-semibold text-sm sm:text-base text-gray-800 line-clamp-2 min-h-[2.5rem] mb-2">
+                    <%= product.productName %>
+                  </h3>
+
+                  <div class="flex items-center gap-2.5 mb-2">
+                    <p class="text-purple-700 font-bold text-lg sm:text-xl">
+                      ₹<%= product.discountedPrice %>
+                    </p>
+                    <% if (product.discountPercent && product.discountPercent> 0) { %>
+                      <p class="text-gray-500 text-sm line-through">
+                        ₹<%= product.originalPrice %>
+                      </p>
+                      <% } %>
+                  </div>
+
+                  <div class="flex items-center gap-1 mb-4">
+                    <i class="fas fa-star text-yellow-400 text-sm"></i>
+                    <span class="text-gray-500 text-xs">5</span>
+                  </div>
+
+                  <!-- ──── Updated Button ──── -->
+                  <button
+                    class="add-to-cart-btn mt-auto w-full rounded-full py-2.5 font-medium text-white transition-all
                <%= product.inCart ? 'bg-green-600 hover:bg-green-700' : 
                    (product.quantity <= 0 ? 'bg-red-600 hover:bg-red-700 cursor-not-allowed opacity-90' : 'bg-purple-600 hover:bg-purple-700') %>"
-        data-product-id="<%= product._id %>"
-        <%= product.inCart ? '' : (product.quantity <= 0 ? 'disabled' : '') %>">
+                    data-product-id="<%= product._id %>" <%=product.inCart ? '' : (product.quantity <=0 ? 'disabled'
+                    : '' ) %>">
 
-  <i class="fas fa-shopping-cart text-sm mr-2"></i>
-  <span>
-    <%= product.inCart ? 'Go to Cart' : 
-        (product.quantity <= 0 ? 'Out of Stock' : 'Add to Cart') %>
-  </span>
+                    <i class="fas fa-shopping-cart text-sm mr-2"></i>
+                    <span>
+                      <%= product.inCart ? 'Go to Cart' : (product.quantity <=0 ? 'Out of Stock' : 'Add to Cart' ) %>
+                    </span>
 
-  
-</button>
-  </div>
-</div>
-<% }) %>
-            </div>
-        </section>
 
-        <!-- Product Details & Reviews (combined section for better mobile flow) -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
-
-            <!-- Specifications & Warranty -->
-            <div>
-                <h2 class="text-2xl font-bold mb-6">Product Details</h2>
-
-                <div class="space-y-8">
-                    <div>
-                        <h3 class="font-semibold text-lg mb-4">General Specs</h3>
-                        <dl class="grid grid-cols-1 sm:grid-cols-2 gap-y-3 gap-x-6 text-sm">
-                            <dt class="text-gray-600">Model</dt>
-                            <dd class="font-medium">P71B Pro</dd>
-                            <dt class="text-gray-600">Connectivity</dt>
-                            <dd class="font-medium">Bluetooth, WiFi</dd>
-                            <dt class="text-gray-600">Compatible Devices</dt>
-                            <dd class="font-medium">Mobile, Tablet</dd>
-                        </dl>
-                    </div>
-
-                    <div>
-                        <h3 class="font-semibold text-lg mb-4">Warranty</h3>
-                        <dl class="grid grid-cols-1 sm:grid-cols-2 gap-y-3 gap-x-6 text-sm">
-                            <dt class="text-gray-600">Domestic Warranty</dt>
-                            <dd class="font-medium">1 Year</dd>
-                            <dt class="text-gray-600">Warranty Summary</dt>
-                            <dd class="font-medium">1 Year Warranty from the Date of Purchase</dd>
-                            <dt class="text-gray-600">Warranty Service Type</dt>
-                            <dd class="font-medium">Reach Out To us at info@mammbramelasupport.com</dd>
-                            <dt class="text-gray-600">Covered in Warranty</dt>
-                            <dd class="font-medium">Manufacturing Defects</dd>
-                            <dt class="text-gray-600">Not Covered in Warranty</dt>
-                            <dd class="font-medium">Physical damages</dd>
-                        </dl>
-                    </div>
+                  </button>
                 </div>
-            </div>
+          </div>
+          <% }) %>
+      </div>
+    </section>
 
-            <!-- Reviews -->
-            <div>
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-                    <h2 class="text-2xl font-bold">Reviews</h2>
-                    <a href="#" class="text-blue-600 hover:underline flex items-center text-sm sm:text-base">
-                        <i class="fas fa-pen-to-square mr-2"></i> Leave a review
-                    </a>
-                </div>
+    <!-- Product Details & Reviews (combined section for better mobile flow) -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
 
-                <!-- Review Summary -->
-                <div class="flex flex-col md:flex-row gap-6 mb-8">
-                    <div class="flex flex-col items-center justify-center p-6 bg-white border border-gray-200 rounded-xl min-w-[180px]">
-                        <div class="text-5xl font-bold mb-2">4.1</div>
-                        <div class="flex text-yellow-400 text-2xl mb-2">
-                            <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="far fa-star"></i>
-                        </div>
-                        <span class="text-sm text-gray-600">65 reviews</span>
-                    </div>
+      <!-- Specifications & Warranty -->
+      <div>
+        <h2 class="text-2xl font-bold mb-6">Product Details</h2>
 
-                    <div class="flex-1 space-y-3">
-                        <div class="flex items-center gap-3">
-                            <span class="w-10 text-right text-sm text-gray-600">5 ★</span>
-                            <div class="flex-1 h-2.5 bg-gray-200 rounded-full overflow-hidden">
-                                <div class="h-full bg-yellow-400" style="width: 65%"></div>
-                            </div>
-                            <span class="w-8 text-sm text-gray-600 text-right">33</span>
-                        </div>
-                        <!-- Repeat for 4,3,2,1 stars with same structure -->
-                        <!-- ... (kept same as your original) ... -->
-                    </div>
-                </div>
+        <div class="space-y-8">
+          <div>
+            <h3 class="font-semibold text-lg mb-4">General Specs</h3>
+            <dl class="grid grid-cols-1 sm:grid-cols-2 gap-y-3 gap-x-6 text-sm">
+              <dt class="text-gray-600">Model</dt>
+              <dd class="font-medium">P71B Pro</dd>
+              <dt class="text-gray-600">Connectivity</dt>
+              <dd class="font-medium">Bluetooth, WiFi</dd>
+              <dt class="text-gray-600">Compatible Devices</dt>
+              <dd class="font-medium">Mobile, Tablet</dd>
+            </dl>
+          </div>
 
-                <!-- Sample Reviews -->
-                <div class="space-y-8">
-                    <!-- Review items remain the same – just better spacing -->
-                    <!-- Your existing review blocks here -->
-                </div>
+          <div>
+            <h3 class="font-semibold text-lg mb-4">Warranty</h3>
+            <dl class="grid grid-cols-1 sm:grid-cols-2 gap-y-3 gap-x-6 text-sm">
+              <dt class="text-gray-600">Domestic Warranty</dt>
+              <dd class="font-medium">1 Year</dd>
+              <dt class="text-gray-600">Warranty Summary</dt>
+              <dd class="font-medium">1 Year Warranty from the Date of Purchase</dd>
+              <dt class="text-gray-600">Warranty Service Type</dt>
+              <dd class="font-medium">Reach Out To us at info@mammbramelasupport.com</dd>
+              <dt class="text-gray-600">Covered in Warranty</dt>
+              <dd class="font-medium">Manufacturing Defects</dd>
+              <dt class="text-gray-600">Not Covered in Warranty</dt>
+              <dd class="font-medium">Physical damages</dd>
+            </dl>
+          </div>
+        </div>
+      </div>
 
-                <div class="text-center mt-8">
-                    <a href="#" class="text-blue-600 hover:underline font-medium inline-flex items-center">
-                        Show all reviews <i class="fas fa-chevron-right ml-2 text-sm"></i>
-                    </a>
-                </div>
-            </div>
+      <!-- Reviews -->
+      <div>
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+          <h2 class="text-2xl font-bold">Reviews</h2>
+          <a href="#" class="text-blue-600 hover:underline flex items-center text-sm sm:text-base">
+            <i class="fas fa-pen-to-square mr-2"></i> Leave a review
+          </a>
         </div>
 
-    </main>
+        <!-- Review Summary -->
+        <div class="flex flex-col md:flex-row gap-6 mb-8">
+          <div
+            class="flex flex-col items-center justify-center p-6 bg-white border border-gray-200 rounded-xl min-w-[180px]">
+            <div class="text-5xl font-bold mb-2">4.1</div>
+            <div class="flex text-yellow-400 text-2xl mb-2">
+              <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i
+                class="fas fa-star"></i><i class="far fa-star"></i>
+            </div>
+            <span class="text-sm text-gray-600">65 reviews</span>
+          </div>
 
-    <footer class="bg-indigo-900 text-white mt-12">
-        <%- include("../../views/partials/user/footer") -%>
-    </footer>
+          <div class="flex-1 space-y-3">
+            <div class="flex items-center gap-3">
+              <span class="w-10 text-right text-sm text-gray-600">5 ★</span>
+              <div class="flex-1 h-2.5 bg-gray-200 rounded-full overflow-hidden">
+                <div class="h-full bg-yellow-400" style="width: 65%"></div>
+              </div>
+              <span class="w-8 text-sm text-gray-600 text-right">33</span>
+            </div>
+            <!-- Repeat for 4,3,2,1 stars with same structure -->
+            <!-- ... (kept same as your original) ... -->
+          </div>
+        </div>
 
-   
-    <script>
+        <!-- Sample Reviews -->
+        <div class="space-y-8">
+          <!-- Review items remain the same – just better spacing -->
+          <!-- Your existing review blocks here -->
+        </div>
 
-document.addEventListener('DOMContentLoaded', () => {
+        <div class="text-center mt-8">
+          <a href="#" class="text-blue-600 hover:underline font-medium inline-flex items-center">
+            Show all reviews <i class="fas fa-chevron-right ml-2 text-sm"></i>
+          </a>
+        </div>
+      </div>
+    </div>
 
-  document.addEventListener('click', async function(e) {
-    const btn = e.target.closest('.add-to-cart-btn');
-    if (!btn) return;
+  </main>
 
-    // ─── Already says "Go to Cart" → just navigate ───
-    if (btn.textContent.trim().includes('Go to Cart')) {
-      window.location.href = '/cart';
-      return;
-    }
-
-    // ─── Out of stock ───
-    if (btn.disabled || btn.textContent.trim().toLowerCase().includes('out of stock')) {
-      e.preventDefault();
-      Swal.fire({
-        icon: 'warning',
-        title: 'Out of Stock',
-        text: 'This product is currently unavailable.',
-        toast: true,
-        position: 'top-end',
-        showConfirmButton: false,
-        timer: 2200
-      });
-      return;
-    }
-
-    // ─── Add to Cart flow ───
-    e.preventDefault();
-
-    const productId = btn.dataset.productId;
-
-    btn.disabled = true;
-    const originalHTML = btn.innerHTML;
-    btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Adding...';
-
-    try {
-      const response = await fetch(`/add-to-cart/${productId}`, {
-        method: 'GET',
-        credentials: 'include',
-        headers: { 'Accept': 'application/json' }
-      });
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(errorText || 'Failed to add');
-      }
-
-      const data = await response.json();
-
-      if (data.success) {
-        // ─── Success: change button to "Go to Cart" ───
-        btn.classList.remove('bg-blue-600', 'hover:bg-blue-700');
-        btn.classList.add('bg-green-600', 'hover:bg-green-700');
-        btn.innerHTML = '<i class="fas fa-shopping-cart text-sm mr-2"></i> Go to Cart';
-
-        // Optional: update any cart count badge in header if you have one
-        // document.querySelector('#cart-count')?.textContent = data.cartItemCount || '';
-
-        Swal.fire({
-          icon: 'success',
-          title: 'Added!',
-          text: 'Product added to your cart',
-          toast: true,
-          position: 'top-end',
-          showConfirmButton: false,
-          timer: 1800
-        });
-      } else {
-        throw new Error(data.message || 'Something went wrong');
-      }
-    } catch (err) {
-      console.error(err);
-
-      let msg = 'Could not add to cart. Please try again.';
-      let icon = 'error';
-
-      if (err.message.includes('Out of stock')) {
-        icon = 'warning';
-        msg = 'Sorry, this product is out of stock.';
-        btn.classList.remove('bg-blue-600', 'hover:bg-blue-700');
-        btn.classList.add('bg-red-600', 'cursor-not-allowed');
-        btn.innerHTML = '<i class="fas fa-shopping-cart text-sm mr-2"></i> Out of Stock';
-        btn.disabled = true;
-      } else if (err.message.includes('Maximum') || err.message.includes('limit')) {
-        icon = 'warning';
-        msg = err.message;
-      }
-
-      Swal.fire({
-        icon: icon,
-        title: icon === 'error' ? 'Error' : 'Notice',
-        text: msg,
-        toast: true,
-        position: 'top-end',
-        timer: 2800,
-        showConfirmButton: false
-      });
-    } finally {
-      if (!btn.textContent.includes('Out of Stock')) {
-        btn.disabled = false;
-      }
-      if (!btn.innerHTML.includes('fa-spinner')) {
-        // only restore if we didn't change to final state
-        btn.innerHTML = originalHTML;
-      }
-    }
-  });
-});
+  <footer class="bg-indigo-900 text-white mt-12">
+    <%- include("../../views/partials/user/footer") -%>
+  </footer>
 
 
+  <script>
 
-        document.addEventListener('DOMContentLoaded', function () {
-            const mainContainer = document.getElementById('mainImageContainer');
-            const mainImage = document.getElementById('mainProductImage');
-            const thumbnails = document.querySelectorAll('.thumbnail-btn');
+    document.addEventListener('DOMContentLoaded', () => {
 
-            if (!mainContainer || !mainImage) return;
+      document.addEventListener('click', async function (e) {
+        const btn = e.target.closest('.add-to-cart-btn');
+        if (!btn) return;
 
-            // Zoom effect
-            mainContainer.addEventListener('mouseenter', () => {
-                mainImage.style.transition = 'transform 0.4s ease';
-                mainImage.style.transform = 'scale(1.8)';
-            });
-
-            mainContainer.addEventListener('mousemove', (e) => {
-                const rect = mainContainer.getBoundingClientRect();
-                const x = ((e.clientX - rect.left) / rect.width) * 100;
-                const y = ((e.clientY - rect.top) / rect.height) * 100;
-                mainImage.style.transformOrigin = `${x}% ${y}%`;
-            });
-
-            mainContainer.addEventListener('mouseleave', () => {
-                mainImage.style.transform = 'scale(1)';
-            });
-
-            // Thumbnail switching
-            thumbnails.forEach(btn => {
-                btn.addEventListener('click', () => {
-                    const src = btn.querySelector('img').src;
-                    mainImage.src = src;
-
-                    // Optional: highlight active thumbnail
-                    thumbnails.forEach(b => b.classList.remove('border-blue-500', 'ring-2', 'ring-blue-300'));
-                    btn.classList.add('border-blue-500', 'ring-2', 'ring-blue-300');
-                });
-            });
-        });
-
-        // Your existing toggleWishlist function (assumed to be defined elsewhere or via partial)
-        function toggleWishlist(productId) {
-            // Your wishlist toggle logic here (fetch or redirect)
-            console.log('Toggling wishlist for:', productId);
-            // Example: window.location.href = `/wishlist/toggle/${productId}`;
+        // ─── 1. Already in Cart → Navigate ───
+        if (btn.dataset.inCart === 'true' || btn.textContent.trim().toLowerCase().includes('go to cart')) {
+          window.location.href = '/cart';
+          return;
         }
 
+        // ─── 2. Out of Stock ───
+        if (btn.disabled || btn.textContent.trim().toLowerCase().includes('out of stock')) {
+          e.preventDefault();
+          Swal.fire({
+            icon: 'warning',
+            title: 'Out of Stock',
+            text: 'This product is currently unavailable.',
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 2200
+          });
+          return;
+        }
 
-      document.addEventListener('DOMContentLoaded', () => {
-  const wishlistBtn = document.getElementById('wishlist-btn');
-  if (!wishlistBtn) return;
+        // ─── 3. Add to Cart flow ───
+        e.preventDefault();
 
-  wishlistBtn.addEventListener('click', async (e) => {
-    if (wishlistBtn.disabled) {
-      if (wishlistBtn.dataset.inWishlist === 'true') {
-        // Optional: tell user why it's disabled
-        Swal.fire({
-          icon: 'info',
-          title: 'Already in Cart',
-          text: 'This product is in your cart. Wishlist is disabled.',
-          toast: true,
-          position: 'top-end',
-          showConfirmButton: false,
-          timer: 2200
-        });
-      }
-      return;
-    }
+        const productId = btn.dataset.productId;
 
-    const productId = wishlistBtn.dataset.productId;
-    const isCurrentlyInWishlist = wishlistBtn.dataset.inWishlist === 'true';
+        btn.disabled = true;
+        const originalHTML = btn.innerHTML;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Adding...';
 
-    // Visual feedback
-    wishlistBtn.disabled = true;
-    const icon = document.getElementById('wishlist-icon');
-    icon.classList.add('fa-beat'); // nice little animation (font awesome 6+)
+        try {
+          const response = await fetch(`/add-to-cart/${productId}`, {
+            method: 'GET',
+            headers: {
+              'Accept': 'application/json',
+              'X-Requested-With': 'XMLHttpRequest'
+            }
+          });
 
-    try {
-      const response = await fetch(`/wishlist/toggle/${productId}`, {
-        method: 'GET',
-        headers: { 'Accept': 'application/json' }
+          if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(errorText || 'Failed to add');
+          }
+
+          const data = await response.json();
+
+          if (data.success) {
+            // ─── Success: change button to "Go to Cart" ───
+            btn.classList.remove('bg-blue-600', 'hover:bg-blue-700');
+            btn.classList.add('bg-green-600', 'hover:bg-green-700');
+            btn.innerHTML = '<i class="fas fa-shopping-cart text-sm mr-2"></i> Go to Cart';
+
+            // Mark as in-cart so next click navigates
+            btn.dataset.inCart = 'true';
+
+            Swal.fire({
+              icon: 'success',
+              title: 'Added!',
+              text: 'Product added to your cart',
+              toast: true,
+              position: 'top-end',
+              showConfirmButton: false,
+              timer: 1800
+            });
+          } else {
+            throw new Error(data.message || 'Something went wrong');
+          }
+        } catch (err) {
+          console.error(err);
+
+          let msg = 'Could not add to cart. Please try again.';
+          let icon = 'error';
+
+          if (err.message.includes('Out of stock')) {
+            icon = 'warning';
+            msg = 'Sorry, this product is out of stock.';
+            btn.classList.remove('bg-blue-600', 'hover:bg-blue-700');
+            btn.classList.add('bg-red-600', 'cursor-not-allowed');
+            btn.innerHTML = '<i class="fas fa-shopping-cart text-sm mr-2"></i> Out of Stock';
+            btn.disabled = true;
+          } else if (err.message.includes('Maximum') || err.message.includes('limit') || err.message.includes('Stock')) {
+            icon = 'warning';
+            msg = err.message;
+          }
+
+          Swal.fire({
+            icon: icon,
+            title: icon === 'error' ? 'Error' : 'Notice',
+            text: msg,
+            toast: true,
+            position: 'top-end',
+            timer: 2800,
+            showConfirmButton: false
+          });
+        } finally {
+          if (!btn.textContent.includes('Out of Stock') && !btn.dataset.inCart) {
+            btn.disabled = false;
+            // Restore only if valid (not swapped to Go to Cart)
+            if (!btn.innerHTML.includes('Go to Cart')) {
+              btn.innerHTML = originalHTML;
+            }
+          }
+          // If we swapped to Go to Cart, re-enable
+          if (btn.dataset.inCart === 'true') {
+            btn.disabled = false;
+          }
+        }
+      });
+    });
+
+
+
+    document.addEventListener('DOMContentLoaded', function () {
+      const mainContainer = document.getElementById('mainImageContainer');
+      const mainImage = document.getElementById('mainProductImage');
+      const thumbnails = document.querySelectorAll('.thumbnail-btn');
+
+      if (!mainContainer || !mainImage) return;
+
+      // Zoom effect
+      mainContainer.addEventListener('mouseenter', () => {
+        mainImage.style.transition = 'transform 0.4s ease';
+        mainImage.style.transform = 'scale(1.8)';
       });
 
-      if (!response.ok) throw new Error('Toggle failed');
-
-      // Toggle state
-      const nowInWishlist = !isCurrentlyInWishlist;
-
-      // Update data attribute
-      wishlistBtn.dataset.inWishlist = nowInWishlist ? 'true' : 'false';
-
-      // Update UI
-      if (nowInWishlist) {
-        wishlistBtn.classList.add('bg-red-50', 'border-red-400');
-        wishlistBtn.classList.remove('bg-white', 'border-gray-300', 'hover:border-red-400');
-        icon.classList.remove('far', 'text-gray-600');
-        icon.classList.add('fas', 'text-red-500');
-        Swal.fire({
-          icon: 'success',
-          title: 'Added to Wishlist',
-          toast: true,
-          position: 'top-end',
-          showConfirmButton: false,
-          timer: 1600
-        });
-      } else {
-        wishlistBtn.classList.remove('bg-red-50', 'border-red-400');
-        wishlistBtn.classList.add('bg-white', 'border-gray-300', 'hover:border-red-400');
-        icon.classList.remove('fas', 'text-red-500');
-        icon.classList.add('far', 'text-gray-600');
-        Swal.fire({
-          icon: 'info',
-          title: 'Removed from Wishlist',
-          toast: true,
-          position: 'top-end',
-          showConfirmButton: false,
-          timer: 1600
-        });
-      }
-    } catch (err) {
-      console.error(err);
-      Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: 'Could not update wishlist. Try again.',
-        toast: true,
-        position: 'top-end',
-        timer: 2400
+      mainContainer.addEventListener('mousemove', (e) => {
+        const rect = mainContainer.getBoundingClientRect();
+        const x = ((e.clientX - rect.left) / rect.width) * 100;
+        const y = ((e.clientY - rect.top) / rect.height) * 100;
+        mainImage.style.transformOrigin = `${x}% ${y}%`;
       });
-    } finally {
-      wishlistBtn.disabled = false;
-      icon.classList.remove('fa-beat');
+
+      mainContainer.addEventListener('mouseleave', () => {
+        mainImage.style.transform = 'scale(1)';
+      });
+
+      // Thumbnail switching
+      thumbnails.forEach(btn => {
+        btn.addEventListener('click', () => {
+          const src = btn.querySelector('img').src;
+          mainImage.src = src;
+
+          // Optional: highlight active thumbnail
+          thumbnails.forEach(b => b.classList.remove('border-blue-500', 'ring-2', 'ring-blue-300'));
+          btn.classList.add('border-blue-500', 'ring-2', 'ring-blue-300');
+        });
+      });
+    });
+
+    // Your existing toggleWishlist function (assumed to be defined elsewhere or via partial)
+    function toggleWishlist(productId) {
+      // Your wishlist toggle logic here (fetch or redirect)
+      console.log('Toggling wishlist for:', productId);
+      // Example: window.location.href = `/wishlist/toggle/${productId}`;
     }
-  });
-});
-    </script>
+
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const wishlistBtn = document.getElementById('wishlist-btn');
+      if (!wishlistBtn) return;
+
+      wishlistBtn.addEventListener('click', async (e) => {
+        if (wishlistBtn.disabled) {
+          if (wishlistBtn.dataset.inWishlist === 'true') {
+            // Optional: tell user why it's disabled
+            Swal.fire({
+              icon: 'info',
+              title: 'Already in Cart',
+              text: 'This product is in your cart. Wishlist is disabled.',
+              toast: true,
+              position: 'top-end',
+              showConfirmButton: false,
+              timer: 2200
+            });
+          }
+          return;
+        }
+
+        const productId = wishlistBtn.dataset.productId;
+        const isCurrentlyInWishlist = wishlistBtn.dataset.inWishlist === 'true';
+
+        // Visual feedback
+        wishlistBtn.disabled = true;
+        const icon = document.getElementById('wishlist-icon');
+        icon.classList.add('fa-beat'); // nice little animation (font awesome 6+)
+
+        try {
+          const response = await fetch(`/wishlist/toggle/${productId}`, {
+            method: 'GET',
+            headers: { 'Accept': 'application/json' }
+          });
+
+          if (!response.ok) throw new Error('Toggle failed');
+
+          // Toggle state
+          const nowInWishlist = !isCurrentlyInWishlist;
+
+          // Update data attribute
+          wishlistBtn.dataset.inWishlist = nowInWishlist ? 'true' : 'false';
+
+          // Update UI
+          if (nowInWishlist) {
+            wishlistBtn.classList.add('bg-red-50', 'border-red-400');
+            wishlistBtn.classList.remove('bg-white', 'border-gray-300', 'hover:border-red-400');
+            icon.classList.remove('far', 'text-gray-600');
+            icon.classList.add('fas', 'text-red-500');
+            Swal.fire({
+              icon: 'success',
+              title: 'Added to Wishlist',
+              toast: true,
+              position: 'top-end',
+              showConfirmButton: false,
+              timer: 1600
+            });
+          } else {
+            wishlistBtn.classList.remove('bg-red-50', 'border-red-400');
+            wishlistBtn.classList.add('bg-white', 'border-gray-300', 'hover:border-red-400');
+            icon.classList.remove('fas', 'text-red-500');
+            icon.classList.add('far', 'text-gray-600');
+            Swal.fire({
+              icon: 'info',
+              title: 'Removed from Wishlist',
+              toast: true,
+              position: 'top-end',
+              showConfirmButton: false,
+              timer: 1600
+            });
+          }
+        } catch (err) {
+          console.error(err);
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Could not update wishlist. Try again.',
+            toast: true,
+            position: 'top-end',
+            timer: 2400
+          });
+        } finally {
+          wishlistBtn.disabled = false;
+          icon.classList.remove('fa-beat');
+        }
+      });
+    });
+  </script>
 
 </body>
+
 </html>

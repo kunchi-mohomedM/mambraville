@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,142 +9,165 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
+
 <body class="bg-gray-100 font-sans">
     <div class="flex h-screen">
         <!-- Sidebar (Hidden on mobile, toggleable) -->
         <%- include('../partials/admin/sidebar') %>
-        
-        <!-- Main Content -->
-        <div class="flex-1 flex flex-col overflow-hidden">
-            <!-- Header with Mobile Menu Toggle -->
-            <header class="bg-gradient-to-r from-black to-purple-900 text-white p-4 flex justify-between items-center">
-                <div class="flex items-center">
-                    <button id="menu-toggle" class="md:hidden text-white mr-4">
-                        <i class="fas fa-bars text-2xl"></i>
-                    </button>
-                    <h1 class="text-xl md:text-2xl font-bold">Category</h1>
-                </div>
-                
-            </header>
-           
-            <!-- Content -->
-            <main class="flex-1 overflow-y-auto p-4 md:p-6 bg-white m-2 md:m-4 rounded-lg shadow">
-                <div class="overflow-x-auto">
-                    <div class="flex flex-col sm:flex-row justify-between items-center mb-4">
-                        <h2 class="text-lg md:text-xl font-semibold mb-2 sm:mb-0">Category List</h2>
-                        <a href="addCategory" class="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700 flex items-center">
-                            <i class="fas fa-plus mr-2"></i>Add New Category
-                        </a>
+
+            <!-- Main Content -->
+            <div class="flex-1 flex flex-col overflow-hidden">
+                <!-- Header with Mobile Menu Toggle -->
+                <header
+                    class="bg-gradient-to-r from-black to-purple-900 text-white p-4 flex justify-between items-center">
+                    <div class="flex items-center">
+                        <button id="menu-toggle" class="md:hidden text-white mr-4">
+                            <i class="fas fa-bars text-2xl"></i>
+                        </button>
+                        <h1 class="text-xl md:text-2xl font-bold">Category</h1>
                     </div>
 
-                    <!-- Responsive Table -->
-                    <div class="block overflow-x-auto">
-                        <table class="min-w-full bg-white">
-                            <% if(categories.length>0){ %>
-                            <thead>
-                                <tr class="bg-gray-100">
-                                    <th class="py-2 px-2 md:py-3 md:px-6 text-left text-xs md:text-sm text-gray-600 font-semibold">Category Name</th>
-                                    <th class="py-2 px-2 md:py-3 md:px-6 text-left text-xs md:text-sm text-gray-600 font-semibold">Description</th>
-                                    <th class="py-2 px-2 md:py-3 md:px-6 text-left text-xs md:text-sm text-gray-600 font-semibold">Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <% categories.forEach(category => { %>
-                                <tr class="border-b hover:bg-gray-50">
-                                    <td class="py-2 px-2 md:py-4 md:px-6 text-sm"><%= category.categoryname %></td>
-                                    <td class="py-2 px-2 md:py-4 md:px-6 text-sm"><%= category.description  %></td>
-                                    <td class="py-2 px-2 md:py-4 md:px-6">
-                                        <div class="flex space-x-2">
-                                            <a href="/admin/editCategory/<%= category._id %>" class="text-blue-600 hover:text-blue-800">
-                                                <i class="fas fa-edit"></i>
-                                            </a>
-                                            <button onclick="deleteCategory('<%= category._id %>')" class="text-red-600 hover:text-red-800">
-                                                <i class="fas fa-trash"></i>
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <% }) %>        
-                            </tbody>
+                </header>
+
+                <!-- Content -->
+                <main class="flex-1 overflow-y-auto p-4 md:p-6 bg-white m-2 md:m-4 rounded-lg shadow">
+                    <div class="overflow-x-auto">
+                        <div class="flex flex-col sm:flex-row justify-between items-center mb-4">
+                            <h2 class="text-lg md:text-xl font-semibold mb-2 sm:mb-0">Category List</h2>
+                            <a href="addCategory"
+                                class="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700 flex items-center">
+                                <i class="fas fa-plus mr-2"></i>Add New Category
+                            </a>
+                        </div>
+
+                        <!-- Responsive Table -->
+                        <div class="block overflow-x-auto">
+                            <table class="min-w-full bg-white">
+                                <% if(categories.length>0){ %>
+                                    <thead>
+                                        <tr class="bg-gray-100">
+                                            <th
+                                                class="py-2 px-2 md:py-3 md:px-6 text-left text-xs md:text-sm text-gray-600 font-semibold">
+                                                Category Name</th>
+                                            <th
+                                                class="py-2 px-2 md:py-3 md:px-6 text-left text-xs md:text-sm text-gray-600 font-semibold">
+                                                Description</th>
+                                            <th
+                                                class="py-2 px-2 md:py-3 md:px-6 text-left text-xs md:text-sm text-gray-600 font-semibold">
+                                                Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <% categories.forEach(category=> { %>
+                                            <tr class="border-b hover:bg-gray-50">
+                                                <td class="py-2 px-2 md:py-4 md:px-6 text-sm">
+                                                    <%= category.categoryname %>
+                                                </td>
+                                                <td class="py-2 px-2 md:py-4 md:px-6 text-sm">
+                                                    <%= category.description %>
+                                                </td>
+                                                <td class="py-2 px-2 md:py-4 md:px-6">
+                                                    <div class="flex space-x-2">
+                                                        <a href="/admin/editCategory/<%= category._id %>"
+                                                            class="text-blue-600 hover:text-blue-800">
+                                                            <i class="fas fa-edit"></i>
+                                                        </a>
+                                                        <button onclick="deleteCategory('<%= category._id %>')"
+                                                            class="text-red-600 hover:text-red-800">
+                                                            <i class="fas fa-trash"></i>
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            <% }) %>
+                                    </tbody>
                             </table>
-                    <%}else{ %> 
+                            <%}else{ %>
                                 <p> No category found</p>
-                                <% } %> 
+                                <% } %>
+                        </div>
                     </div>
-                </div>
 
-                <!-- Pagination -->
-                <div class="flex justify-center mt-4 md:mt-6">
-                    <nav class="flex items-center space-x-1">
-                        <a href="#" class="px-2 py-1 md:px-3 md:py-1 bg-gray-200 rounded-l-md hover:bg-gray-300">
-                            <i class="fas fa-chevron-left text-gray-600"></i>
-                        </a>
-                        <a href="#" class="px-2 py-1 md:px-3 md:py-1 bg-blue-500 text-white">1</a>
-                        <a href="#" class="px-2 py-1 md:px-3 md:py-1 bg-gray-200 rounded-r-md hover:bg-gray-300">
-                            <i class="fas fa-chevron-right text-gray-600"></i>
-                        </a>
-                    </nav>
-                </div>
-            </main>
-        </div>
+                    <!-- Pagination -->
+                    <div class="flex justify-center mt-4 md:mt-6">
+                        <nav class="flex items-center space-x-1">
+                            <a href="#" class="px-2 py-1 md:px-3 md:py-1 bg-gray-200 rounded-l-md hover:bg-gray-300">
+                                <i class="fas fa-chevron-left text-gray-600"></i>
+                            </a>
+                            <a href="#" class="px-2 py-1 md:px-3 md:py-1 bg-blue-500 text-white">1</a>
+                            <a href="#" class="px-2 py-1 md:px-3 md:py-1 bg-gray-200 rounded-r-md hover:bg-gray-300">
+                                <i class="fas fa-chevron-right text-gray-600"></i>
+                            </a>
+                        </nav>
+                    </div>
+                </main>
+            </div>
     </div>
 
 
-     <script>
-  // Logout (optional confirmation)
-  function logout() {
-    Swal.fire({
-      title: "Are you sure?",
-      text: "You will be logged out of your account!",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "Yes, logout"
-    }).then((result) => {
-      if (result.isConfirmed) {
-        window.location.href = '/admin/logout';
-      }
-    });
-  }
+    <script>
+        // Logout (optional confirmation)
+        function logout() {
+            Swal.fire({
+                title: "Are you sure?",
+                text: "You will be logged out of your account!",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Yes, logout"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = '/admin/logout';
+                }
+            });
+        }
 
-  // Delete Category (confirmation + success)
-  function deleteCategory(categoryId) {
-    Swal.fire({
-      title: "Are you sure?",
-      text: "This will permanently delete the category!",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "Yes, delete it"
-    }).then((result) => {
-      if (result.isConfirmed) {
-        window.location.href = `/admin/category/delete/${categoryId}`;
-      }
-    });
-  }
+        // Delete Category (confirmation + success)
+        function deleteCategory(categoryId) {
+            Swal.fire({
+                title: "Are you sure?",
+                text: "This will permanently delete the category!",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Yes, delete it"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = `/admin/category/delete/${categoryId}`;
+                }
+            });
+        }
 
-  // Show success message if redirected with ?mssg=
-  const urlParams = new URLSearchParams(window.location.search);
-  const message = urlParams.get('mssg');
-  if (message) {
-    Swal.fire({
-      icon: "success",
-      title: message,
-      showConfirmButton: false,
-      timer: 1800
-    });
-  }
+  // Show flash messages
+  <% if (success && success.length > 0) { %>
+            Swal.fire({
+                icon: "success",
+                title: "<%= success %>",
+                showConfirmButton: false,
+                timer: 1800
+            });
+  <% } %>
+
+  <% if (error && error.length > 0) { %>
+            Swal.fire({
+                icon: "error",
+                title: "Error",
+                text: "<%= error %>",
+                confirmButtonColor: "#d33"
+            });
+  <% } %>
 
   // Toggle sidebar on mobile
   const menuToggle = document.getElementById('menu-toggle');
-  const sidebar = document.getElementById('sidebar');
-  menuToggle.addEventListener('click', () => {
-    sidebar.classList.toggle('-translate-x-full');
-  });
+        const sidebar = document.getElementById('sidebar');
+        menuToggle.addEventListener('click', () => {
+            sidebar.classList.toggle('-translate-x-full');
+        });
 
 
     </script>
 </body>
+
 </html>

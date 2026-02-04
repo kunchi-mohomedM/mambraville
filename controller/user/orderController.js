@@ -399,7 +399,7 @@ const placeOrder = async (req, res) => {
         });
       }
 
-       const razorpayOrder = await razorpay.orders.create({
+      const razorpayOrder = await razorpay.orders.create({
         amount: totalAmount * 100,
         currency: "INR",
         receipt: "MAM" + Date.now(),
@@ -425,7 +425,7 @@ const placeOrder = async (req, res) => {
         status: "Pending",
         coupon: couponData,
         couponDiscountAmount,
-        razorpayOrderId:razorpayOrder.id,
+        razorpayOrderId: razorpayOrder.id,
       });
 
       await order.save();
@@ -749,7 +749,7 @@ const cancelItem = async (req, res) => {
       await wallet.save();
     }
 
-    res.redirect(`/order-summary?message=Item cancelled successfully`);
+    res.redirect(`/order-summary?message=${encodeURIComponent("Item cancelled successfully")}`);
   } catch (err) {
     console.error("Error cancelling order item:", err);
     res.status(500).send("Error cancelling item");
