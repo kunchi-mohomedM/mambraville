@@ -37,7 +37,7 @@
                 <a href="#" id="resendLink" class="text-gray-400 font-medium cursor-not-allowed">Resend</a>
             </p>
             <p class="text-gray-500 text-sm mt-2">
-                You can resend code in <span id="timer" class="font-medium">01:00</span>
+                You can resend code in <span id="timer" class="font-medium">03:00</span>
             </p>
         </div>
 
@@ -47,7 +47,7 @@
     <script>
         // Global variables
         let timerInterval = null;
-        let timerSeconds = 60; // 1 minute timer
+        let timerSeconds = 180; // 3 minutes timer
         let resendRequestInProgress = false;
         
         // DOM elements
@@ -63,8 +63,8 @@
 
         // Start or restart the timer
         function startTimer() {
-            // Reset timer to 60 seconds (1 minute)
-            timerSeconds = 60;
+            // Reset timer to 180 seconds (3 minutes)
+            timerSeconds = 180;
             timerDisplay.textContent = formatTime(timerSeconds);
             
             // Disable resend link

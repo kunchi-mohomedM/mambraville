@@ -8,7 +8,7 @@ const Cart = require("../../models/cartSchema");
 const Wishlist = require("../../models/wishlistSchema");
 const Wallet = require("../../models/walletSchema")
 const applyBestDiscount = require('../../helper/applyBestDiscount')
-const CategoryOffer= require('../../models/categoryOffer')
+const CategoryOffer = require('../../models/categoryOffer')
 
 const pageNotFound = async (req, res) => {
   try {
@@ -81,14 +81,28 @@ const generateUniqueReferralId = async () => {
   return referralId;
 };
 
+// Load OTP page - prevents OTP regeneration on refresh
+const loadOtpPage = async (req, res) => {
+  try {
+    // Check if user has valid session data
+    if (!req.session.userData || !req.session.userOtp) {
+      return res.redirect("/signup");
+    }
 
+    const email = req.session.userData.email;
+    return res.render("otp_page", { email });
+  } catch (error) {
+    console.error("OTP Page Load Error:", error);
+    res.redirect("/signup");
+  }
+};
 
 
 const signUp = async (req, res) => {
   try {
-    const { fullname, email, password, confirm_password, referral_code:referralId } = req.body;
+    const { fullname, email, password, confirm_password, referral_code: referralId } = req.body;
 
-   
+
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       return res.render("signup", {
@@ -120,7 +134,7 @@ const signUp = async (req, res) => {
       referredUserId = referredUser._id;
     }
 
-    
+
     if (password) {
       if (password !== confirm_password) {
         return res.render("signup", { message: "Passwords do not match" });
@@ -133,22 +147,23 @@ const signUp = async (req, res) => {
         return res.json({ success: false, message: "Failed to send OTP email" });
       }
 
-      console.log("OTP:", otp); 
+      console.log("OTP:", otp);
 
-     
+
       req.session.userData = {
         fullname,
         email,
         password,
         referralId: referralId?.trim() || null,
-        referredUserId 
+        referredUserId
       };
       req.session.userOtp = otp;
+      req.session.otpTimestamp = Date.now(); // Store OTP creation time
 
-      return res.render("otp_page", { email });
+      return res.redirect("/otp-page");
     }
 
-    
+
     const newReferralId = await generateUniqueReferralId();
 
     const newUser = new User({
@@ -188,6 +203,18 @@ const verifyOtp = async (req, res) => {
   try {
     const { otp } = req.body;
 
+    // Check if OTP has expired (3 minutes = 180000 milliseconds)
+    const OTP_EXPIRY_TIME = 3 * 60 * 1000; // 3 minutes in milliseconds
+    const currentTime = Date.now();
+    const otpAge = currentTime - (req.session.otpTimestamp || 0);
+
+    if (!req.session.otpTimestamp || otpAge > OTP_EXPIRY_TIME) {
+      return res.status(400).json({
+        success: false,
+        message: "OTP has expired. Please request a new one."
+      });
+    }
+
     if (otp !== req.session.userOtp) {
       return res.status(400).json({
         success: false,
@@ -210,7 +237,7 @@ const verifyOtp = async (req, res) => {
 
     const referralId = await generateUniqueReferralId();
 
-    
+
     const newUser = new User({
       fullname: userData.fullname,
       email: userData.email,
@@ -221,10 +248,11 @@ const verifyOtp = async (req, res) => {
 
     await newUser.save();
 
-    
+
     await creditReferralBonuses(newUser._id, userData.referredUserId || null);
 
     delete req.session.userOtp;
+    delete req.session.otpTimestamp;
     delete req.session.userData;
 
     req.session.user = newUser._id;
@@ -241,11 +269,11 @@ const verifyOtp = async (req, res) => {
 async function creditReferralBonuses(newUserId, referredByUserId = null) {
   const signupBonus = referredByUserId ? 50 : 0;
 
-  
+
   const existingWallet = await Wallet.findOne({ userId: newUserId });
 
   if (!existingWallet) {
-   
+
     const newUserTransactions = signupBonus ? [{
       amount: signupBonus,
       type: "credit",
@@ -259,7 +287,7 @@ async function creditReferralBonuses(newUserId, referredByUserId = null) {
       transactions: newUserTransactions
     });
   } else {
-   
+
     if (signupBonus > 0) {
       await Wallet.updateOne(
         { userId: newUserId },
@@ -278,12 +306,12 @@ async function creditReferralBonuses(newUserId, referredByUserId = null) {
     }
   }
 
-  
+
   if (referredByUserId) {
     const referrer = await User.findById(referredByUserId);
     if (!referrer) return;
 
-    
+
     const alreadyReferred = referrer.referredUsers?.some(
       (ref) => ref.userId.toString() === newUserId.toString()
     );
@@ -305,7 +333,7 @@ async function creditReferralBonuses(newUserId, referredByUserId = null) {
       }
     );
 
-    
+
     await User.findByIdAndUpdate(referredByUserId, {
       $push: { referredUsers: { userId: newUserId } }
     });
@@ -323,6 +351,7 @@ const resendOtp = async (req, res) => {
     }
     const otp = generateOtp();
     req.session.userOtp = otp;
+    req.session.otpTimestamp = Date.now(); // Reset OTP timestamp on resend
 
     const emailSent = await sendVerificationEmail(email, otp);
     if (emailSent) {
@@ -348,17 +377,17 @@ const resendOtp = async (req, res) => {
 
 const loadHomepage = async (req, res) => {
   try {
-    
+
     let products = await Products.find({ isDeleted: false });
     const categories = await Category.find({ isListed: true });
 
-    
+
     const now = new Date();
-const categoryOffers = await CategoryOffer.find({
-  isActive: true,
-  startDate: { $lte: now },
-  endDate: { $gte: now }
-}).lean();
+    const categoryOffers = await CategoryOffer.find({
+      isActive: true,
+      startDate: { $lte: now },
+      endDate: { $gte: now }
+    }).lean();
 
     const categoryOfferMap = {};
     categoryOffers.forEach(offer => {
@@ -366,7 +395,7 @@ const categoryOffers = await CategoryOffer.find({
         offer.discountPercentage;
     });
 
-   
+
     let cartItems = [];
     let wishlistItems = [];
 
@@ -388,7 +417,7 @@ const categoryOffers = await CategoryOffer.find({
         : [];
     }
 
-    
+
     products = applyBestDiscount({
       products,
       categoryOfferMap,
@@ -396,7 +425,7 @@ const categoryOffers = await CategoryOffer.find({
       wishlistItems
     });
 
-    
+
     const newArrivals = [...products]
       .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
       .slice(0, 3);
@@ -409,7 +438,7 @@ const categoryOffers = await CategoryOffer.find({
       .sort((a, b) => a.quantity - b.quantity)
       .slice(0, 3);
 
- 
+
     return res.render("home", {
       newArrivals,
       trendingProducts,
@@ -439,19 +468,22 @@ const emailverification = async (req, res) => {
     const otp = generateOtp();
     console.log(otp)
     const emailSent = await sendVerificationEmail(email, otp);
-   
+
     if (!emailSent) {
       return res.render("forgotemailpage", { message: "Failed to send email" });
     }
     req.session.userOtp = otp;
+    req.session.otpTimestamp = Date.now(); // Store OTP creation time for password reset
+    req.session.resetEmail = email; // Store email for password reset
 
-    res.render("passwordrecovery", { email });
+    res.redirect("/reset-password");
 
-    
+
   } catch (error) {
     console.error("error");
     res.render("forgotemailpage", {
-      message: "Something went wrong. Please try again later.",})
+      message: "Something went wrong. Please try again later.",
+    })
   }
 };
 
@@ -465,10 +497,16 @@ const loadLogin = async (req, res) => {
 
 const loadresetpassword = async (req, res) => {
   try {
-    
-    res.render("passwordrecovery");
+    // Check if user has valid session data for password reset
+    if (!req.session.userOtp || !req.session.resetEmail) {
+      return res.redirect("/forgot-password");
+    }
+
+    const email = req.session.resetEmail;
+    res.render("passwordrecovery", { email });
   } catch (error) {
     console.log("Error occured while forgot password recovery email page");
+    res.redirect("/forgot-password");
   }
 };
 
@@ -486,7 +524,7 @@ const login = async (req, res) => {
     const user = await User.findOne({
       email: email.toLowerCase(),
     });
-    
+
 
     if (!user) {
       return res.status(401).render("signin", {
@@ -532,6 +570,18 @@ const resetpasswordverification = async (req, res) => {
   try {
     const { newPassword, otp, userEmail } = req.body;
 
+    // Check if OTP has expired (3 minutes = 180000 milliseconds)
+    const OTP_EXPIRY_TIME = 3 * 60 * 1000; // 3 minutes in milliseconds
+    const currentTime = Date.now();
+    const otpAge = currentTime - (req.session.otpTimestamp || 0);
+
+    if (!req.session.otpTimestamp || otpAge > OTP_EXPIRY_TIME) {
+      return res.status(401).json({
+        success: false,
+        message: "OTP has expired. Please request a new one."
+      });
+    }
+
     if (req.session.userOtp !== otp) {
       return res.status(401).json({ success: false, message: "Invalid Otp" });
     }
@@ -546,18 +596,24 @@ const resetpasswordverification = async (req, res) => {
     const passwordHash = await securePassword(newPassword);
     user.password = passwordHash;
     await user.save({ validateBeforeSave: false });
+
+    // Clean up session data
+    delete req.session.userOtp;
+    delete req.session.otpTimestamp;
+    delete req.session.resetEmail;
+
     return res
       .status(200)
       .json({ success: true, message: "Password changed successfully" });
   } catch (error) {
-  console.error("Reset password error:", error);
-  // Optional: send real error to client in development only
-  return res.status(500).json({
-    success: false,
-    message: "Server error while resetting password",
-    error: process.env.NODE_ENV === 'development' ? error.message : undefined
-  });
-}
+    console.error("Reset password error:", error);
+    // Optional: send real error to client in development only
+    return res.status(500).json({
+      success: false,
+      message: "Server error while resetting password",
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined
+    });
+  }
 };
 
 const logout = (req, res) => {
@@ -573,7 +629,7 @@ const logout = (req, res) => {
 
 const forgotpassword = async (req, res) => {
   try {
-    
+
     res.render("forgotemailpage");
   } catch (error) {
     console.log("Error occured while forgot password recovery email page");
@@ -585,22 +641,22 @@ const loaduserprofile = async (req, res) => {
     const userId = req.session.user;
 
     const user = await User.findById(userId)
-    .populate("referredUsers.userId","fullname email")
-    .lean();
+      .populate("referredUsers.userId", "fullname email")
+      .lean();
 
     if (!user) return res.redirect("/login");
 
     const wallet = await Wallet.findOne({ userId }).lean();
 
     const addresses = user.address || [];
-    
+
     const defaultAddress = addresses.find((a) => a.isDefault);
 
     res.render("userprofile", {
       user,
       wallet,
-      referralCode:user.referralId,
-      referredCount:user.referredUsers?.length || 0,
+      referralCode: user.referralId,
+      referredCount: user.referredUsers?.length || 0,
       addresses,
       defaultAddress,
     });
@@ -661,7 +717,7 @@ const loadChangePassword = async (req, res) => {
 const changePassword = async (req, res) => {
   try {
     const userId = req.session.user;
-    const {currentPassword, newPassword, confirmPassword } = req.body;
+    const { currentPassword, newPassword, confirmPassword } = req.body;
 
     const user = await User.findById(userId).select('+password');
 
@@ -682,7 +738,7 @@ const changePassword = async (req, res) => {
       return res.render("changepassword2", {
         error: "New password and confirmation do not match!",
         success: null,
-        activePage:"change-password"
+        activePage: "change-password"
       });
     }
 
@@ -727,10 +783,10 @@ const updateUserName = async (req, res) => {
 };
 
 
-const loadAboutpage = async(req,res)=>{
+const loadAboutpage = async (req, res) => {
   try {
-    
-    res.render('aboutPage',{ 
+
+    res.render('aboutPage', {
       user: req.session.user || null
     })
   } catch (error) {
@@ -748,17 +804,18 @@ module.exports = {
   logout,
   verifyOtp,
   resendOtp,
-  
-  
-  
+  loadOtpPage,
+
+
+
   loaduserprofile,
   loadaddressmanagement,
   loadChangePassword,
   changePassword,
   updateUserName,
   loadAboutpage,
-    forgotpassword,
-    resetpasswordverification,
-    loadresetpassword,
-    emailverification,
+  forgotpassword,
+  resetpasswordverification,
+  loadresetpassword,
+  emailverification,
 };
