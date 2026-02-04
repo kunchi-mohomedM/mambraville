@@ -26,46 +26,45 @@ const loadUserProducts = async (req, res) => {
       }
     }
 
-    
+
     if (req.query.search) {
       matchStage.productName = { $regex: req.query.search, $options: "i" };
     }
 
-   
+
     const now = new Date();
-const categoryOffers = await CategoryOffer.find({
-  isActive: true,
-  startDate: { $lte: now },
-  endDate: { $gte: now }
-}).lean();
+    const categoryOffers = await CategoryOffer.find({
+      isActive: true,
+      startDate: { $lte: now },
+      endDate: { $gte: now }
+    }).lean();
 
     const categoryOfferMap = {};
     categoryOffers.forEach((offer) => {
       categoryOfferMap[offer.categoryId.toString()] = offer.discountPercentage;
     });
 
-   
+
+    let categoryDiscountExpression = 0;
+
+    if (Object.keys(categoryOfferMap).length > 0) {
+      categoryDiscountExpression = {
+        $switch: {
+          branches: Object.entries(categoryOfferMap).map(([catId, discount]) => ({
+            case: { $eq: [{ $toString: "$category" }, catId] },
+            then: discount
+          })),
+          default: 0
+        }
+      };
+    }
+
     const pipeline = [
       { $match: matchStage },
 
-     
       {
         $addFields: {
-          categoryDiscount: {
-            $cond: {
-              if: { $in: [{ $toString: "$category" }, Object.keys(categoryOfferMap)] },
-              then: {
-                $switch: {
-                  branches: Object.entries(categoryOfferMap).map(([catId, discount]) => ({
-                    case: { $eq: [{ $toString: "$category" }, catId] },
-                    then: discount
-                  })),
-                  default: 0
-                }
-              },
-              else: 0
-            }
-          }
+          categoryDiscount: categoryDiscountExpression
         }
       },
 
@@ -222,11 +221,11 @@ const loadproductdetails = async (req, res) => {
 
 
     const now = new Date();
-const categoryOffers = await CategoryOffer.find({
-  isActive: true,
-  startDate: { $lte: now },
-  endDate: { $gte: now }
-}).lean();
+    const categoryOffers = await CategoryOffer.find({
+      isActive: true,
+      startDate: { $lte: now },
+      endDate: { $gte: now }
+    }).lean();
 
     const categoryOfferMap = {};
     categoryOffers.forEach(offer => {
@@ -239,12 +238,12 @@ const categoryOffers = await CategoryOffer.find({
     let wishlistItems = [];
 
     if (req.session.user) {
-      const cart = await Cart.findOne({ userId: req.session.user}).lean();
+      const cart = await Cart.findOne({ userId: req.session.user }).lean();
       cartItems = cart ? cart.items.map(i => i.productId.toString()) : [];
-   
+
       const wishlist = await Wishlist.findOne({ userId: req.session.user }).lean();
       wishlistItems = wishlist ? wishlist.items.map(i => i.productId.toString()) : [];
-   
+
     }
 
 
