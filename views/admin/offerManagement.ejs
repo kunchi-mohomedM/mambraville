@@ -6,6 +6,9 @@
     <title>Offer Management | Mambraville Admin</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 
 <body class="bg-gray-100">
@@ -250,6 +253,15 @@
 </div>
 
 <script>
+// ================= SweetAlert Helpers =================
+const Toast = Swal.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 3000,
+    timerProgressBar: true,
+});
+
 // ================= Referral Offer Functions =================
 
 function openEditReferralModal() {
@@ -279,22 +291,49 @@ document.getElementById('editReferralForm').addEventListener('submit', async (e)
         const result = await response.json();
 
         if (result.success) {
-            alert('Referral offer updated successfully!');
+            await Swal.fire({
+                icon: 'success',
+                title: 'Updated!',
+                text: 'Referral offer updated successfully',
+                confirmButtonColor: '#7c3aed', // purple-600
+                timer: 2000
+            });
             location.reload();
         } else {
-            alert(result.message || 'Failed to update referral offer');
+            await Swal.fire({
+                icon: 'error',
+                title: 'Failed',
+                text: result.message || 'Failed to update referral offer',
+                confirmButtonColor: '#7c3aed'
+            });
         }
     } catch (error) {
         console.error('Error:', error);
-        alert('An error occurred while updating');
+        await Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'An error occurred while updating',
+            confirmButtonColor: '#7c3aed'
+        });
     }
 });
 
 async function toggleReferralStatus(currentStatus) {
     const isActive = currentStatus === 'true';
     const action = isActive ? 'disable' : 'enable';
-    
-    if (!confirm(`Are you sure you want to ${action} the referral offer?`)) return;
+    const actionPast = isActive ? 'disabled' : 'enabled';
+
+    const { isConfirmed } = await Swal.fire({
+        title: `Are you sure?`,
+        text: `You want to ${action} the referral offer.`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#7c3aed',
+        cancelButtonColor: '#d1d5db',
+        confirmButtonText: `Yes, ${action} it!`
+    });
+
+    if (!isConfirmed) return;
 
     try {
         const response = await fetch('/admin/offers/referral/toggle', {
@@ -306,14 +345,30 @@ async function toggleReferralStatus(currentStatus) {
         const result = await response.json();
 
         if (result.success) {
-            alert(`Referral offer ${action}d successfully!`);
+            await Swal.fire({
+                icon: 'success',
+                title: 'Success',
+                text: `Referral offer ${actionPast} successfully!`,
+                confirmButtonColor: '#7c3aed',
+                timer: 2000
+            });
             location.reload();
         } else {
-            alert(result.message || `Failed to ${action} referral offer`);
+            await Swal.fire({
+                icon: 'error',
+                title: 'Failed',
+                text: result.message || `Failed to ${action} referral offer`,
+                confirmButtonColor: '#7c3aed'
+            });
         }
     } catch (error) {
         console.error('Error:', error);
-        alert('An error occurred');
+        await Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'An error occurred',
+            confirmButtonColor: '#7c3aed'
+        });
     }
 }
 
@@ -327,7 +382,6 @@ function openAddCategoryOfferModal() {
     document.getElementById('categoryOfferSubmitBtn').innerHTML = '<i class="fas fa-save mr-1"></i> Save Offer';
     document.getElementById('categoryOfferModal').classList.remove('hidden');
     
-    // Set min date to today
     const today = new Date().toISOString().split('T')[0];
     document.getElementById('startDate').min = today;
     document.getElementById('endDate').min = today;
@@ -362,9 +416,13 @@ document.getElementById('categoryOfferForm').addEventListener('submit', async (e
         endDate: formData.get('endDate')
     };
 
-    // Validate dates
     if (new Date(data.endDate) <= new Date(data.startDate)) {
-        alert('End date must be after start date');
+        await Swal.fire({
+            icon: 'warning',
+            title: 'Invalid dates',
+            text: 'End date must be after start date',
+            confirmButtonColor: '#7c3aed'
+        });
         return;
     }
 
@@ -384,44 +442,88 @@ document.getElementById('categoryOfferForm').addEventListener('submit', async (e
         const result = await response.json();
 
         if (result.success) {
-            alert(offerId ? 'Category offer updated successfully!' : 'Category offer created successfully!');
+            await Swal.fire({
+                icon: 'success',
+                title: 'Success!',
+                text: offerId ? 'Category offer updated successfully!' : 'Category offer created successfully!',
+                confirmButtonColor: '#16a34a', // green-600
+                timer: 2000
+            });
             location.reload();
         } else {
-            alert(result.message || 'Failed to save category offer');
+            await Swal.fire({
+                icon: 'error',
+                title: 'Failed',
+                text: result.message || 'Failed to save category offer',
+                confirmButtonColor: '#16a34a'
+            });
         }
     } catch (error) {
         console.error('Error:', error);
-        alert('An error occurred while saving');
+        await Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'An error occurred while saving',
+            confirmButtonColor: '#16a34a'
+        });
     }
 });
 
 async function toggleCategoryOfferStatus(offerId, currentStatus) {
-    const action = currentStatus ? 'disable' : 'enable';
-    
-    if (!confirm(`Are you sure you want to ${action} this category offer?`)) return;
+    const isActive = !!currentStatus;
+    const action = isActive ? 'disable' : 'enable';
+    const actionPast = isActive ? 'disabled' : 'enabled';
+
+    const { isConfirmed } = await Swal.fire({
+        title: 'Are you sure?',
+        text: `You want to ${action} this category offer.`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#16a34a',
+        cancelButtonColor: '#d1d5db',
+        confirmButtonText: `Yes, ${action} it!`
+    });
+
+    if (!isConfirmed) return;
 
     try {
         const response = await fetch(`/admin/offers/category/${offerId}/toggle`, {
             method: 'PATCH',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ isActive: !currentStatus })
+            body: JSON.stringify({ isActive: !isActive })
         });
 
         const result = await response.json();
 
         if (result.success) {
-            alert(`Category offer ${action}d successfully!`);
+            await Swal.fire({
+                icon: 'success',
+                title: 'Success',
+                text: `Category offer ${actionPast} successfully!`,
+                confirmButtonColor: '#16a34a',
+                timer: 2000
+            });
             location.reload();
         } else {
-            alert(result.message || `Failed to ${action} category offer`);
+            await Swal.fire({
+                icon: 'error',
+                title: 'Failed',
+                text: result.message || `Failed to ${action} category offer`,
+                confirmButtonColor: '#16a34a'
+            });
         }
     } catch (error) {
         console.error('Error:', error);
-        alert('An error occurred');
+        await Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'An error occurred',
+            confirmButtonColor: '#16a34a'
+        });
     }
 }
 
-// Auto-update end date min when start date changes
+// Auto-update end date min
 document.getElementById('startDate').addEventListener('change', function() {
     document.getElementById('endDate').min = this.value;
 });
