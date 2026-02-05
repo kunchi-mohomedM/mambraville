@@ -8,7 +8,7 @@ const orderController = require("../controller/user/orderController");
 const wishlistController = require("../controller/user/wishlistController");
 const walletController = require("../controller/user/walletController");
 const couponController = require("../controller/user/couponController");
-const { userAuth, isLogin } = require('../middleware/userAuth');
+const { userAuth, isLogin, checkUserBlocked } = require('../middleware/userAuth');
 const passport = require("passport");
 
 
@@ -31,8 +31,8 @@ router.get("/reset-password", isLogin, userController.loadresetpassword)
 router.post("/reset-password", isLogin, userController.resetpasswordverification)
 
 
-router.get('/products-user', userproductController.loadUserProducts)
-router.get('/productdetails/:id', userproductController.loadproductdetails)
+router.get('/products-user', checkUserBlocked, userproductController.loadUserProducts)
+router.get('/productdetails/:id', checkUserBlocked, userproductController.loadproductdetails)
 
 
 router.get('/auth/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
@@ -47,7 +47,7 @@ router.post("/update-username", userAuth, userController.updateUserName);
 router.get("/change-password", userAuth, userController.loadChangePassword);
 router.post("/change-password", userAuth, userController.changePassword);
 router.get("/addressmanagement", userAuth, userController.loadaddressmanagement)
-router.get("/aboutPage", userController.loadAboutpage);
+router.get("/aboutPage", checkUserBlocked, userController.loadAboutpage);
 
 //address operations
 router.post("/add-address", userAuth, addressController.addAddress);
@@ -105,7 +105,7 @@ router.post("/coupon/apply", userAuth, couponController.applyCoupon);
 
 
 
-router.get("/", userController.loadHomepage);
+router.get("/", checkUserBlocked, userController.loadHomepage);
 
 
 
