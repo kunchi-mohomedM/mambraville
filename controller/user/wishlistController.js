@@ -2,12 +2,15 @@ const mongoose = require("mongoose")
 const Wishlist = require("../../models/wishlistSchema");
 const Product = require("../../models/productSchema");
 const Cart = require("../../models/cartSchema")
+const User = require("../../models/userSchema")
 
 
 const loadWishlist = async (req, res) => {
   try {
     const userId = req.session.user;
     if (!userId) return res.redirect("/login");
+
+    const user = await User.findById(userId).lean()
 
     let wishlist = await Wishlist.findOne({ userId })
       .populate({
@@ -55,7 +58,9 @@ const loadWishlist = async (req, res) => {
       console.log(`Cleaned ${wishlist.items.length - validItems.length} invalid wishlist item(s)`);
     }
 
-    return res.render("wishList", { wishlist });
+    return res.render("wishList", { 
+      user,
+      wishlist });
 
   } catch (error) {
     console.error("loadWishlist error:", error);

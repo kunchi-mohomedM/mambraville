@@ -712,6 +712,7 @@ const loadaddressmanagement = async (req, res) => {
     const defaultAddress = addressList.find((a) => a.isDefault) || null;
 
     res.render("addressmanagement", {
+      user,
       addressList,
       defaultAddress,
     });
@@ -731,6 +732,7 @@ const loadChangePassword = async (req, res) => {
     }
 
     res.render("changepassword2", {
+      user,
       error: null,
       success: null,
       activePage: "change-password",
