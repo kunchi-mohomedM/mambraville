@@ -144,7 +144,7 @@ const loadDashboard = async (req, res) => {
             refunds: [
               {
                 $match: {
-                  status: { $in: ['Returned'] },
+                  status: { $in: ['Returned', 'Cancelled'] },
                   paymentStatus: 'Paid',
                   orderedAt: { $gte: startDate, $lte: endDate }
                 }
@@ -264,7 +264,7 @@ const loadDashboard = async (req, res) => {
       ])
     ]);
 
-    
+
     const stats = overallStats[0] || {};
 
     const totalOrders = stats.totalOrders?.[0]?.count || 0;
@@ -275,7 +275,7 @@ const loadDashboard = async (req, res) => {
     const netSales = grossSales - totalDiscount;
     const totalRefunds = stats.refunds?.[0]?.totalRefunds || 0;
 
-    
+
     let tableData = [];
 
     if (filter === 'daily') {
@@ -311,7 +311,7 @@ const loadDashboard = async (req, res) => {
       }];
     }
 
-    
+
     res.render('dashboard', {
       latestOrders: latestOrders || [],
       totalOrders,

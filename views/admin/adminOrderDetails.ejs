@@ -33,6 +33,7 @@
           <div class="mb-4 space-y-1">
             <p><strong>User:</strong> <%= order.userId.fullname %> | <%= order.userId.email %></p>
             <p><strong>Status:</strong> <span class="font-semibold text-purple-700"><%= order.status %></span></p>
+            <p><strong>Payment Method:</strong> <span class="font-semibold text-purple-700"><%= order.paymentMethod %></span> </p>
             <p><strong>Ordered At:</strong> <%= new Date(order.orderedAt).toLocaleString() %></p>
             <% if(order.deliveredAt) { %>
               <p><strong>Delivered At:</strong> <%= new Date(order.deliveredAt).toLocaleString() %></p>
