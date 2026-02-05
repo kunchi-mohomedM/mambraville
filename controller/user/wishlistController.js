@@ -55,7 +55,7 @@ const loadWishlist = async (req, res) => {
       console.log(`Cleaned ${wishlist.items.length - validItems.length} invalid wishlist item(s)`);
     }
 
-    return res.render("wishlist", { wishlist });
+    return res.render("wishList", { wishlist });
 
   } catch (error) {
     console.error("loadWishlist error:", error);
