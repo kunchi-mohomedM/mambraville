@@ -75,7 +75,7 @@ const addCategory = async (req, res) => {
 
 const loadaddCategory = async (req, res) => {
     try {
-        return res.render("addCategory", {});
+        return res.render("addcategory", {});
     } catch (error) {
         console.error("Error occured while rendering add category page", error)
     }
