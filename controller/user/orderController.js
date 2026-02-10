@@ -98,11 +98,14 @@ const loadCheckout = async (req, res) => {
 
     const cartTotal = cartItems.reduce((sum, item) => sum + item.subtotal, 0);
 
-    const coupons = await Coupon.find({
-      isActive: true,
-      expiryDate: { $gte: new Date() },
-      usedBy: { $ne: userId },
-    }).lean();
+    const now = new Date();
+
+const coupons = await Coupon.find({
+  isActive: true,
+  startDate: { $lte: now },           // ← has already started
+  expiryDate: { $gte: now },          // ← not yet expired
+  usedBy: { $ne: userId },
+}).lean();
 
     const applicableCoupons = coupons.filter(
       (coupon) => cartTotal >= coupon.minPurchase
@@ -221,19 +224,20 @@ const placeOrder = async (req, res) => {
     }
 
     if (couponCode) {
-      const coupon = await Coupon.findOne({
-        code: couponCode,
-        isActive: true,
-        expiryDate: { $gte: new Date() },
-        usedBy: { $ne: userId },
-      });
+  const coupon = await Coupon.findOne({
+    code: couponCode,
+    isActive: true,
+    startDate: { $lte: new Date() },     // ← important
+    expiryDate: { $gte: new Date() },
+    usedBy: { $ne: userId },
+  });
 
-      if (!coupon) {
-        return res.json({
-          success: false,
-          message: "Invalid or expired coupon",
-        });
-      }
+  if (!coupon) {
+    return res.json({
+      success: false,
+      message: "Invalid, expired, or not yet active coupon",
+    });
+  }
 
       if (subtotalAmount < coupon.minPurchase) {
         return res.json({

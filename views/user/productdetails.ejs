@@ -390,6 +390,28 @@
             }
           });
 
+          // ─── Check for authentication error FIRST (before checking response.ok) ───
+          if (response.status === 401) {
+            const data = await response.json();
+            if (data.notAuthenticated) {
+              // Show alert and redirect to login
+              Swal.fire({
+                icon: 'warning',
+                title: 'Login Required',
+                text: 'Please login to add items to your cart',
+                showConfirmButton: true,
+                confirmButtonText: 'Go to Login',
+                confirmButtonColor: '#3b82f6'
+              }).then((result) => {
+                if (result.isConfirmed) {
+                  window.location.href = '/login';
+                }
+              });
+              return;
+            }
+          }
+
+          // ─── Then check for other errors ───
           if (!response.ok) {
             const errorText = await response.text();
             throw new Error(errorText || 'Failed to add');
@@ -500,11 +522,11 @@
       });
     });
 
-    // Your existing toggleWishlist function (assumed to be defined elsewhere or via partial)
+
     function toggleWishlist(productId) {
-      // Your wishlist toggle logic here (fetch or redirect)
+
       console.log('Toggling wishlist for:', productId);
-      // Example: window.location.href = `/wishlist/toggle/${productId}`;
+
     }
 
 
@@ -542,6 +564,27 @@
             method: 'GET',
             headers: { 'Accept': 'application/json' }
           });
+
+          // ─── Check for authentication error ───
+          if (response.status === 401) {
+            const data = await response.json();
+            if (data.notAuthenticated) {
+              // Show alert and redirect to login
+              Swal.fire({
+                icon: 'warning',
+                title: 'Login Required',
+                text: 'Please login to add items to your wishlist',
+                showConfirmButton: true,
+                confirmButtonText: 'Go to Login',
+                confirmButtonColor: '#3b82f6'
+              }).then((result) => {
+                if (result.isConfirmed) {
+                  window.location.href = '/login';
+                }
+              });
+              return;
+            }
+          }
 
           if (!response.ok) throw new Error('Toggle failed');
 

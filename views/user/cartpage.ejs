@@ -5,170 +5,512 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Your Cart</title>
     <script src="https://cdn.tailwindcss.com"></script>
-
-
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Responsive Utilities */
+        @media (max-width: 374px) {
+            .xs-text-xs { font-size: 0.7rem; }
+            .xs-text-sm { font-size: 0.75rem; }
+        }
+        
+        /* Smooth transitions */
+        * {
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        /* Better touch targets for mobile */
+        @media (max-width: 640px) {
+            button:not(.no-min-height), 
+            a:not(.no-min-height) {
+                min-height: 44px;
+            }
+        }
+        
+        /* Prevent horizontal scroll */
+        body {
+            overflow-x: hidden;
+        }
+        
+        /* Mobile card style for cart items */
+        @media (max-width: 767px) {
+            .cart-item-mobile {
+                display: flex;
+                flex-direction: column;
+                gap: 0.75rem;
+            }
+        }
+        
+        /* Smooth image loading */
+        .cart-image {
+            transition: opacity 0.3s;
+        }
+        
+        /* Quantity button animations */
+        .qty-btn {
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .qty-btn:active:not(:disabled) {
+            transform: scale(0.95);
+        }
+        
+        /* Alert animation */
+        @keyframes slideInDown {
+            from {
+                transform: translateY(-100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+        
+        .alert-animate {
+            animation: slideInDown 0.3s ease-out;
+        }
+        
+        /* Empty cart illustration */
+        .empty-cart-icon {
+            font-size: 4rem;
+            color: #D1D5DB;
+        }
+        
+        /* Sticky checkout button on mobile */
+        @media (max-width: 767px) {
+            .sticky-checkout {
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                z-index: 40;
+                box-shadow: 0 -4px 6px -1px rgba(0, 0, 0, 0.1);
+            }
+            
+            /* Add padding to prevent content from being hidden */
+            .cart-content-mobile {
+                padding-bottom: 120px;
+            }
+        }
+        
+        /* Loading state */
+        .loading {
+            opacity: 0.6;
+            pointer-events: none;
+        }
+    </style>
 </head>
-<body class="bg-gray-100">
+<body class="bg-gray-50 sm:bg-gray-100">
 
-    <header class="bg-white shadow-sm">
+    <header class="bg-white shadow-sm sticky top-0 z-50">
         <%-include("../../views/partials/user/header")-%>
     </header>
 
-  <% if (typeof mssg !== 'undefined' && mssg) { %>
-  <div class="max-w-4xl mx-auto mb-8 px-4">
-    <div class="flex items-center gap-4 p-5 rounded-xl shadow-md border-l-4
-                <%= alertType === 'error' ? 'bg-red-50 border-red-500' : 'bg-yellow-50 border-yellow-500' %>">
+    <!-- Alert Message -->
+    <% if (typeof mssg !== 'undefined' && mssg) { %>
+    <div class="max-w-7xl mx-auto mb-4 sm:mb-6 md:mb-8 px-3 sm:px-4 md:px-6 alert-animate">
+        <div class="flex items-start sm:items-center gap-3 sm:gap-4 p-4 sm:p-5 rounded-lg sm:rounded-xl shadow-md border-l-4
+                    <%= alertType === 'error' ? 'bg-red-50 border-red-500' : 'bg-yellow-50 border-yellow-500' %>">
 
-      <div class="flex-shrink-0">
-        <svg class="w-8 h-8 <%= alertType === 'error' ? 'text-red-600' : 'text-yellow-600' %>" 
-             fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
-        </svg>
-      </div>
-
-      <div class="flex-1">
-        <p class="text-lg font-semibold <%= alertType === 'error' ? 'text-red-800' : 'text-yellow-800' %>">
-          <%= mssg %>
-        </p>
-      </div>
-
-      <button onclick="this.closest('.max-w-4xl').remove()" 
-              class="text-gray-500 hover:text-gray-700">
-        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-        </svg>
-      </button>
-    </div>
-  </div>
-<% } %>
-
-
-<div class="container mx-auto p-6">
-    <h1 class="text-3xl font-bold mb-6">Your Cart</h1>
-
-    <% if (cart && cart.items && cart.items.length > 0) { %>
-
-        <div class="bg-white shadow rounded-lg p-4">
-            <table class="min-w-full table-auto">
-                <thead>
-                    <tr class="border-b">
-                        <th class="px-4 py-2 text-left">Image</th>
-                        <th class="px-4 py-2 text-left">Name</th>
-                        <th class="px-4 py-2 text-left">Quantity</th>
-                        <th class="px-4 py-2 text-left">Subtotal</th>
-                        <th class="px-4 py-2 text-left">Action</th>
-                    </tr>
-                </thead>
-
-                <tbody>
-                <% cart.items.forEach(item => { %>
-                    <tr class="border-b">
-
-                        <!-- Product Image -->
-                        <td class="py-2 px-4">
-                            <img src="<%= item.product.productImage[0].url %>"
-     class="w-16 h-16 object-cover rounded">
-
-                        </td>
-
-                        <!-- Product Name -->
-                        <td class="py-2 px-4">
-                            <%= item.product.productName %>
-                        </td>
-
-                        <!-- QUANTITY SECTION -->
-                        <td class="py-2 px-4">
-                            <div class="flex items-center gap-2">
-
-                                <!-- Decrease -->
-                                <a href="/cart/decrease/<%= item.product._id %>"
-                                   class="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300">-</a>
-
-                                <span class="px-3 font-semibold"><%= item.qty %></span>
-
-                                <% 
-                                    const currentStock = item.currentStock != null 
-                                        ? item.currentStock 
-                                        : (item.productId && item.productId.quantity ? item.productId.quantity : 0);
-
-                                    const reachedStockLimit = currentStock && item.qty >= currentStock;
-                                    const reachedMax = item.qty >= 5; // MAX_QTY
-                                %>
-
-                                <% if (reachedStockLimit || reachedMax) { %>
-                                    <button disabled class="px-2 py-1 bg-gray-300 text-gray-600 rounded">+</button>
-                                <% } else { %>
-                                    <a href="/cart/increase/<%= item.product._id %>"
-                                       class="px-2 py-1 bg-blue-500 text-white rounded hover:bg-blue-600">+</a>
-                                <% } %>
-
-                            </div>
-                        </td>
-
-                        <!-- Subtotal -->
-                        <td class="py-2 px-4 font-semibold">
-                          ₹ <%= item.subtotal.toFixed(2) %>
-                        </td>
-
-                        <!-- Remove -->
-                        <td class="py-2 px-4">
-                            <form action="/cart/remove/<%= item.product._id %>" method="POST">
-                                <button type="submit"
-                                        class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600">
-                                    Remove
-                                </button>
-                            </form>
-                        </td>
-
-                    </tr>
-                <% }) %>
-                </tbody>
-
-            </table>
-        </div>
-
-        <!-- CART TOTAL -->
-        <div class="bg-white shadow rounded-lg p-4 mt-6">
-            <h2 class="text-xl font-semibold">Cart Total: ₹ <%= Math.round(cart.cartTotal).toLocaleString()%></h2>
-
-            <div class="mt-4">
-                <a href="/checkout"
-                   class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
-                    Proceed to Checkout
-                </a>
+            <div class="flex-shrink-0">
+                <svg class="w-6 h-6 sm:w-8 sm:h-8 <%= alertType === 'error' ? 'text-red-600' : 'text-yellow-600' %>" 
+                     fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                </svg>
             </div>
+
+            <div class="flex-1 min-w-0">
+                <p class="text-sm sm:text-base md:text-lg font-semibold <%= alertType === 'error' ? 'text-red-800' : 'text-yellow-800' %> break-words">
+                    <%= mssg %>
+                </p>
+            </div>
+
+            <button onclick="this.closest('.max-w-7xl').remove()" 
+                    class="no-min-height flex-shrink-0 text-gray-500 hover:text-gray-700 active:text-gray-900 p-1 rounded-lg hover:bg-white/50">
+                <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
         </div>
-
-    <% } else { %>
-
-        <!-- EMPTY CART -->
-        <div class="bg-white p-6 shadow rounded-lg text-center">
-            <h2 class="text-xl font-semibold mb-4">Your cart is empty</h2>
-            <a href="/products-user"
-               class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
-                Continue Shopping
-            </a>
-        </div>
-
+    </div>
     <% } %>
 
-</div>
+    <div class="container mx-auto px-3 sm:px-4 md:px-6 py-4 sm:py-6">
+        
+        <!-- Page Title -->
+        <div class="mb-4 sm:mb-6">
+            <h1 class="text-2xl sm:text-3xl font-bold text-gray-900">Your Cart</h1>
+            <% if (cart && cart.items && cart.items.length > 0) { %>
+            <p class="text-sm sm:text-base text-gray-600 mt-1">
+                <%= cart.items.length %> <%= cart.items.length === 1 ? 'item' : 'items' %> in your cart
+            </p>
+            <% } %>
+        </div>
 
+        <% if (cart && cart.items && cart.items.length > 0) { %>
 
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+            <div class="cart-content-mobile">
+                <!-- Desktop Table View (Hidden on Mobile/Tablet) -->
+                <div class="hidden lg:block bg-white shadow rounded-lg overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full table-auto">
+                            <thead class="bg-gray-50 border-b-2 border-gray-200">
+                                <tr>
+                                    <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Image</th>
+                                    <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Product</th>
+                                    <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Quantity</th>
+                                    <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Subtotal</th>
+                                    <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Action</th>
+                                </tr>
+                            </thead>
 
-<% if (typeof stockError !== "undefined") { %>
-<script>
-  Swal.fire({
-    icon: "error",
-    title: "Out of Stock",
-    text: "<%= stockError %>",
-    confirmButtonColor: "#d33"
-  });
-</script>
-<% } %>
+                            <tbody class="divide-y divide-gray-200">
+                            <% cart.items.forEach(item => { %>
+                                <tr class="hover:bg-gray-50 transition">
 
+                                    <!-- Product Image -->
+                                    <td class="py-4 px-6">
+                                        <img src="<%= item.product.productImage[0].url %>"
+                                             class="cart-image w-20 h-20 object-cover rounded-lg border border-gray-200"
+                                             alt="<%= item.product.productName %>"
+                                             loading="lazy">
+                                    </td>
 
-</body>
+                                    <!-- Product Name -->
+                                    <td class="py-4 px-6">
+                                        <div class="font-medium text-gray-900 max-w-xs">
+                                            <%= item.product.productName %>
+                                        </div>
+                                    </td>
+
+                                    <!-- QUANTITY SECTION -->
+                                    <td class="py-4 px-6">
+                                        <div class="flex items-center gap-2">
+
+                                            <!-- Decrease -->
+                                            <a href="/cart/decrease/<%= item.product._id %>"
+                                               class="qty-btn no-min-height flex items-center justify-center w-8 h-8 bg-gray-200 rounded-lg hover:bg-gray-300 active:bg-gray-400 text-gray-700 font-bold">
+                                                <i class="fas fa-minus text-xs"></i>
+                                            </a>
+
+                                            <span class="px-4 py-1 font-semibold text-gray-900 min-w-[3rem] text-center">
+                                                <%= item.qty %>
+                                            </span>
+
+                                            <% 
+                                                const currentStock = item.currentStock != null 
+                                                    ? item.currentStock 
+                                                    : (item.productId && item.productId.quantity ? item.productId.quantity : 0);
+
+                                                const reachedStockLimit = currentStock && item.qty >= currentStock;
+                                                const reachedMax = item.qty >= 5; // MAX_QTY
+                                            %>
+
+                                            <% if (reachedStockLimit || reachedMax) { %>
+                                                <button disabled 
+                                                        class="no-min-height flex items-center justify-center w-8 h-8 bg-gray-200 text-gray-400 rounded-lg cursor-not-allowed">
+                                                    <i class="fas fa-plus text-xs"></i>
+                                                </button>
+                                            <% } else { %>
+                                                <a href="/cart/increase/<%= item.product._id %>"
+                                                   class="qty-btn no-min-height flex items-center justify-center w-8 h-8 bg-blue-500 rounded-lg hover:bg-blue-600 active:bg-blue-700 text-white font-bold">
+                                                    <i class="fas fa-plus text-xs"></i>
+                                                </a>
+                                            <% } %>
+
+                                        </div>
+                                    </td>
+
+                                    <!-- Subtotal -->
+                                    <td class="py-4 px-6">
+                                        <span class="font-bold text-lg text-gray-900">
+                                            ₹<%= item.subtotal.toFixed(2) %>
+                                        </span>
+                                    </td>
+
+                                    <!-- Remove -->
+                                    <td class="py-4 px-6">
+                                        <form action="/cart/remove/<%= item.product._id %>" method="POST" class="inline">
+                                            <button type="submit"
+                                                    class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 active:bg-red-700 transition font-medium">
+                                                <i class="fas fa-trash-alt mr-1"></i>
+                                                Remove
+                                            </button>
+                                        </form>
+                                    </td>
+
+                                </tr>
+                            <% }) %>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Mobile/Tablet Card View (Hidden on Desktop) -->
+                <div class="lg:hidden space-y-3 sm:space-y-4">
+                    <% cart.items.forEach(item => { %>
+                        <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition">
+                            <div class="p-3 sm:p-4">
+                                
+                                <!-- Top Section: Image & Product Info -->
+                                <div class="flex gap-3 sm:gap-4 mb-3 sm:mb-4">
+                                    <!-- Product Image -->
+                                    <div class="flex-shrink-0">
+                                        <img src="<%= item.product.productImage[0].url %>"
+                                             class="cart-image w-20 h-20 sm:w-24 sm:h-24 object-cover rounded-lg border border-gray-200"
+                                             alt="<%= item.product.productName %>"
+                                             loading="lazy">
+                                    </div>
+
+                                    <!-- Product Details -->
+                                    <div class="flex-1 min-w-0">
+                                        <h3 class="font-semibold text-sm sm:text-base text-gray-900 line-clamp-2 mb-2">
+                                            <%= item.product.productName %>
+                                        </h3>
+                                        
+                                        <!-- Price -->
+                                        <div class="mb-2">
+                                            <span class="text-lg sm:text-xl font-bold text-purple-700">
+                                                ₹<%= item.subtotal.toFixed(2) %>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Divider -->
+                                <div class="border-t border-gray-200 mb-3 sm:mb-4"></div>
+
+                                <!-- Bottom Section: Quantity Controls & Remove Button -->
+                                <div class="flex items-center justify-between gap-3">
+                                    
+                                    <!-- Quantity Controls -->
+                                    <div class="flex items-center gap-2">
+                                        <span class="text-xs sm:text-sm text-gray-600 font-medium mr-1">Qty:</span>
+                                        
+                                        <!-- Decrease -->
+                                        <a href="/cart/decrease/<%= item.product._id %>"
+                                           class="qty-btn flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 bg-gray-200 rounded-lg hover:bg-gray-300 active:bg-gray-400 text-gray-700">
+                                            <i class="fas fa-minus text-xs"></i>
+                                        </a>
+
+                                        <span class="px-3 sm:px-4 py-1.5 font-bold text-base sm:text-lg text-gray-900 min-w-[2.5rem] sm:min-w-[3rem] text-center">
+                                            <%= item.qty %>
+                                        </span>
+
+                                        <% 
+                                            const currentStock = item.currentStock != null 
+                                                ? item.currentStock 
+                                                : (item.productId && item.productId.quantity ? item.productId.quantity : 0);
+
+                                            const reachedStockLimit = currentStock && item.qty >= currentStock;
+                                            const reachedMax = item.qty >= 5; // MAX_QTY
+                                        %>
+
+                                        <% if (reachedStockLimit || reachedMax) { %>
+                                            <button disabled 
+                                                    class="flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 bg-gray-200 text-gray-400 rounded-lg cursor-not-allowed">
+                                                <i class="fas fa-plus text-xs"></i>
+                                            </button>
+                                        <% } else { %>
+                                            <a href="/cart/increase/<%= item.product._id %>"
+                                               class="qty-btn flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 bg-blue-500 rounded-lg hover:bg-blue-600 active:bg-blue-700 text-white">
+                                                <i class="fas fa-plus text-xs"></i>
+                                            </a>
+                                        <% } %>
+                                    </div>
+
+                                    <!-- Remove Button -->
+                                    <form action="/cart/remove/<%= item.product._id %>" method="POST" class="inline">
+                                        <button type="submit"
+                                                class="flex items-center gap-1.5 bg-red-500 text-white px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg hover:bg-red-600 active:bg-red-700 transition font-medium text-xs sm:text-sm">
+                                            <i class="fas fa-trash-alt"></i>
+                                            <span>Remove</span>
+                                        </button>
+                                    </form>
+                                </div>
+
+                            </div>
+                        </div>
+                    <% }) %>
+                </div>
+
+                <!-- CART TOTAL - Desktop -->
+                <div class="hidden lg:block bg-white shadow rounded-lg p-6 mt-6">
+                    <div class="flex items-center justify-between mb-6">
+                        <h2 class="text-2xl font-bold text-gray-900">Cart Total:</h2>
+                        <span class="text-3xl font-bold text-purple-700">
+                            ₹<%= Math.round(cart.cartTotal).toLocaleString() %>
+                        </span>
+                    </div>
+
+                    <div class="flex gap-4">
+                        <a href="/products-user"
+                           class="flex-1 bg-gray-200 text-gray-800 px-6 py-3 rounded-lg hover:bg-gray-300 transition font-semibold text-center">
+                            <i class="fas fa-arrow-left mr-2"></i>
+                            Continue Shopping
+                        </a>
+                        <a href="/checkout"
+                           class="flex-1 bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition font-semibold text-center shadow-md hover:shadow-lg">
+                            <i class="fas fa-lock mr-2"></i>
+                            Proceed to Checkout
+                        </a>
+                    </div>
+                </div>
+
+                <!-- CART TOTAL - Mobile/Tablet (Sticky on Mobile) -->
+                <div class="lg:hidden sticky-checkout bg-white border-t border-gray-200 p-4 sm:static sm:rounded-lg sm:shadow sm:border sm:mt-4">
+                    <div class="max-w-lg mx-auto">
+                        <!-- Total -->
+                        <div class="flex items-center justify-between mb-3 sm:mb-4">
+                            <span class="text-base sm:text-lg font-semibold text-gray-700">Total:</span>
+                            <span class="text-2xl sm:text-3xl font-bold text-purple-700">
+                                ₹<%= Math.round(cart.cartTotal).toLocaleString() %>
+                            </span>
+                        </div>
+
+                        <!-- Buttons -->
+                        <div class="space-y-2 sm:space-y-3">
+                            <a href="/checkout"
+                               class="block w-full bg-green-600 text-white px-6 py-3 sm:py-3.5 rounded-lg hover:bg-green-700 active:bg-green-800 transition font-bold text-center text-base shadow-lg">
+                                <i class="fas fa-lock mr-2"></i>
+                                Proceed to Checkout
+                            </a>
+                            <a href="/products-user"
+                               class="block w-full bg-gray-100 text-gray-800 px-6 py-2.5 sm:py-3 rounded-lg hover:bg-gray-200 active:bg-gray-300 transition font-semibold text-center text-sm sm:text-base border border-gray-300">
+                                <i class="fas fa-arrow-left mr-2"></i>
+                                Continue Shopping
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        <% } else { %>
+
+            <!-- EMPTY CART -->
+            <div class="max-w-md mx-auto">
+                <div class="bg-white p-8 sm:p-10 md:p-12 shadow-lg rounded-2xl text-center">
+                    
+                    <!-- Empty Cart Icon -->
+                    <div class="mb-6">
+                        <i class="fas fa-shopping-cart empty-cart-icon"></i>
+                    </div>
+
+                    <h2 class="text-xl sm:text-2xl font-bold text-gray-900 mb-3">Your cart is empty</h2>
+                    <p class="text-sm sm:text-base text-gray-600 mb-6 sm:mb-8">
+                        Looks like you haven't added anything to your cart yet
+                    </p>
+                    
+                    <a href="/products-user"
+                       class="inline-block bg-purple-600 text-white px-8 py-3 sm:py-3.5 rounded-lg hover:bg-purple-700 active:bg-purple-800 transition font-semibold text-base sm:text-lg shadow-md hover:shadow-lg">
+                        <i class="fas fa-shopping-bag mr-2"></i>
+                        Start Shopping
+                    </a>
+                </div>
+            </div>
+
+        <% } %>
+
+    </div>
+
+    <footer class="bg-indigo-900 text-white mt-8 sm:mt-12">
+        <%- include("../../views/partials/user/footer") -%>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <% if (typeof stockError !== "undefined") { %>
+    <script>
+        Swal.fire({
+            icon: "error",
+            title: "Out of Stock",
+            text: "<%= stockError %>",
+            confirmButtonColor: "#d33",
+            customClass: {
+                container: 'swal-responsive'
+            }
+        });
+    </script>
+    <% } %>
+
+    <script>
+        // Add loading state to forms
+        document.addEventListener('DOMContentLoaded', function() {
+            const forms = document.querySelectorAll('form');
+            forms.forEach(form => {
+                form.addEventListener('submit', function() {
+                    const button = this.querySelector('button[type="submit"]');
+                    if (button) {
+                        button.disabled = true;
+                        button.classList.add('loading');
+                        const originalText = button.innerHTML;
+                        button.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Processing...';
+                        
+                        // Restore button after timeout (in case of error)
+                        setTimeout(() => {
+                            button.disabled = false;
+                            button.classList.remove('loading');
+                            button.innerHTML = originalText;
+                        }, 5000);
+                    }
+                });
+            });
+
+            // Add loading state to quantity links
+            const qtyLinks = document.querySelectorAll('.qty-btn');
+            qtyLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    // Visual feedback
+                    this.style.opacity = '0.6';
+                    this.style.pointerEvents = 'none';
+                });
+            });
+        });
+
+        // Responsive SweetAlert styling
+        const style = document.createElement('style');
+        style.textContent = `
+            @media (max-width: 640px) {
+                .swal-responsive .swal2-popup {
+                    font-size: 0.875rem;
+                    padding: 1.25rem;
+                    width: 90%;
+                }
+                .swal-responsive .swal2-title {
+                    font-size: 1.25rem;
+                }
+                .swal-responsive .swal2-html-container {
+                    font-size: 0.875rem;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Image loading optimization
+        if ('loading' in HTMLImageElement.prototype) {
+            const images = document.querySelectorAll('img[loading="lazy"]');
+            images.forEach(img => {
+                img.addEventListener('load', function() {
+                    this.style.opacity = '1';
+                });
+            });
+        }
+
+        // Prevent multiple rapid clicks on quantity buttons
+        let clickTimeout;
+        document.querySelectorAll('.qty-btn').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                if (clickTimeout) {
+                    e.preventDefault();
+                    return false;
+                }
+                clickTimeout = setTimeout(() => {
+                    clickTimeout = null;
+                }, 1000);
+            });
+        });
+    </script>
+
+</body> 
 </html>

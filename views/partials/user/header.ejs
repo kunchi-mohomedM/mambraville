@@ -5,52 +5,85 @@
   crossorigin="anonymous" referrerpolicy="no-referrer" />
 
 <!-- Fixed Header -->
-<header class="fixed top-0 left-0 right-0 bg-white shadow-md z-50">
-  <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+<header class="fixed top-0 left-0 right-0 bg-white shadow-sm z-50 border-b border-gray-200">
+  <div class="container mx-auto px-3 sm:px-4 md:px-6 lg:px-8">
 
-    <!-- Top row: Logo + Icons -->
-    <div class="flex items-center justify-between py-3 sm:py-4">
+    <!-- Main Header Row -->
+    <div class="flex items-center justify-between py-3 sm:py-4 lg:py-5 gap-2 sm:gap-4">
 
-      <!-- Logo -->
-      <a href="/" class="flex items-center min-w-0">
+      <!-- Logo (Left) -->
+      <a href="/" class="flex items-center min-w-0 flex-shrink-0">
         <div class="text-center leading-none">
-          <div class="text-xl sm:text-2xl font-black tracking-tighter whitespace-nowrap">
-            <span class="text-blue-700">Gadgetr</span><span class="text-orange-500">y</span>
+          <div class="text-xl sm:text-2xl lg:text-3xl font-black tracking-tight whitespace-nowrap">
+            <span class="text-blue-600">Gadgetr</span><span class="text-orange-500">y</span>
           </div>
-          <div class="text-[7px] sm:text-[8px] font-bold tracking-widest text-gray-500 uppercase mt-0.5">
-            powered by mambra home appliances — 2004
+          <div class="text-[8px] sm:text-[9px] lg:text-[10px] font-semibold tracking-wide text-gray-400 uppercase mt-0.5 sm:mt-1 whitespace-nowrap">
+            Powered by Mambra Home Appliances
           </div>
         </div>
       </a>
 
+      <!-- Center Navigation (Desktop Only) -->
+      <nav class="hidden lg:flex items-center space-x-6 xl:space-x-10">
+        <a href="/" class="text-gray-700 hover:text-blue-600 transition font-medium text-sm xl:text-base whitespace-nowrap">Home</a>
+        <a href="/products-user" class="text-gray-700 hover:text-blue-600 transition font-medium text-sm xl:text-base whitespace-nowrap">Products</a>
+        <a href="/aboutPage" class="text-gray-700 hover:text-blue-600 transition font-medium text-sm xl:text-base whitespace-nowrap">About Us</a>
+        
+        <% if(!user) { %>
+          <a href="/login" class="text-gray-700 hover:text-blue-600 transition font-medium text-sm xl:text-base whitespace-nowrap">Login</a>
+        <% } else { %>
+          <a href="/logout" class="text-gray-700 hover:text-blue-600 transition font-medium text-sm xl:text-base whitespace-nowrap">Logout</a>
+        <% } %>
+      </nav>
+
       <!-- Right Icons -->
-      <div class="flex items-center space-x-5 sm:space-x-6 text-gray-700">
-        <a href="/user-profile" class="hover:text-blue-600 transition p-1 -m-1">
+      <div class="flex items-center space-x-3 sm:space-x-4 md:space-x-5 lg:space-x-7 flex-shrink-0">
+
+        <!-- User (Hidden on mobile) -->
+        <a href="/user-profile" class="hover:text-blue-600 transition text-gray-700 hidden sm:block" aria-label="User Profile">
           <i class="fas fa-user text-lg sm:text-xl"></i>
         </a>
-        <a href="/wishlist" class="hover:text-blue-600 transition p-1 -m-1">
+
+        <!-- Wishlist -->
+        <a href="/wishlist" class="hover:text-blue-600 transition text-gray-700 relative" aria-label="Wishlist">
           <i class="fas fa-heart text-lg sm:text-xl"></i>
+          <% if (wishlistItems.length > 0) { %>
+            <span class="absolute -top-1.5 sm:-top-2 -right-1.5 sm:-right-2 bg-red-500 text-white text-[10px] sm:text-xs font-semibold rounded-full w-4 h-4 sm:w-5 sm:h-5 flex items-center justify-center shadow-sm">
+              <%= wishlistItems.length %>
+            </span>
+          <% } %>
         </a>
-        <a href="/cart" class="hover:text-blue-600 transition p-1 -m-1 relative">
+
+        <!-- Cart -->
+        <a href="/cart" class="hover:text-blue-600 transition text-gray-700 relative" aria-label="Shopping Cart">
           <i class="fas fa-shopping-cart text-lg sm:text-xl"></i>
-          <!-- You can add cart count badge here later if needed -->
-          <!-- <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full px-1.5 py-0.5">3</span> -->
+          <% if (cartItems.length > 0) { %>
+            <span class="absolute -top-1.5 sm:-top-2 -right-1.5 sm:-right-2 bg-red-500 text-white text-[10px] sm:text-xs font-semibold rounded-full w-4 h-4 sm:w-5 sm:h-5 flex items-center justify-center shadow-sm">
+              <%= cartItems.length %>
+            </span>
+          <% } %>
         </a>
+
+        <!-- Mobile Menu Button (visible on smaller screens) -->
+        <button id="mobile-menu-btn" class="lg:hidden text-gray-700 hover:text-blue-600 transition focus:outline-none focus:ring-2 focus:ring-blue-500 rounded p-1" aria-label="Toggle mobile menu">
+          <i class="fas fa-bars text-lg sm:text-xl"></i>
+        </button>
+
       </div>
     </div>
 
-    <!-- Bottom Navigation -->
-    <nav class="flex justify-center overflow-x-auto border-t py-2.5 sm:py-3 -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8 scrollbar-hide">
-      <div class="flex items-center space-x-6 sm:space-x-8 lg:space-x-10 text-gray-700 font-medium text-sm sm:text-base whitespace-nowrap">
-        <a href="/" class="hover:text-blue-600 transition">Home</a>
-        <a href="/products-user" class="hover:text-blue-600 transition">Products</a>
-        <a href="/aboutPage" class="hover:text-blue-600 transition">About Us</a>
+    <!-- Mobile Navigation (Hidden by default) -->
+    <nav id="mobile-menu" class="lg:hidden hidden border-t border-gray-200 py-3 sm:py-4">
+      <div class="flex flex-col space-y-2 sm:space-y-3 text-gray-700 font-medium text-sm sm:text-base">
+        <a href="/" class="hover:text-blue-600 hover:bg-gray-50 transition py-2 px-2 rounded-md">Home</a>
+        <a href="/products-user" class="hover:text-blue-600 hover:bg-gray-50 transition py-2 px-2 rounded-md">Products</a>
+        <a href="/aboutPage" class="hover:text-blue-600 hover:bg-gray-50 transition py-2 px-2 rounded-md">About Us</a>
+        <a href="/user-profile" class="hover:text-blue-600 hover:bg-gray-50 transition py-2 px-2 rounded-md sm:hidden">Profile</a>
         
-
         <% if(!user) { %>
-          <a href="/login" class="text-gray-700 hover:text-blue-600 font-medium">Login</a>
+          <a href="/login" class="text-gray-700 hover:text-blue-600 hover:bg-gray-50 transition py-2 px-2 rounded-md">Login</a>
         <% } else { %>
-          <a href="/logout" class="text-gray-700 hover:text-blue-600 font-medium">Logout</a>
+          <a href="/logout" class="text-gray-700 hover:text-blue-600 hover:bg-gray-50 transition py-2 px-2 rounded-md">Logout</a>
         <% } %>
       </div>
     </nav>
@@ -59,17 +92,81 @@
 </header>
 
 <!-- Push content below fixed header -->
-<main class="pt-28 sm:pt-32 md:pt-36">
+<main class="pt-20 sm:pt-24 lg:pt-28">
   <!-- Your page content goes here -->
 </main>
 
-<style>
-  /* Hide scrollbar but keep scrollable */
-  .scrollbar-hide {
-    -ms-overflow-style: none;  /* IE and Edge */
-    scrollbar-width: none;     /* Firefox */
+<script>
+  // Mobile menu toggle
+  const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+  const mobileMenu = document.getElementById('mobile-menu');
+  
+  if (mobileMenuBtn && mobileMenu) {
+    mobileMenuBtn.addEventListener('click', () => {
+      mobileMenu.classList.toggle('hidden');
+      
+      // Update icon
+      const icon = mobileMenuBtn.querySelector('i');
+      if (mobileMenu.classList.contains('hidden')) {
+        icon.classList.remove('fa-times');
+        icon.classList.add('fa-bars');
+      } else {
+        icon.classList.remove('fa-bars');
+        icon.classList.add('fa-times');
+      }
+    });
+    
+    // Close menu when clicking outside
+    document.addEventListener('click', (e) => {
+      if (!mobileMenuBtn.contains(e.target) && !mobileMenu.contains(e.target)) {
+        mobileMenu.classList.add('hidden');
+        const icon = mobileMenuBtn.querySelector('i');
+        icon.classList.remove('fa-times');
+        icon.classList.add('fa-bars');
+      }
+    });
+    
+    // Close menu when window is resized to desktop
+    window.addEventListener('resize', () => {
+      if (window.innerWidth >= 1024) {
+        mobileMenu.classList.add('hidden');
+        const icon = mobileMenuBtn.querySelector('i');
+        icon.classList.remove('fa-times');
+        icon.classList.add('fa-bars');
+      }
+    });
   }
-  .scrollbar-hide::-webkit-scrollbar {
-    display: none;             /* Chrome, Safari, Opera */
+</script>
+
+<style>
+  /* Smooth transitions */
+  header a {
+    transition: all 0.2s ease;
+  }
+  
+  /* Badge styling */
+  header .bg-red-500 {
+    box-shadow: 0 2px 4px rgba(239, 68, 68, 0.3);
+  }
+  
+  /* Better touch targets for mobile */
+  @media (max-width: 640px) {
+    header button, 
+    header a {
+      min-height: 44px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+  }
+  
+  /* Smooth mobile menu animation */
+  #mobile-menu {
+    transition: all 0.3s ease-in-out;
+  }
+  
+  /* Prevent horizontal scroll on small screens */
+  header {
+    overflow-x: hidden;
   }
 </style>

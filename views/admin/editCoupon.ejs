@@ -168,6 +168,19 @@
                 />
               </div>
 
+
+               <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">
+                  Start Date
+                </label>
+                <input
+  type="date"
+  name="startdate"
+  value="<%= coupon.startDate ? new Date(coupon.startDate).toISOString().split('T')[0] : '' %>"
+  required
+/>
+              </div>
+
               <!-- Expiry Date -->
               <div id="expire-date-field">
                 <label class="block text-sm font-medium text-gray-700 mb-1">
@@ -197,9 +210,9 @@
       </div>
     </div>
 
-  <script>
+<script>
   const discountTypeSelect = document.getElementById("discount-type");
-  const maxDiscountField = document.getElementById("max-discount-field");
+  const maxDiscountField   = document.getElementById("max-discount-field");
 
   function toggleDiscountFields() {
     const type = discountTypeSelect.value;
@@ -212,107 +225,57 @@
   }
 
   discountTypeSelect.addEventListener("change", toggleDiscountFields);
-  toggleDiscountFields(); // Run on load
+  toggleDiscountFields(); // initial call
 
-  // Validation function
-  function validateForm() {
-    let isValid = true;
-
-    // Reset error states
-    document.getElementById("code-error").classList.add("hidden");
-    document.querySelectorAll(".error-text").forEach(el => el.classList.add("hidden"));
-
-    const couponCode = document.getElementById("coupon-code").value.trim().toUpperCase();
-    const discountType = discountTypeSelect.value;
-    const discountValue = document.getElementById("discount").value.trim();
-    const expiryDate = document.getElementById("expire-date").value;
-
-    // 1. Coupon Code Validation
-    const codePattern = /^[A-Z0-9]{1,10}$/;
-    if (!couponCode) {
-      showError("code-error", "Coupon code is required");
-      isValid = false;
-    } else if (couponCode.length > 10) {
-      showError("code-error", "Coupon code cannot exceed 10 characters");
-      isValid = false;
-    } else if (!codePattern.test(couponCode)) {
-      showError("code-error", "Coupon code must contain only uppercase letters and numbers");
-      isValid = false;
-    }
-
-    // Auto-uppercase the code as user types (optional UX improvement)
-    document.getElementById("coupon-code").value = couponCode;
-
-    // 2. Discount Value Validation
-    if (!discountValue || discountValue <= 0) {
-      showErrorFor("discount", "Discount amount must be greater than 0");
-      isValid = false;
-    } else if (discountType === "percentage" && discountValue > 100) {
-      showErrorFor("discount", "Percentage discount cannot exceed 100");
-      isValid = false;
-    }
-
-    // 3. Expiry Date Validation
-    if (!expiryDate) {
-      showErrorFor("expire-date", "Expiry date is required");
-      isValid = false;
-    } else {
-      const selectedDate = new Date(expiryDate);
-      const today = new Date();
-      today.setHours(0, 0, 0, 0); // Normalize to start of day
-
-      if (selectedDate < today) {
-        showErrorFor("expire-date", "Expiry date cannot be in the past");
-        isValid = false;
-      }
-    }
-
-    return isValid;
-  }
-
-  // Helper: Show error under specific field
-  function showErrorFor(fieldId, message) {
-    let errorEl = document.querySelector(`#${fieldId}`).parentElement.querySelector(".error-text");
-    if (!errorEl) {
-      errorEl = document.createElement("p");
-      errorEl.className = "text-red-500 text-sm mt-1 error-text";
-      document.querySelector(`#${fieldId}`).parentElement.appendChild(errorEl);
-    }
-    errorEl.textContent = message;
-    errorEl.classList.remove("hidden");
-  }
-
-  // Reuse existing code-error
-  function showError(elementId, message) {
-    const errorEl = document.getElementById(elementId);
-    errorEl.textContent = message;
-    errorEl.classList.remove("hidden");
-  }
-
-  // Form Submission
+  // ────────────────────────────────────────────────
+  //              FORM SUBMISSION + VALIDATION
+  // ────────────────────────────────────────────────
   document.getElementById("couponForm").addEventListener("submit", async function (e) {
     e.preventDefault();
 
     if (!validateForm()) {
-      return; // Stop if validation fails
-    }
-
-    const couponCode = document.getElementById("coupon-code").value.trim().toUpperCase();
-    const discountType = discountTypeSelect.value;
-    const discountValue = Number(document.getElementById("discount").value);
-    const minPurchase = Number(document.getElementById("min-purchase").value.trim() || 0);
-    const maxDiscount = Number(document.getElementById("max-discount").value.trim() || 0);
-    const expiryDate = document.getElementById("expire-date").value;
-
-    // Get couponId from URL
-    const pathParts = window.location.pathname.split("/");
-    const couponId = pathParts[pathParts.length - 1];
-
-    if (!couponId || couponId.length < 12) {
-      Swal.fire("Error", "Invalid coupon ID", "error");
       return;
     }
 
+    // Read all fields
+    const couponCode    = document.getElementById("coupon-code").value.trim().toUpperCase();
+    const discountType  = discountTypeSelect.value;
+    const discountValue = Number(document.getElementById("discount").value) || 0;
+    const minPurchase   = Number(document.getElementById("min-purchase").value.trim()) || 0;
+    const maxDiscount   = Number(document.getElementById("max-discount").value.trim()) || 0;
+    const startDateVal  = document.querySelector('input[name="startdate"]').value;   // ← important
+    const expiryDate    = document.getElementById("expire-date").value;
+
+    // Extra client-side date validation
+    if (startDateVal && expiryDate) {
+      const startD = new Date(startDateVal);
+      const expD   = new Date(expiryDate);
+      if (startD > expD) {
+        Swal.fire("Error", "Start date cannot be after expiry date", "error");
+        return;
+      }
+    }
+
+    if (!startDateVal) {
+      Swal.fire("Error", "Please select a start date", "error");
+      return;
+    }
+
+    if (!expiryDate) {
+      Swal.fire("Error", "Please select an expiry date", "error");
+      return;
+    }
+
+    // Get coupon ID from URL
+    const pathParts = window.location.pathname.split("/");
+    const couponId = pathParts[pathParts.length - 1];
+
+    if (!couponId || couponId.length < 10) {  // more relaxed check
+      Swal.fire("Error", "Invalid coupon ID in URL", "error");
+      return;
+    }
+
+    // Prepare payload
     const formData = {
       couponId,
       code: couponCode,
@@ -320,6 +283,7 @@
       discountValue,
       minPurchase,
       maxDiscount,
+      startdate: startDateVal,     // ← this was missing!
       expiryDate
     };
 
@@ -349,10 +313,76 @@
         });
       }
     } catch (error) {
-      console.error(error);
-      Swal.fire("Error", "Network error. Please try again.", "error");
+      console.error("Edit coupon fetch error:", error);
+      Swal.fire("Error", "Network error or server is not responding", "error");
     }
   });
+
+  // Your existing validation functions (keep them)
+  function validateForm() {
+    let isValid = true;
+    document.getElementById("code-error").classList.add("hidden");
+    document.querySelectorAll(".error-text").forEach(el => el.classList.add("hidden"));
+
+    const couponCode = document.getElementById("coupon-code").value.trim().toUpperCase();
+    const discountType = discountTypeSelect.value;
+    const discountValue = document.getElementById("discount").value.trim();
+    const expiryDate = document.getElementById("expire-date").value;
+
+    const codePattern = /^[A-Z0-9]{1,10}$/;
+    if (!couponCode) {
+      showError("code-error", "Coupon code is required");
+      isValid = false;
+    } else if (couponCode.length > 10) {
+      showError("code-error", "Coupon code cannot exceed 10 characters");
+      isValid = false;
+    } else if (!codePattern.test(couponCode)) {
+      showError("code-error", "Coupon code must contain only uppercase letters and numbers");
+      isValid = false;
+    }
+
+    document.getElementById("coupon-code").value = couponCode;
+
+    if (!discountValue || Number(discountValue) <= 0) {
+      showErrorFor("discount", "Discount amount must be greater than 0");
+      isValid = false;
+    } else if (discountType === "percentage" && Number(discountValue) > 100) {
+      showErrorFor("discount", "Percentage discount cannot exceed 100");
+      isValid = false;
+    }
+
+    if (!expiryDate) {
+      showErrorFor("expire-date", "Expiry date is required");
+      isValid = false;
+    } else {
+      const selectedDate = new Date(expiryDate);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      if (selectedDate < today) {
+        showErrorFor("expire-date", "Expiry date cannot be in the past");
+        isValid = false;
+      }
+    }
+
+    return isValid;
+  }
+
+  function showErrorFor(fieldId, message) {
+    let errorEl = document.querySelector(`#${fieldId}`).parentElement.querySelector(".error-text");
+    if (!errorEl) {
+      errorEl = document.createElement("p");
+      errorEl.className = "text-red-500 text-sm mt-1 error-text";
+      document.querySelector(`#${fieldId}`).parentElement.appendChild(errorEl);
+    }
+    errorEl.textContent = message;
+    errorEl.classList.remove("hidden");
+  }
+
+  function showError(elementId, message) {
+    const errorEl = document.getElementById(elementId);
+    errorEl.textContent = message;
+    errorEl.classList.remove("hidden");
+  }
 
   function logout() {
     window.location.href = "/admin/logout";

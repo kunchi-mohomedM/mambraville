@@ -7,6 +7,7 @@ const Products = require("../../models/productSchema");
 const Cart = require("../../models/cartSchema");
 const Wishlist = require("../../models/wishlistSchema");
 const Wallet = require("../../models/walletSchema")
+const Order = require("../../models/orderSchema")
 const applyBestDiscount = require('../../helper/applyBestDiscount')
 const CategoryOffer = require('../../models/categoryOffer')
 
@@ -81,10 +82,10 @@ const generateUniqueReferralId = async () => {
   return referralId;
 };
 
-// Load OTP page - prevents OTP regeneration on refresh
+
 const loadOtpPage = async (req, res) => {
   try {
-    // Check if user has valid session data
+
     if (!req.session.userData || !req.session.userOtp) {
       return res.redirect("/signup");
     }
@@ -158,7 +159,7 @@ const signUp = async (req, res) => {
         referredUserId
       };
       req.session.userOtp = otp;
-      req.session.otpTimestamp = Date.now(); // Store OTP creation time
+      req.session.otpTimestamp = Date.now();
 
       return res.redirect("/otp-page");
     }
@@ -175,7 +176,7 @@ const signUp = async (req, res) => {
 
     await newUser.save();
 
-    // Credit bonuses immediately for Google signup
+
     await creditReferralBonuses(newUser._id, referredUserId);
 
     req.session.user = newUser._id;
@@ -203,8 +204,8 @@ const verifyOtp = async (req, res) => {
   try {
     const { otp } = req.body;
 
-    // Check if OTP has expired (3 minutes = 180000 milliseconds)
-    const OTP_EXPIRY_TIME = 3 * 60 * 1000; // 3 minutes in milliseconds
+
+    const OTP_EXPIRY_TIME = 3 * 60 * 1000;
     const currentTime = Date.now();
     const otpAge = currentTime - (req.session.otpTimestamp || 0);
 
@@ -345,15 +346,15 @@ const resendOtp = async (req, res) => {
   try {
     let email;
 
-    // 1. Signup flow (most common case in your current code)
+
     if (req.session.userData && req.session.userData.email) {
       email = req.session.userData.email;
     }
-    // 2. Forgot password / reset password flow
+
     else if (req.session.resetEmail) {
       email = req.session.resetEmail;
     }
-    // 3. Neither → session expired or invalid request
+
     else {
       return res.status(400).json({
         success: false,
@@ -361,10 +362,10 @@ const resendOtp = async (req, res) => {
       });
     }
 
-    // Optional: extra safety - check if user exists (especially useful for reset flow)
+
     const userExists = await User.findOne({ email });
     if (!userExists && req.session.resetEmail) {
-      // In reset flow we already checked existence earlier → but belt & suspenders
+
       delete req.session.resetEmail;
       delete req.session.userOtp;
       delete req.session.otpTimestamp;
@@ -376,8 +377,7 @@ const resendOtp = async (req, res) => {
 
     const otp = generateOtp();
     req.session.userOtp = otp;
-    req.session.otpTimestamp = Date.now(); // reset expiration timer
-
+    req.session.otpTimestamp = Date.now();
     const emailSent = await sendVerificationEmail(email, otp);
 
     if (emailSent) {
@@ -423,33 +423,12 @@ const loadHomepage = async (req, res) => {
     });
 
 
-    let cartItems = [];
-    let wishlistItems = [];
-
-    if (req.session.user) {
-      const cart = await Cart.findOne({
-        userId: req.session.user
-      }).lean();
-
-      cartItems = cart
-        ? cart.items.map(i => i.productId.toString())
-        : [];
-
-      const wishlist = await Wishlist.findOne({
-        userId: req.session.user
-      }).lean();
-
-      wishlistItems = wishlist
-        ? wishlist.items.map(i => i.productId.toString())
-        : [];
-    }
-
-
+    // Cart and wishlist items are now available via res.locals from middleware
     products = applyBestDiscount({
       products,
       categoryOfferMap,
-      cartItems,
-      wishlistItems
+      cartItems: res.locals.cartItems,
+      wishlistItems: res.locals.wishlistItems
     });
 
 
@@ -457,9 +436,44 @@ const loadHomepage = async (req, res) => {
       .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
       .slice(0, 3);
 
-    const trendingProducts = [...products]
-      .sort((a, b) => b.quantity - a.quantity)
-      .slice(0, 8);
+    let trendingProducts = [];
+
+    // Get top 8 most purchased product IDs + their total sold quantity
+    const topSold = await Order.aggregate([
+      { $match: { orderStatus: { $nin: ["Cancelled", "Returned"] } } }, // adjust statuses as per your logic
+      { $unwind: "$items" },
+      {
+        $group: {
+          _id: "$items.productId",
+          totalSold: { $sum: "$items.qty" }
+        }
+      },
+      { $sort: { totalSold: -1 } },
+      { $limit: 8 },
+      {
+        $project: {
+          productId: "$_id",
+          totalSold: 1
+        }
+      }
+    ]);
+
+    if (topSold.length > 0) {
+      
+      const soldMap = new Map(topSold.map(item => [item.productId.toString(), item.totalSold]));
+
+      
+      trendingProducts = products
+        .filter(p => soldMap.has(p._id.toString()))
+        .sort((a, b) => soldMap.get(b._id.toString()) - soldMap.get(a._id.toString()));
+        
+    } else {
+     
+      trendingProducts = [...products]
+        .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+        .slice(0, 8);
+
+    }
 
     const specialOffers = [...products]
       .sort((a, b) => a.quantity - b.quantity)
@@ -500,8 +514,8 @@ const emailverification = async (req, res) => {
       return res.render("forgotemailpage", { message: "Failed to send email" });
     }
     req.session.userOtp = otp;
-    req.session.otpTimestamp = Date.now(); // Store OTP creation time for password reset
-    req.session.resetEmail = email; // Store email for password reset
+    req.session.otpTimestamp = Date.now();
+    req.session.resetEmail = email;
 
     res.redirect("/reset-password");
 
@@ -524,7 +538,7 @@ const loadLogin = async (req, res) => {
 
 const loadresetpassword = async (req, res) => {
   try {
-    // Check if user has valid session data for password reset
+
     if (!req.session.userOtp || !req.session.resetEmail) {
       return res.redirect("/forgot-password");
     }
@@ -597,8 +611,8 @@ const resetpasswordverification = async (req, res) => {
   try {
     const { newPassword, otp, userEmail } = req.body;
 
-    // Check if OTP has expired (3 minutes = 180000 milliseconds)
-    const OTP_EXPIRY_TIME = 3 * 60 * 1000; // 3 minutes in milliseconds
+
+    const OTP_EXPIRY_TIME = 3 * 60 * 1000;
     const currentTime = Date.now();
     const otpAge = currentTime - (req.session.otpTimestamp || 0);
 
@@ -624,7 +638,7 @@ const resetpasswordverification = async (req, res) => {
     user.password = passwordHash;
     await user.save({ validateBeforeSave: false });
 
-    // Clean up session data
+
     delete req.session.userOtp;
     delete req.session.otpTimestamp;
     delete req.session.resetEmail;
@@ -634,7 +648,7 @@ const resetpasswordverification = async (req, res) => {
       .json({ success: true, message: "Password changed successfully" });
   } catch (error) {
     console.error("Reset password error:", error);
-    // Optional: send real error to client in development only
+
     return res.status(500).json({
       success: false,
       message: "Server error while resetting password",

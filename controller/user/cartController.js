@@ -31,8 +31,11 @@ const addTocart = async (req, res) => {
   try {
     const userId = req.session.user;
     if (!userId) {
-      return res.status(401).json({ success: false, message: "Please login" });
-      // or redirect if you prefer: return res.redirect("/login");
+      return res.status(401).json({
+        success: false,
+        message: "Please login to add items to cart",
+        notAuthenticated: true
+      });
     }
 
     const productId = req.params.id;
@@ -64,16 +67,16 @@ const addTocart = async (req, res) => {
 
     if (existingItem) {
       if (existingItem.qty >= MAX_QTY) {
-        return res.status(400).json({ 
-          success: false, 
-          message: `Maximum ${MAX_QTY} units allowed` 
+        return res.status(400).json({
+          success: false,
+          message: `Maximum ${MAX_QTY} units allowed`
         });
       }
 
       if (existingItem.qty + 1 > product.quantity) {
-        return res.status(400).json({ 
-          success: false, 
-          message: "Stock limit reached" 
+        return res.status(400).json({
+          success: false,
+          message: "Stock limit reached"
         });
       }
 
@@ -87,36 +90,36 @@ const addTocart = async (req, res) => {
 
     await cart.save();
 
-    // Remove from wishlist if present
+
     await Wishlist.updateOne(
       { userId },
       { $pull: { items: { productId: product._id } } }
     );
 
-    // ─── For AJAX calls ───
-  
-if (req.headers['accept']?.includes('application/json') || req.xhr) {
-  return res.json({
-    success: true,
-    message: "Added to cart successfully",
-    inCart: true,           // ← new
-    cartItemCount: cart.items.length   // optional – if you show cart badge in header
-  });
-}
 
-// fallback for non-AJAX (direct browser GET)
-return res.redirect("/cart");
+
+    if (req.headers['accept']?.includes('application/json') || req.xhr) {
+      return res.json({
+        success: true,
+        message: "Added to cart successfully",
+        inCart: true,
+        cartItemCount: cart.items.length
+      });
+    }
+
+
+    return res.redirect("/cart");
 
   } catch (error) {
     console.error("Add to cart error:", error);
-    
+
     if (req.headers['accept']?.includes('application/json') || req.xhr) {
-      return res.status(500).json({ 
-        success: false, 
-        message: "Server error" 
+      return res.status(500).json({
+        success: false,
+        message: "Server error"
       });
     }
-    
+
     return res.status(500).send("Internal server error");
   }
 };
@@ -126,13 +129,13 @@ const loadCart = async (req, res) => {
     const userId = req.session.user;
     if (!userId) return res.redirect("/login");
 
-  
 
-const error = req.query.error;
+
+    const error = req.query.error;
     const customMessage = req.query.message ? decodeURIComponent(req.query.message) : null;
 
     let mssg = null;
-    let alertType = "warning"; 
+    let alertType = "warning";
 
     if (error === "stock") {
       mssg = "Cannot add more than available stock";
@@ -210,8 +213,8 @@ const error = req.query.error;
     }));
 
     await cart.save();
-    
-   
+
+
 
     return res.render("cartpage", {
       cart: {
@@ -220,7 +223,7 @@ const error = req.query.error;
       },
       mssg,
       alertType,
-       
+
     });
   } catch (error) {
     console.error("Error occur while loading cart:", error);

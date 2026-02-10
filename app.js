@@ -8,6 +8,7 @@ const userRouter = require("./routes/userRouter.js");
 const adminRouter = require("./routes/adminRouter.js")
 const session = require("express-session")
 const nocache = require("nocache")
+const cartWishlistCount = require("./middleware/cartWishlistCount")
 db()
 
 
@@ -51,6 +52,9 @@ app.use((req, res, next) => {
     res.locals.error = req.flash('error');
     next();
 });
+
+// Fetch cart and wishlist counts for all pages
+app.use(cartWishlistCount);
 
 app.use("/", userRouter);
 app.use("/admin", adminRouter)

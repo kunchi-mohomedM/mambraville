@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -19,76 +20,75 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
         <!-- Filter Bar -->
-       <!-- Filter Bar -->
-<div class="sticky top-0 z-30 bg-white py-5 px-4 sm:px-6 rounded-xl shadow-md mb-6 mt-6">
-  <form id="filterForm" action="/products-user" method="GET"
-        class="flex flex-col gap-4 sm:flex-row sm:items-end sm:flex-wrap">
+        <!-- Filter Bar -->
+        <div class="sticky top-0 z-30 bg-white py-5 px-4 sm:px-6 rounded-xl shadow-md mb-6 mt-6">
+            <form id="filterForm" action="/products-user" method="GET"
+                class="flex flex-col gap-4 sm:flex-row sm:items-end sm:flex-wrap">
 
-    <!-- Search -->
-    <div class="relative flex-1 min-w-[200px]">
-      <input type="text" id="searchInput" name="search"
-             value="<%= queryParams.search || '' %>"
-             placeholder="Search products..."
-             class="w-full border border-gray-300 rounded-full py-2.5 pl-10 pr-10 
+                <!-- Search -->
+                <div class="relative flex-1 min-w-[200px]">
+                    <input type="text" id="searchInput" name="search" value="<%= queryParams.search || '' %>"
+                        placeholder="Search products..." class="w-full border border-gray-300 rounded-full py-2.5 pl-10 pr-10 
                     focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500
                     text-gray-700 placeholder-gray-400" />
 
-      <i class="fa fa-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                    <i class="fa fa-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
 
-      <button type="button" id="clearSearchBtn"
-              class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-red-500 hidden">
-        <i class="fa-solid fa-circle-xmark text-lg"></i>
-      </button>
-    </div>
+                    <button type="button" id="clearSearchBtn"
+                        class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-red-500 hidden">
+                        <i class="fa-solid fa-circle-xmark text-lg"></i>
+                    </button>
+                </div>
 
-    <!-- Category -->
-    <div class="flex items-center space-x-2 min-w-[180px]">
-      <label for="categorySelect" class="text-sm text-gray-700 font-medium whitespace-nowrap">Category:</label>
-      <select id="categorySelect" name="category"
-              class="border border-gray-300 rounded-lg px-3 py-2.5 flex-1
+                <!-- Category -->
+                <div class="flex items-center space-x-2 min-w-[180px]">
+                    <label for="categorySelect"
+                        class="text-sm text-gray-700 font-medium whitespace-nowrap">Category:</label>
+                    <select id="categorySelect" name="category" class="border border-gray-300 rounded-lg px-3 py-2.5 flex-1
                      focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-gray-700">
-        <option value="">All</option>
-        <% categories.forEach(cat => { %>
-          <option value="<%= cat.categoryname %>" <%= queryParams.category === cat.categoryname ? 'selected' : '' %>>
-            <%= cat.categoryname %>
-          </option>
-        <% }) %>
-      </select>
-    </div>
+                        <option value="">All</option>
+                        <% categories.forEach(cat=> { %>
+                            <option value="<%= cat.categoryname %>" <%=queryParams.category===cat.categoryname
+                                ? 'selected' : '' %>>
+                                <%= cat.categoryname %>
+                            </option>
+                            <% }) %>
+                    </select>
+                </div>
 
-    <!-- Sort -->
-    <div class="flex items-center space-x-2 min-w-[180px]">
-      <label for="sortSelect" class="text-sm text-gray-700 font-medium whitespace-nowrap">Sort:</label>
-      <select id="sortSelect" name="sort"
-              class="border border-gray-300 rounded-lg px-3 py-2.5 flex-1
+                <!-- Sort -->
+                <div class="flex items-center space-x-2 min-w-[180px]">
+                    <label for="sortSelect" class="text-sm text-gray-700 font-medium whitespace-nowrap">Sort:</label>
+                    <select id="sortSelect" name="sort" class="border border-gray-300 rounded-lg px-3 py-2.5 flex-1
                      focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-gray-700">
-        <option value="">Default</option>
-        <option value="priceasc"  <%= queryParams.sort === 'priceasc'  ? 'selected' : '' %>>Price: Low to High</option>
-        <option value="pricedesc" <%= queryParams.sort === 'pricedesc' ? 'selected' : '' %>>Price: High to Low</option>
-        <option value="newest"    <%= queryParams.sort === 'newest'    ? 'selected' : '' %>>Newest</option>
-        <option value="oldest"    <%= queryParams.sort === 'oldest'    ? 'selected' : '' %>>Oldest</option>
-        <option value="popular"   <%= queryParams.sort === 'popular'   ? 'selected' : '' %>>Popular</option>
-      </select>
-    </div>
+                        <option value="">Default</option>
+                        <option value="priceasc" <%=queryParams.sort==='priceasc' ? 'selected' : '' %>>Price: Low to
+                            High</option>
+                        <option value="pricedesc" <%=queryParams.sort==='pricedesc' ? 'selected' : '' %>>Price: High to
+                            Low</option>
+                        <option value="newest" <%=queryParams.sort==='newest' ? 'selected' : '' %>>Newest</option>
+                        <option value="oldest" <%=queryParams.sort==='oldest' ? 'selected' : '' %>>Oldest</option>
+                        <option value="popular" <%=queryParams.sort==='popular' ? 'selected' : '' %>>Popular</option>
+                    </select>
+                </div>
 
-    <!-- Buttons group -->
-    <div class="flex flex-col sm:flex-row gap-3 sm:self-end">
-      <!-- Clear Filters Button -->
-      <button type="button" id="clearFiltersBtn"
-              class="bg-white border border-gray-400 text-gray-700 px-6 py-2.5 rounded-lg 
+                <!-- Buttons group -->
+                <div class="flex flex-col sm:flex-row gap-3 sm:self-end">
+                    <!-- Clear Filters Button -->
+                    <button type="button" id="clearFiltersBtn" class="bg-white border border-gray-400 text-gray-700 px-6 py-2.5 rounded-lg 
                      hover:bg-gray-50 hover:border-gray-500 transition font-medium min-w-[120px]">
-        Clear Filters
-      </button>
+                        Clear Filters
+                    </button>
 
-      <!-- Apply Button -->
-      <button type="submit"
-              class="bg-purple-600 text-white px-6 py-2.5 rounded-lg hover:bg-purple-700 transition font-medium min-w-[120px]">
-        Apply
-      </button>
-    </div>
+                    <!-- Apply Button -->
+                    <button type="submit"
+                        class="bg-purple-600 text-white px-6 py-2.5 rounded-lg hover:bg-purple-700 transition font-medium min-w-[120px]">
+                        Apply
+                    </button>
+                </div>
 
-  </form>
-</div>
+            </form>
+        </div>
 
         <!-- Breadcrumb -->
         <nav class="text-sm mb-6">
@@ -103,81 +103,84 @@
         <div class="mb-10">
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 sm:gap-6">
 
-                <% products.forEach(product => { %>
-                <div class="group bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-200 relative flex flex-col">
+                <% products.forEach(product=> { %>
+                    <div
+                        class="group bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-200 relative flex flex-col">
 
-                    <!-- Discount Badge -->
-                    <% if (product.discountPercent && product.discountPercent > 0) { %>
-                    <div class="absolute top-3 left-3 z-10">
-                        <span class="bg-orange-600 text-white text-xs font-bold px-2.5 py-1 rounded-full shadow-sm">
-                            <%= product.discountPercent %>% OFF
-                        </span>
-                    </div>
-                    <% } %>
-
-                    <!-- Wishlist -->
-                    <div class="absolute top-3 right-3 z-10">
-                        <% if (product.inCart) { %>
-                        <div class="bg-white/90 p-2.5 rounded-full shadow-md cursor-not-allowed">
-                            <i class="fa-solid fa-heart text-gray-300 opacity-60 text-xl"></i>
-                        </div>
-                        <% } else { %>
-                        <a href="/wishlist/toggle/<%= product._id %>" 
-                           class="wishlist-btn bg-white p-2.5 rounded-full shadow-md hover:shadow-lg transition-all duration-300 active:scale-95 inline-flex items-center justify-center">
-                            <i class="fa-heart text-xl transition-colors duration-300 <%= product.inWishlist ? 'fa-solid text-red-500' : 'fa-regular text-gray-500 hover:text-red-400' %>"></i>
-                        </a>
-                        <% } %>
-                    </div>
-
-                    <!-- Image -->
-                    <div class="relative pt-[85%] sm:pt-[75%] bg-gray-50 overflow-hidden">
-                        <img src="<%= product.productImage[0]?.url %>"
-                             onclick="window.location.href='/productdetails/<%= product._id %>'"
-                             class="absolute inset-0 w-full h-full object-contain p-4 group-hover:scale-105 transition-transform duration-500 cursor-pointer" />
-                    </div>
-
-                    <!-- Details -->
-                    <div class="p-4 flex flex-col flex-grow">
-                        <h3 class="font-semibold text-sm sm:text-base text-gray-800 line-clamp-2 min-h-[2.5rem] mb-1">
-                            <%= product.productName %>
-                        </h3>
-
-                        <div class="flex items-center gap-2.5 mt-1 mb-2">
-                            <p class="text-purple-700 font-bold text-lg sm:text-xl">
-                                ₹<%= product.discountedPrice %>
-                            </p>
-                            <% if (product.discountPercent && product.discountPercent > 0) { %>
-                            <p class="text-gray-500 text-sm line-through">
-                                ₹<%= product.originalPrice %>
-                            </p>
+                        <!-- Discount Badge -->
+                        <% if (product.discountPercent && product.discountPercent> 0) { %>
+                            <div class="absolute top-3 left-3 z-10">
+                                <span
+                                    class="bg-orange-600 text-white text-xs font-bold px-2.5 py-1 rounded-full shadow-sm">
+                                    <%= product.discountPercent %>% OFF
+                                </span>
+                            </div>
                             <% } %>
-                        </div>
 
-                        <div class="flex items-center gap-1 mb-3">
-                            <i class="fas fa-star text-yellow-400 text-sm"></i>
-                            <span class="text-gray-500 text-xs">5</span>
-                        </div>
+                                <!-- Wishlist -->
+                                <div class="absolute top-3 right-3 z-10">
+                                    <% if (product.inCart) { %>
+                                        <div class="bg-white/90 p-2.5 rounded-full shadow-md cursor-not-allowed">
+                                            <i class="fa-solid fa-heart text-gray-300 opacity-60 text-xl"></i>
+                                        </div>
+                                        <% } else { %>
+                                            <a href="/wishlist/toggle/<%= product._id %>"
+                                                class="wishlist-btn bg-white p-2.5 rounded-full shadow-md hover:shadow-lg transition-all duration-300 active:scale-95 inline-flex items-center justify-center">
+                                                <i
+                                                    class="fa-heart text-xl transition-colors duration-300 <%= product.inWishlist ? 'fa-solid text-red-500' : 'fa-regular text-gray-500 hover:text-red-400' %>"></i>
+                                            </a>
+                                            <% } %>
+                                </div>
 
-                        <button class="toggle-cart-btn mt-auto w-full rounded-full py-2.5 font-medium text-white transition-all
+                                <!-- Image -->
+                                <div class="relative pt-[85%] sm:pt-[75%] bg-gray-50 overflow-hidden">
+                                    <img src="<%= product.productImage[0]?.url %>"
+                                        onclick="window.location.href='/productdetails/<%= product._id %>'"
+                                        class="absolute inset-0 w-full h-full object-contain p-4 group-hover:scale-105 transition-transform duration-500 cursor-pointer" />
+                                </div>
+
+                                <!-- Details -->
+                                <div class="p-4 flex flex-col flex-grow">
+                                    <h3
+                                        class="font-semibold text-sm sm:text-base text-gray-800 line-clamp-2 min-h-[2.5rem] mb-1">
+                                        <%= product.productName %>
+                                    </h3>
+
+                                    <div class="flex items-center gap-2.5 mt-1 mb-2">
+                                        <p class="text-purple-700 font-bold text-lg sm:text-xl">
+                                            ₹<%= product.discountedPrice %>
+                                        </p>
+                                        <% if (product.discountPercent && product.discountPercent> 0) { %>
+                                            <p class="text-gray-500 text-sm line-through">
+                                                ₹<%= product.originalPrice %>
+                                            </p>
+                                            <% } %>
+                                    </div>
+
+                                    <div class="flex items-center gap-1 mb-3">
+                                        <i class="fas fa-star text-yellow-400 text-sm"></i>
+                                        <span class="text-gray-500 text-xs">5</span>
+                                    </div>
+
+                                    <button class="toggle-cart-btn mt-auto w-full rounded-full py-2.5 font-medium text-white transition-all
                                        <%= product.inCart 
                                            ? 'bg-green-600 hover:bg-green-700' 
                                            : (product.quantity <= 0 
                                                ? 'bg-red-600 cursor-not-allowed' 
                                                : 'bg-purple-600 hover:bg-purple-700') %>"
-                                data-product-id="<%= product._id %>"
-                                data-in-cart="<%= product.inCart %>"
-                                <%= product.quantity <= 0 ? 'disabled' : '' %>>
+                                        data-product-id="<%= product._id %>" data-in-cart="<%= product.inCart %>"
+                                        <%=product.quantity <=0 ? 'disabled' : '' %>>
 
-                            <i class="fas fa-shopping-cart text-sm mr-2"></i>
-                            <span>
-                                <% if (product.inCart) { %>Go to Cart
-                                <% } else if (product.quantity <= 0) { %>Out of Stock
-                                <% } else { %>Add to Cart<% } %>
-                            </span>
-                        </button>
+                                        <i class="fas fa-shopping-cart text-sm mr-2"></i>
+                                        <span>
+                                            <% if (product.inCart) { %>Go to Cart
+                                                <% } else if (product.quantity <=0) { %>Out of Stock
+                                                    <% } else { %>Add to Cart<% } %>
+                                        </span>
+                                    </button>
+                                </div>
                     </div>
-                </div>
-                <% }) %>
+                    <% }) %>
 
             </div>
         </div>
@@ -185,26 +188,26 @@
         <!-- Pagination -->
         <div class="flex justify-center my-10">
             <nav class="inline-flex items-center rounded-lg border border-gray-300 shadow-sm">
-                <% if (currentPage > 1) { %>
-                <a href="?<%= new URLSearchParams({ ...queryParams, page: currentPage - 1 }).toString() %>"
-                   class="px-4 py-2 border-r border-gray-300 text-gray-700 hover:bg-gray-50">
-                    <i class="fas fa-chevron-left"></i>
-                </a>
-                <% } %>
+                <% if (currentPage> 1) { %>
+                    <a href="?<%= new URLSearchParams({ ...queryParams, page: currentPage - 1 }).toString() %>"
+                        class="px-4 py-2 border-r border-gray-300 text-gray-700 hover:bg-gray-50">
+                        <i class="fas fa-chevron-left"></i>
+                    </a>
+                    <% } %>
 
-                <% for (let i = 1; i <= totalPages; i++) { %>
-                <a href="?<%= new URLSearchParams({ ...queryParams, page: i }).toString() %>"
-                   class="px-4 py-2 border-r border-gray-300 text-sm <%= i === currentPage ? 'bg-purple-600 text-white' : 'text-gray-700 hover:bg-gray-50' %>">
-                    <%= i %>
-                </a>
-                <% } %>
+                        <% for (let i=1; i <=totalPages; i++) { %>
+                            <a href="?<%= new URLSearchParams({ ...queryParams, page: i }).toString() %>"
+                                class="px-4 py-2 border-r border-gray-300 text-sm <%= i === currentPage ? 'bg-purple-600 text-white' : 'text-gray-700 hover:bg-gray-50' %>">
+                                <%= i %>
+                            </a>
+                            <% } %>
 
-                <% if (currentPage < totalPages) { %>
-                <a href="?<%= new URLSearchParams({ ...queryParams, page: currentPage + 1 }).toString() %>"
-                   class="px-4 py-2 text-gray-700 hover:bg-gray-50">
-                    <i class="fas fa-chevron-right"></i>
-                </a>
-                <% } %>
+                                <% if (currentPage < totalPages) { %>
+                                    <a href="?<%= new URLSearchParams({ ...queryParams, page: currentPage + 1 }).toString() %>"
+                                        class="px-4 py-2 text-gray-700 hover:bg-gray-50">
+                                        <i class="fas fa-chevron-right"></i>
+                                    </a>
+                                    <% } %>
             </nav>
         </div>
 
@@ -218,12 +221,12 @@
     <script>
 
 
-document.getElementById('clearFiltersBtn')?.addEventListener('click', () => {
-  window.location.href = "/products-user";
-});
+        document.getElementById('clearFiltersBtn')?.addEventListener('click', () => {
+            window.location.href = "/products-user";
+        });
 
 
-       
+
         document.getElementById('sortSelect')?.addEventListener('change', () => {
             document.getElementById('filterForm').submit();
         });
@@ -232,7 +235,7 @@ document.getElementById('clearFiltersBtn')?.addEventListener('click', () => {
             document.getElementById('filterForm').submit();
         });
 
-  
+
         const searchInput = document.getElementById("searchInput");
         const clearBtn = document.getElementById("clearSearchBtn");
 
@@ -256,7 +259,18 @@ document.getElementById('clearFiltersBtn')?.addEventListener('click', () => {
                     if (button.disabled) return;
 
                     if (isLoggedIn === "false") {
-                        window.location.href = "/login";
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Login Required',
+                            text: 'Please login to add items to your cart',
+                            showConfirmButton: true,
+                            confirmButtonText: 'Go to Login',
+                            confirmButtonColor: '#7c3aed'
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                window.location.href = "/login";
+                            }
+                        });
                         return;
                     }
 
@@ -303,4 +317,5 @@ document.getElementById('clearFiltersBtn')?.addEventListener('click', () => {
     </script>
 
 </body>
+
 </html>

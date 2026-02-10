@@ -1,26 +1,76 @@
 <!DOCTYPE html>
-<html>
-<head>
-  <meta charset="utf-8">
-  <title>Order Successful</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-gray-100">
-   <header class="bg-white shadow-sm">
-        <%-include("../../views/partials/user/header")-%>
-    </header>
-  <div class="container mx-auto py-20 px-4 max-w-3xl text-center">
-    <div class="bg-white p-8 rounded-lg shadow">
-      <h1 class="text-3xl font-bold mb-4 text-green-600">Thank you! 🎉</h1>
-      <p class="text-gray-700 mb-4">Your order has been placed successfully.</p>
-      <p class="text-sm text-gray-500 mb-6">Order ID: <strong><%= order.orderId %></strong></p>
+<html lang="en">
 
-      <div class="flex justify-center gap-4">
-        <a href="/order-summary" class="px-6 py-2 bg-blue-600 text-white rounded">View Order</a>
-        <a href="/products-user" class="px-6 py-2 border border-gray-300 rounded">Continue Shopping</a>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Order Successful - MambraVille</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" />
+</head>
+
+<body class="bg-gray-50">
+
+  <header class="bg-white shadow-sm">
+    <%-include("../../views/partials/user/header")-%>
+  </header>
+
+  <div class="container mx-auto py-8 sm:py-12 md:py-16 lg:py-20 px-4 sm:px-6 lg:px-8 max-w-3xl">
+    <div class="bg-white p-6 sm:p-8 md:p-10 lg:p-12 rounded-xl shadow-lg">
+
+      <!-- Success Icon -->
+      <div class="flex justify-center mb-6">
+        <div
+          class="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 bg-green-100 rounded-full flex items-center justify-center">
+          <i class="fas fa-check-circle text-green-600 text-4xl sm:text-5xl md:text-6xl"></i>
+        </div>
       </div>
+
+      <!-- Title -->
+      <h1 class="text-2xl sm:text-3xl md:text-4xl font-bold mb-3 sm:mb-4 text-green-600 text-center">
+        Thank you! 🎉
+      </h1>
+
+      <!-- Message -->
+      <p class="text-base sm:text-lg text-gray-700 mb-3 sm:mb-4 text-center">
+        Your order has been placed successfully.
+      </p>
+
+      <!-- Order ID -->
+      <div class="bg-gray-50 border border-gray-200 rounded-lg p-3 sm:p-4 mb-6 sm:mb-8">
+        <p class="text-sm sm:text-base text-gray-600 text-center">
+          Order ID: <strong class="text-gray-900 text-base sm:text-lg">
+            <%= order.orderId %>
+          </strong>
+        </p>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4">
+        <a href="/order-summary"
+          class="w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-3.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-medium text-center transition-all duration-200 shadow-sm hover:shadow-md text-sm sm:text-base">
+          <i class="fas fa-shopping-bag mr-2"></i>
+          <span>View Order</span>
+        </a>
+        <a href="/products-user"
+          class="w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-3.5 border-2 border-gray-300 hover:border-gray-400 text-gray-700 hover:bg-gray-50 rounded-lg font-medium text-center transition-all duration-200 text-sm sm:text-base">
+          <i class="fas fa-store mr-2"></i>
+          <span>Continue Shopping</span>
+        </a>
+      </div>
+
+      <!-- Additional Info -->
+      <div class="mt-8 sm:mt-10 pt-6 sm:pt-8 border-t border-gray-200">
+        <p class="text-xs sm:text-sm text-gray-500 text-center">
+          You will receive an order confirmation email shortly.
+        </p>
+      </div>
+
     </div>
   </div>
-   <%-include("../../views/partials/user/footer")-%>
+
+  <%-include("../../views/partials/user/footer")-%>
+
 </body>
+
 </html>

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
 
     <meta charset="UTF-8">
@@ -9,292 +10,276 @@
 
     <script src="https://cdn.tailwindcss.com"></script>
 
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+        integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 </head>
+
 <body class="bg-gray-100">
     <div class="flex h-screen">
         <!-- Mobile Sidebar Toggle -->
         <div id="sidebar-overlay" class="fixed inset-0 bg-black opacity-50 z-20 hidden md:hidden"></div>
-        
+
         <!-- Sidebar -->
-        <%- include('../partials/admin/sidebar') %>  
-        
-        <!-- Main Content -->
-        <div class="flex-1 flex flex-col  overflow-hidden">
-            <!-- Header -->
-            <header class="bg-gradient-to-r from-black to-purple-900 text-white p-4 flex justify-between items-center">
-                <div class="flex items-center">
-                    <button id="toggle-sidebar" class="mr-3 text-white md:hidden">
-                        <i class="fas fa-bars text-xl"></i>
-                    </button>
-                    <h1 class="text-2xl font-bold">Products</h1>
-                </div>
-               
-            </header>
+        <%- include('../partials/admin/sidebar') %>
 
-            <!-- Product List Content -->
-           <div class="flex-1 overflow-y-auto p-6">
-
-                <!-- Page Title and Actions -->
-                <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-6">
-                    <div>
-                        <h2 class="text-xl font-semibold text-gray-800">Product Management</h2>
-                        <p class="text-gray-500 mt-1">Manage your product inventory</p>
+            <!-- Main Content -->
+            <div class="flex-1 flex flex-col  overflow-hidden">
+                <!-- Header -->
+                <header
+                    class="bg-gradient-to-r from-black to-purple-900 text-white p-4 flex justify-between items-center">
+                    <div class="flex items-center">
+                        <button id="toggle-sidebar" class="mr-3 text-white md:hidden">
+                            <i class="fas fa-bars text-xl"></i>
+                        </button>
+                        <h1 class="text-2xl font-bold">Products</h1>
                     </div>
-                    <div class="mt-4 sm:mt-0 flex flex-col sm:flex-row gap-3">
-                       
-                        <a href="addproduct" class="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700 flex items-center">
-                            <i class="fas fa-plus mr-2"></i>Add Products
-                        </a>
+
+                </header>
+
+                <!-- Product List Content -->
+                <div class="flex-1 overflow-y-auto p-6">
+
+                    <!-- Page Title and Actions -->
+                    <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-6">
+                        <div>
+                            <h2 class="text-xl font-semibold text-gray-800">Product Management</h2>
+                            <p class="text-gray-500 mt-1">Manage your product inventory</p>
+                        </div>
+                        <div class="mt-4 sm:mt-0 flex flex-col sm:flex-row gap-3">
+
+                            <a href="addproduct"
+                                class="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700 flex items-center">
+                                <i class="fas fa-plus mr-2"></i>Add Products
+                            </a>
+                        </div>
                     </div>
-                </div>
 
-                <!-- Search and Sorting -->
-                <div class="bg-white p-4 rounded-lg shadow mb-6">
-                    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-                        <div class="hidden md:flex items-center flex-1 mx-6">
-                            <div class="relative w-full">
-                                <div class="bg-white p-4 rounded-lg shadow mb-6">
- <form action="/admin/products" method="GET"
-      class="flex flex-col md:flex-row md:items-center md:justify-between gap-6 bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+                    <!-- Search and Sorting -->
+                    <div class="bg-white p-4 rounded-lg shadow mb-6">
+                        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                            <div class="hidden md:flex items-center flex-1 mx-6">
+                                <div class="relative w-full">
+                                    <!-- Search and Sorting - SINGLE INSTANCE -->
+<div class="bg-white p-6 rounded-xl shadow border border-gray-200 mb-6">
+    <form action="/admin/products" method="GET"
+          class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 md:gap-6">
 
-  <!-- SEARCH -->
-  <div class="relative w-full md:w-96">
-    <input
-      type="text"
-      id="searchInput"
-      name="search"
-      value="<%= searchQuery %>"
-      placeholder="Search products..."
-      class="w-full h-12 px-4 pl-11 pr-12 bg-gray-50 border border-gray-300 rounded-xl text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:border-transparent transition"
-    />
+        <!-- SEARCH -->
+        <div class="relative flex-1 max-w-md">
+            <input type="text" id="searchInput" name="search"
+                   value="<%= searchQuery %>" placeholder="Search products..."
+                   class="w-full h-11 pl-10 pr-10 bg-gray-50 border border-gray-300 rounded-lg text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition" />
 
-    <!-- Search Icon -->
-    <svg class="absolute left-4 inset-y-0 my-auto h-5 w-5 text-gray-400 pointer-events-none" 
-         fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-    </svg>
+            <!-- Search Icon -->
+            <svg class="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 pointer-events-none"
+                 fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
 
-    <!-- Clear Button -->
-    <button
-      type="button"
-      id="clearSearchBtn"
-      class="absolute right-4 inset-y-0 my-auto h-8 w-8 flex items-center justify-center rounded-full text-gray-400 hover:text-red-600 hover:bg-gray-200 transition hidden"
-      aria-label="Clear search">
-      <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-              d="M6 18L18 6M6 6l12 12"/>
-      </svg>
-    </button>
-  </div>
+            <!-- Clear Button -->
+            <button type="button" id="clearSearchBtn"
+                    class="absolute right-2 top-1/2 -translate-y-1/2 h-7 w-7 flex items-center justify-center rounded-full text-gray-400 hover:text-red-600 hover:bg-gray-100 transition hidden">
+                <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
 
-  <!-- SORT -->
-  <div class="flex items-center gap-3">
-    <label for="sortSelect" class="text-sm font-medium text-gray-700">Sort by:</label>
-    <select id="sortSelect" name="sort"
-            onchange="this.form.submit()"
-            class="h-12 px-4 bg-gray-50 border border-gray-300 rounded-xl text-gray-900 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:border-transparent transition">
-      <option value="newest" <%= sort === "newest" ? "selected" : "" %>>Newest</option>
-      <option value="oldest" <%= sort === "oldest" ? "selected" : "" %>>Oldest</option>
-      <option value="priceasc" <%= sort === "priceasc" ? "selected" : "" %>>Price: Low to High</option>
-      <option value="pricedesc" <%= sort === "pricedesc" ? "selected" : "" %>>Price: High to Low</option>
-      <option value="popular" <%= sort === "popular" ? "selected" : "" %>>Popular</option>
-    </select>
-  </div>
+        <!-- SORT -->
+        <div class="flex items-center gap-3">
+            <label for="sortSelect" class="text-sm font-medium text-gray-700 whitespace-nowrap">Sort by:</label>
+            <select id="sortSelect" name="sort" onchange="this.form.submit()"
+                    class="h-11 px-4 bg-gray-50 border border-gray-300 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition">
+                <option value="newest"  <%= sort === "newest"  ? "selected" : "" %>>Newest</option>
+                <option value="oldest"  <%= sort === "oldest"  ? "selected" : "" %>>Oldest</option>
+                <option value="priceasc" <%= sort === "priceasc" ? "selected" : "" %>>Price: Low to High</option>
+                <option value="pricedesc" <%= sort === "pricedesc"? "selected" : "" %>>Price: High to Low</option>
+                <option value="popular" <%= sort === "popular" ? "selected" : "" %>>Popular</option>
+            </select>
+        </div>
 
-</form>
+    </form>
 </div>
 
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                </div>
 
-                <!-- Products Table -->
-              <div class="bg-white rounded-lg shadow">
-                    <div class="overflow-x-auto w-full">
-                        <table class="min-w-full divide-y divide-gray-200">
-                            <% if(products.length>0) {%>
-                            <thead class="bg-gray-50">
-                                <tr>
-                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Product
-                                    </th>
-                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Category
-                                    </th>
-                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Price
-                                    </th>
-                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Stock
-                                    </th>
-                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Status
-                                    </th>
-                                    <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Actions
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody class="bg-white divide-y divide-gray-200">
-                                <% products.forEach(product=>{ %>
-                                <!-- Product Row 1 -->
-                                <tr>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <div class="flex items-center">
-                                            <div class="h-10 w-10 flex-shrink-0">
-                                                <img class="h-10 w-10 rounded-md object-cover" src='<%= product.productImage[0]?.url%>' alt="Product image">
-                                            </div>
-                                            <div class="ml-4">
-                                                <div class="text-sm font-medium text-gray-900"><%= product.productName %></div>
-                                                
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <div class="text-sm text-gray-900"
-                                        >
-                                        <%= product.category.categoryname %>
+                        <!-- Products Table -->
+                        <div class="bg-white rounded-xl shadow overflow-hidden">
+    <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+                <tr>
+                    <th class="px-6 py-3.5 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider w-[38%]">Product</th>
+                    <th class="px-5 py-3.5 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider w-[17%]">Category</th>
+                    <th class="px-5 py-3.5 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider w-[14%]">Price</th>
+                    <th class="px-5 py-3.5 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider w-[11%]">Stock</th>
+                    <th class="px-5 py-3.5 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider w-[10%]">Status</th>
+                    <th class="px-6 py-3.5 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider w-[10%]">Actions</th>
+                </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+                <% if(products.length > 0) { %>
+                    <% products.forEach(product => { %>
+                        <tr class="hover:bg-gray-50 transition">
+                            <td class="px-6 py-4">
+                                <div class="flex items-center">
+                                    <div class="flex-shrink-0 h-12 w-12">
+                                        <img class="h-12 w-12 rounded-lg object-cover border border-gray-200"
+                                             src="<%= product.productImage?.[0]?.url || '/images/placeholder.jpg' %>"
+                                             alt="<%= product.productName %>" onerror="this.src='/images/placeholder.jpg'">
                                     </div>
-                                        
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <div class="text-sm text-gray-900"><%= product.price  %></div>
-                                       
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                        <%= product.quantity  %>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full <%= product.status==='Available' ?'bg-green-100 text-green-800 ' : 'bg-red-100 text-red-800'%> ">
-                                            <%= product.status %>
-                                        </span>
-                                    </td>
-                                   <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-    <div class="flex justify-end items-center gap-1">
-       <a href="/admin/editproduct/<%= product._id %>" 
-   class="text-indigo-600 hover:bg-indigo-100 hover:text-indigo-900 p-2 rounded transition-all"
-   title="Edit Product">
-    <i class="fa-solid fa-pen-to-square text-lg"></i>
-</a>
-
-<button onclick="toggleDltProduct('<%= product._id %>')" 
-        class="text-red-600 hover:bg-red-100 hover:text-red-900 p-2 rounded transition-all"
-        title="<%= product.isDeleted ? 'Restore' : 'Soft Delete' %>">
-    <% if (product.isDeleted) { %>
-        <i class="fa-solid fa-trash-arrow-up text-lg"></i>
-    <% } else { %>
-        <i class="fa-solid fa-trash text-lg"></i>
-    <% } %>
-</button>
-    </div>
-</td>
-                                </tr>
-                                <% }) %>
-                            </tbody>
-                        </table>
-                        <% }else{ %>
-                            <p> No Product Found</p>
-                            <% } %>
-                    </div>
-                    
-                    <!-- Pagination -->
-                    <% if (totalPages > 1) { %>
-                        <div class="p-6 flex justify-center">
-                            <nav class="flex items-center gap-1">
-                                <% if (page > 1) { %>
-                                <a href="/admin/products?page=<%= page - 1 %>&search=<%= searchQuery %>&sort=<%= sort %>" 
-                                    class="px-3 py-1 bg-gray-200 rounded-l-md hover:bg-gray-300">
-                                    <i class="fas fa-chevron-left text-gray-600"></i>
-                                </a>
-                                <% } %>
-                                <% for(let i = 1; i <= totalPages; i++) { %>
-                                    <a href="/admin/products?page=<%= i %>&search=<%= searchQuery %>&sort=<%= sort %>" 
-                                        class="px-3 py-1 <%= page === i ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-600 hover:bg-gray-300' %>">
-                                        <%= i %>
+                                    <div class="ml-4 truncate max-w-[240px]">
+                                        <div class="text-sm font-medium text-gray-900 line-clamp-2">
+                                            <%= product.productName %>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="px-5 py-4 whitespace-nowrap text-sm text-gray-700">
+                                <%= product.category?.categoryname || '—' %>
+                            </td>
+                            <td class="px-5 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                ₹<%= Number(product.price).toLocaleString('en-IN') %>
+                            </td>
+                            <td class="px-5 py-4 whitespace-nowrap text-sm <%= product.quantity <= 5 ? 'text-red-600 font-semibold' : 'text-gray-900' %>">
+                                <%= product.quantity %>
+                            </td>
+                            <td class="px-5 py-4 whitespace-nowrap">
+                                <span class="inline-flex px-2.5 py-1 text-xs font-semibold rounded-full
+                                    <%= product.status === 'Available' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' %>">
+                                    <%= product.status %>
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                <div class="flex items-center justify-end gap-2">
+                                    <a href="/admin/editproduct/<%= product._id %>"
+                                       class="text-indigo-600 hover:text-indigo-900 p-1.5 rounded hover:bg-indigo-50 transition">
+                                        <i class="fa-solid fa-pen-to-square"></i>
                                     </a>
-                                <% } %>
-                                <% if (page < totalPages) { %>
-                                <a href="/admin/products?page=<%= page + 1 %>&search=<%= searchQuery %>&sort=<%= sort %>" 
-                                    class="px-3 py-1 bg-gray-200 rounded-r-md hover:bg-gray-300">
-                                    <i class="fas fa-chevron-right text-gray-600"></i>
-                                </a>
-                                <% } %>
-                            </nav>
-                        </div>
-                        <% } %>
+                                    <button onclick="toggleDltProduct('<%= product._id %>')"
+                                            class="p-1.5 rounded transition <%= product.isDeleted ? 'text-amber-600 hover:bg-amber-50' : 'text-red-600 hover:bg-red-50' %>"
+                                            title="<%= product.isDeleted ? 'Restore' : 'Delete' %>">
+                                        <i class="fa-solid <%= product.isDeleted ? 'fa-trash-arrow-up' : 'fa-trash' %>"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    <% }) %>
+                <% } else { %>
+                    <tr>
+                        <td colspan="6" class="px-6 py-16 text-center text-gray-500">
+                            No products found
+                        </td>
+                    </tr>
+                <% } %>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Pagination -->
+    <% if (totalPages > 1) { %>
+        <div class="px-6 py-4 flex justify-center border-t">
+            <nav class="inline-flex rounded-md shadow-sm" aria-label="Pagination">
+                <% if (page > 1) { %>
+                    <a href="/admin/products?page=<%= page-1 %>&search=<%= searchQuery %>&sort=<%= sort %>"
+                       class="relative inline-flex items-center px-3 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">
+                        <i class="fas fa-chevron-left"></i>
+                    </a>
+                <% } %>
+
+                <% for(let i = 1; i <= totalPages; i++) { %>
+                    <a href="/admin/products?page=<%= i %>&search=<%= searchQuery %>&sort=<%= sort %>"
+                       class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium
+                              <%= page === i ? 'z-10 bg-purple-50 border-purple-500 text-purple-600' : 'text-gray-700 hover:bg-gray-50' %>">
+                        <%= i %>
+                    </a>
+                <% } %>
+
+                <% if (page < totalPages) { %>
+                    <a href="/admin/products?page=<%= page+1 %>&search=<%= searchQuery %>&sort=<%= sort %>"
+                       class="relative inline-flex items-center px-3 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">
+                        <i class="fas fa-chevron-right"></i>
+                    </a>
+                <% } %>
+            </nav>
+        </div>
+    <% } %>
+</div>
+                    </div>
                 </div>
             </div>
-        </div>
-    </div>
 
-    <script>
-        // Toggle Sidebar on Mobile
-        const sidebar = document.getElementById('sidebar');
-        const sidebarOverlay = document.getElementById('sidebar-overlay');
-        const toggleButton = document.getElementById('toggle-sidebar');
+            <script>
+                // Toggle Sidebar on Mobile
+                const sidebar = document.getElementById('sidebar');
+                const sidebarOverlay = document.getElementById('sidebar-overlay');
+                const toggleButton = document.getElementById('toggle-sidebar');
 
-        function toggleSidebar() {
-            sidebar.classList.toggle('-translate-x-full');
-            sidebarOverlay.classList.toggle('hidden');
-        }
-
-        toggleButton.addEventListener('click', toggleSidebar);
-        sidebarOverlay.addEventListener('click', toggleSidebar);
-
-        // Logout function
-        function logout() {
-            if (confirm("Are you sure you want to logout?")) {
-                alert("Logging out...");
-                // Add actual logout logic here
-            }
-        }
-
-       
-
-        async function toggleDltProduct(productId){
-                try {
-                    const response = await fetch ('/admin/product/delete',{
-                    method:'PATCH',
-                    headers:{'Content-Type':'application/json'},
-                    body:JSON.stringify({productId})
-                })
-                if(response.ok){
-                    window.location.reload()
-                }else{
-                    alert('Failed to update')
-                }  
-                } catch (error) {
-                    console.log(error)
+                function toggleSidebar() {
+                    sidebar.classList.toggle('-translate-x-full');
+                    sidebarOverlay.classList.toggle('hidden');
                 }
-            
-            }
+
+                toggleButton.addEventListener('click', toggleSidebar);
+                sidebarOverlay.addEventListener('click', toggleSidebar);
+
+                // Logout function
+                function logout() {
+                    if (confirm("Are you sure you want to logout?")) {
+                        alert("Logging out...");
+                        // Add actual logout logic here
+                    }
+                }
 
 
 
-const searchInput = document.getElementById("searchInput");
-const clearBtn = document.getElementById("clearSearchBtn");
+                async function toggleDltProduct(productId) {
+                    try {
+                        const response = await fetch('/admin/product/delete', {
+                            method: 'PATCH',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ productId })
+                        })
+                        if (response.ok) {
+                            window.location.reload()
+                        } else {
+                            alert('Failed to update')
+                        }
+                    } catch (error) {
+                        console.log(error)
+                    }
 
-if (searchInput && clearBtn) {
-  clearBtn.classList.toggle("hidden", !searchInput.value);
+                }
 
-  searchInput.addEventListener("input", () => {
-    clearBtn.classList.toggle("hidden", !searchInput.value);
-  });
 
-  clearBtn.addEventListener("click", () => {
-    const params = new URLSearchParams(window.location.search);
-    params.delete("search");
-    params.delete("page"); // reset page only
 
-    window.location.href = `/admin/products?${params.toString()}`;
-  });
-}
+                const searchInput = document.getElementById("searchInput");
+                const clearBtn = document.getElementById("clearSearchBtn");
 
-</script>
+                if (searchInput && clearBtn) {
+                    clearBtn.classList.toggle("hidden", !searchInput.value);
+
+                    searchInput.addEventListener("input", () => {
+                        clearBtn.classList.toggle("hidden", !searchInput.value);
+                    });
+
+                    clearBtn.addEventListener("click", () => {
+                        const params = new URLSearchParams(window.location.search);
+                        params.delete("search");
+                        params.delete("page"); // reset page only
+
+                        window.location.href = `/admin/products?${params.toString()}`;
+                    });
+                }
+
+            </script>
 </body>
+
 </html>

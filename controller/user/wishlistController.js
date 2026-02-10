@@ -58,61 +58,16 @@ const loadWishlist = async (req, res) => {
       console.log(`Cleaned ${wishlist.items.length - validItems.length} invalid wishlist item(s)`);
     }
 
-    return res.render("wishList", { 
+    return res.render("wishList", {
       user,
-      wishlist });
+      wishlist
+    });
 
   } catch (error) {
     console.error("loadWishlist error:", error);
     return res.status(500).send("Internal Server Error");
   }
 };
-
-
-
-
-const addToWishlist = async (req, res) => {
-  try {
-    const userId = req.session.user;
-    const productId = req.params.id || req.body.productId;
-
-    if (!userId) return res.redirect("/login");
-
-    const product = await Product.findById(productId).lean();
-    if (!product) return res.redirect("/products-user?message=" + encodedURIComponent('Product not Found'))
-
-    const cart = await Cart.findOne({ userId });
-
-    if (cart && cart.items.some(i => i.productId.toString() === productId.toString())) {
-      return res.redirect('/products-user?message=' + encodeURIComponent('Product already in cart'));
-    }
-
-    let wishlist = await Wishlist.findOne({ userId })
-      .populate("items.productId");
-
-
-    if (!wishlist) {
-      wishlist = new Wishlist({ userId, items: [] });
-    }
-
-    const already = wishlist.items.some(
-      i => (i.productId?._id || i.productId)?.toString() === productId.toString()
-    );
-
-    if (already) {
-
-      return res.redirect('/products-user?message=' + encodeURIComponent('Already in wishlist'));
-    }
-    wishlist.items.push({ productId });
-    await wishlist.save();
-
-    return res.redirect("/products-user")
-
-  } catch (err) {
-    console.log(err);
-    res.json({ success: false });
-  }
-}
 
 
 const removeFromWishlist = async (req, res) => {
@@ -177,8 +132,16 @@ const toggleWishlist = async (req, res) => {
     const userId = req.session.user;
     const productId = req.params.productId;
 
-
+    // Check authentication and return appropriate response
     if (!userId) {
+      // Check if it's an AJAX request
+      if (req.headers['accept']?.includes('application/json') || req.xhr) {
+        return res.status(401).json({
+          success: false,
+          message: "Please login to add items to wishlist",
+          notAuthenticated: true
+        });
+      }
       return res.redirect("/login");
     }
 
@@ -240,7 +203,6 @@ const toggleWishlist = async (req, res) => {
 
 module.exports = {
   loadWishlist,
-  addToWishlist,
   removeFromWishlist,
   moveToCart,
   toggleWishlist

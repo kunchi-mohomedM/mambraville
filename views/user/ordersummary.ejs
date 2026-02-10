@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,227 +11,315 @@
 
 
 <body class="bg-gray-50">
-    
- <header class="bg-white shadow-sm">
+
+    <header class="bg-white shadow-sm">
         <%-include("../../views/partials/user/header")-%>
     </header>
-<div class="container mx-auto px-4 py-8 max-w-6xl">
-    
-    <h1 class="text-3xl font-bold text-gray-900 mb-6">My Orders</h1>
 
-    <div class="flex flex-col md:flex-row gap-6">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 max-w-7xl">
 
-        <!-- LEFT SIDEBAR  -->
-        <div class="w-full md:w-1/3 lg:w-1/4">
-            <div class="bg-white rounded-lg shadow p-6 mb-6">
-                <div class="flex flex-col items-center mb-6">
-                  
+        <h1 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-4 sm:mb-6">My Orders</h1>
 
-                    <div class="text-center mt-2">
-                        <p class="text-gray-600">Hello,</p>
-                        <h2 class="text-xl font-semibold"><%= user.fullname %></h2>
+        <div class="flex flex-col lg:flex-row gap-4 sm:gap-6">
+
+            <!-- LEFT SIDEBAR  -->
+            <div class="w-full lg:w-1/4 xl:w-1/5">
+                <div class="bg-white rounded-lg shadow-sm p-4 sm:p-6 mb-4 sm:mb-6 sticky top-24">
+                    <div class="flex flex-col items-center mb-4 sm:mb-6 pb-4 border-b border-gray-200">
+                        <div class="text-center">
+                            <p class="text-gray-600 text-sm mb-1">Hello,</p>
+                            <h2 class="text-lg sm:text-xl font-semibold text-gray-900">
+                                <%= user.fullname %>
+                            </h2>
+                        </div>
                     </div>
-                </div>
 
-                <div class="border-t border-gray-200 pt-4">
-                    <ul class="space-y-4">
-                        <li>
-                            <a href="/user-profile" class="flex items-center text-gray-700 hover:text-indigo-600">
-                                <i class="fas fa-user mr-3 w-5"></i> Profile Information
-                            </a>
-                        </li>
-                        <li>
-                            <a href="/order-summary" class="flex items-center text-indigo-600 font-medium">
-                                <i class="fas fa-shopping-bag mr-3 w-5"></i> My Orders
-                            </a>
-                        </li>
-                        <li>
-                            <a href="/addressmanagement" class="flex items-center text-gray-700 hover:text-indigo-600">
-                                <i class="fas fa-home mr-3 w-5"></i> Manage Addresses
-                            </a>
-                        </li>
-                        <li>
-                            <a href="/wallet" class="flex items-center text-gray-700 hover:text-indigo-600">
-                                <i class="fas fa-wallet mr-3 w-5"></i> My Wallet
-                            </a>
-                        </li>
-                        <li>
-                            <a href="/wishlist" class="flex items-center text-gray-700 hover:text-indigo-600">
-                                <i class="fas fa-heart mr-3 w-5"></i> My Wishlist
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#" class="flex items-center text-gray-700 hover:text-indigo-600">
-                                <i class="fas fa-key mr-3 w-5"></i> Change Password
-                            </a>
-                        </li>
-                    </ul>
-                </div>
+                    <nav>
+                        <ul class="space-y-1">
+                            <li>
+                                <a href="/user-profile"
+                                    class="flex items-center px-3 py-2.5 text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 rounded-md transition text-sm sm:text-base">
+                                    <i class="fas fa-user mr-3 w-5 text-gray-500"></i>
+                                    <span>Profile Information</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="/order-summary"
+                                    class="flex items-center px-3 py-2.5 bg-indigo-50 text-indigo-600 font-medium rounded-md text-sm sm:text-base">
+                                    <i class="fas fa-shopping-bag mr-3 w-5"></i>
+                                    <span>My Orders</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="/addressmanagement"
+                                    class="flex items-center px-3 py-2.5 text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 rounded-md transition text-sm sm:text-base">
+                                    <i class="fas fa-home mr-3 w-5 text-gray-500"></i>
+                                    <span>Manage Addresses</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="/wallet"
+                                    class="flex items-center px-3 py-2.5 text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 rounded-md transition text-sm sm:text-base">
+                                    <i class="fas fa-wallet mr-3 w-5 text-gray-500"></i>
+                                    <span>My Wallet</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="/wishlist"
+                                    class="flex items-center px-3 py-2.5 text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 rounded-md transition text-sm sm:text-base">
+                                    <i class="fas fa-heart mr-3 w-5 text-gray-500"></i>
+                                    <span>My Wishlist</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="/change-password"
+                                    class="flex items-center px-3 py-2.5 text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 rounded-md transition text-sm sm:text-base">
+                                    <i class="fas fa-key mr-3 w-5 text-gray-500"></i>
+                                    <span>Change Password</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
 
-                <div class="border-t border-gray-200 mt-6 pt-4">
-                    <a href="/logout" class="flex items-center text-red-600 hover:text-red-700">
-                        <i class="fas fa-sign-out-alt mr-3 w-5"></i> Log out
-                    </a>
+                    <div class="border-t border-gray-200 mt-4 pt-4">
+                        <a href="/logout"
+                            class="flex items-center px-3 py-2.5 text-red-600 hover:bg-red-50 rounded-md transition text-sm sm:text-base">
+                            <i class="fas fa-sign-out-alt mr-3 w-5"></i>
+                            <span>Log out</span>
+                        </a>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <!-- RIGHT: ORDERS TABLE -->
-        <div class="w-full md:w-2/3 lg:w-3/4">
-            <div class="bg-white rounded-lg shadow p-6">
-                <h2 class="text-2xl font-semibold mb-4">Order Summary</h2>
+            <!-- RIGHT: ORDERS TABLE -->
+            <div class="flex-1 w-full lg:w-3/4 xl:w-4/5">
+                <div class="bg-white rounded-lg shadow-sm p-4 sm:p-6 lg:p-8">
+                    <h2 class="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900 mb-4 sm:mb-6">Order Summary</h2>
 
-                <div class="flex justify-between items-center mb-4">
+                    <!-- SEARCH BAR - Responsive -->
+                    <div class="mb-4 sm:mb-6">
+                        <form action="/order-summary" method="GET" class="relative w-full sm:w-80">
+                            <input type="text" id="searchInput" name="search" placeholder="Search orders..."
+                                value="<%= typeof search !== 'undefined' ? search : '' %>"
+                                class="border border-gray-300 px-4 py-2.5 pr-10 rounded-lg w-full focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm" />
 
-    <!-- SEARCH BAR -->
-<form action="/order-summary" method="GET" class="relative w-72">
-    <input 
-        type="text"
-        id="searchInput"
-        name="search"
-        placeholder="Search orders..."
-        value="<%= typeof search !== 'undefined' ? search : '' %>"
-        class="border px-3 py-2 pr-10 rounded-md w-full"
-    />
-
-    <!-- Clear Button -->
-    <button
-        type="button"
-        id="clearSearchBtn"
-        class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-red-500 hidden"
-    >
-        <i class="fas fa-circle-xmark"></i>
-    </button>
-</form>
-
-
-</div>
-
-
-        <div class="overflow-x-auto w-full">
-        <table class="min-w-[1100px] w-full text-left border-collapse">
-    <thead>
-        <tr class="bg-gray-100 text-gray-700 text-sm">
-            <th class="p-2">Product</th>
-            <th class="p-4">Qty</th>
-            <th class="p-4">Price</th>
-            <th class="p-4">Status</th>
-            <th class="p-4">Ordered</th>
-            <th class="p-4">Delivered</th>
-            <th class="p-4">Action</th>
-        </tr>
-    </thead>
-<tbody>
-    <% if (orders && orders.length > 0) { %>
-        <% orders.forEach(order => { %>
-
-            <tr class="border-b">
-
-                <!-- PRODUCT PREVIEW (ONLY FIRST ITEM) -->
-                <td class="p-2 flex items-center gap-3">
-                    <% const first = order.items[0]; %>
-
-                    <img src="<%= first.image %>" class="w-12 h-12 object-cover rounded">
-
-                    <div class="flex flex-col">
-                        <span class="font-medium line-clamp-2 max-w-[180px] md:max-w-[220px]">
-    <%= first.name %>
-</span>
-
-                        <% if (order.items.length > 1) { %>
-                            <span class="text-xs text-gray-500">
-                                +<%= order.items.length - 1 %> more item(s)
-                            </span>
-                        <% } %>
+                            <!-- Clear Button -->
+                            <button type="button" id="clearSearchBtn"
+                                class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-red-500 hidden transition">
+                                <i class="fas fa-circle-xmark"></i>
+                            </button>
+                        </form>
                     </div>
-                </td>
-
-                <!-- QTY (total qty of order) -->
-                <td class="p-3">
-                    <%= order.items.reduce((sum, item) => sum + item.qty, 0) %>
-                </td>
-
-                <!-- TOTAL PRICE -->
-                <td class="p-3">₹<%= order.totalAmount %></td>
 
 
-                <!-- STATUS -->
-                <td class="p-3">
-                    <span class="px-2 py-1 rounded text-sm 
-                        <%= order.status === 'Delivered'
-                            ? 'bg-green-100 text-green-700'
-                            : order.status === 'Shipped'
-                            ? 'bg-blue-100 text-blue-700'
-                            : 'bg-yellow-100 text-yellow-700' %>">
-                        <%= order.status %>
-                    </span>
-                </td>
+                    <!-- DESKTOP TABLE VIEW (hidden on mobile) -->
+                    <div class="hidden md:block overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-gray-100 text-gray-700 text-sm">
+                                    <th class="p-3">Product</th>
+                                    <th class="p-3 text-center">Qty</th>
+                                    <th class="p-3">Price</th>
+                                    <th class="p-3">Status</th>
+                                    <th class="p-3">Ordered</th>
+                                    <th class="p-3">Delivered</th>
+                                    <th class="p-3 text-center">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% if (orders && orders.length> 0) { %>
+                                    <% orders.forEach(order=> { %>
+                                        <tr class="border-b hover:bg-gray-50">
+                                            <!-- PRODUCT PREVIEW -->
+                                            <td class="p-3">
+                                                <div class="flex items-center gap-3">
+                                                    <% const first=order.items[0]; %>
+                                                        <img src="<%= first.image %>"
+                                                            class="w-12 h-12 object-cover rounded flex-shrink-0"
+                                                            alt="<%= first.name %>">
+                                                        <div class="flex flex-col min-w-0">
+                                                            <span class="font-medium text-sm line-clamp-2">
+                                                                <%= first.name %>
+                                                            </span>
+                                                            <% if (order.items.length> 1) { %>
+                                                                <span class="text-xs text-gray-500">
+                                                                    +<%= order.items.length - 1 %> more
+                                                                </span>
+                                                                <% } %>
+                                                        </div>
+                                                </div>
+                                            </td>
 
-                <!-- ORDERED DATE -->
-                <td class="p-3">
-                    <%= order.orderedAt.toLocaleDateString('en-IN') %>
-                </td>
+                                            <!-- QTY -->
+                                            <td class="p-3 text-center">
+                                                <%= order.items.reduce((sum, item)=> sum + item.qty, 0) %>
+                                            </td>
 
-                <!-- DELIVERED DATE -->
-                <td class="p-3">
-                    <%= order.deliveredAt ? order.deliveredAt.toLocaleDateString('en-IN') : '-' %>
-                </td>
+                                            <!-- PRICE -->
+                                            <td class="p-3 font-semibold">₹<%= order.totalAmount %>
+                                            </td>
 
-                <!-- ALWAYS SHOW BUTTON -->
-                <td class="p-3">
-                    <a href="/order/details/<%= order._id %>"
-                        class="px-4 py-2 bg-indigo-600 text-white rounded-md text-xs hover:bg-indigo-700">
-                        View Details
-                    </a>
-                </td>
+                                            <!-- STATUS -->
+                                            <td class="p-3">
+                                                <span class="px-2 py-1 rounded text-xs inline-block font-medium
+                                                    <%= order.status === 'Delivered' ? 'bg-green-100 text-green-700'
+                                                        : order.status === 'Shipped' ? 'bg-blue-100 text-blue-700'
+                                                        : 'bg-yellow-100 text-yellow-700' %>">
+                                                    <%= order.status %>
+                                                </span>
+                                            </td>
 
-            </tr>
+                                            <!-- ORDERED DATE -->
+                                            <td class="p-3 text-sm">
+                                                <%= order.orderedAt.toLocaleDateString('en-IN') %>
+                                            </td>
 
-        <% }) %>
-    <% } else { %>
+                                            <!-- DELIVERED DATE -->
+                                            <td class="p-3 text-sm">
+                                                <%= order.deliveredAt ? order.deliveredAt.toLocaleDateString('en-IN')
+                                                    : '-' %>
+                                            </td>
 
-        <tr>
-            <td colspan="8" class="py-6 text-center text-gray-500">
-                No Orders Found
-            </td>
-        </tr>
+                                            <!-- ACTION -->
+                                            <td class="p-3 text-center">
+                                                <a href="/order/details/<%= order._id %>"
+                                                    class="px-4 py-2 bg-indigo-600 text-white rounded-md text-xs hover:bg-indigo-700 inline-block whitespace-nowrap transition">
+                                                    View Details
+                                                </a>
+                                            </td>
+                                        </tr>
+                                        <% }) %>
+                                            <% } else { %>
+                                                <tr>
+                                                    <td colspan="7" class="py-8 text-center text-gray-500">
+                                                        No Orders Found
+                                                    </td>
+                                                </tr>
+                                                <% } %>
+                            </tbody>
+                        </table>
+                    </div>
 
-    <% } %>
-</tbody>
+                    <!-- MOBILE CARD VIEW (visible only on mobile) -->
+                    <div class="md:hidden space-y-4">
+                        <% if (orders && orders.length> 0) { %>
+                            <% orders.forEach(order=> { %>
+                                <div class="bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden">
+                                    <% const first=order.items[0]; %>
 
-    
-</table>
-<% if (totalPages > 1) { %>
-  <div class="flex justify-center mt-6">
-    <nav class="flex items-center gap-1">
+                                        <!-- Product Header -->
+                                        <div class="flex items-start gap-3 p-4 border-b border-gray-100">
+                                            <img src="<%= first.image %>"
+                                                class="w-16 h-16 object-cover rounded flex-shrink-0"
+                                                alt="<%= first.name %>">
+                                            <div class="flex-1 min-w-0">
+                                                <h3 class="font-semibold text-sm line-clamp-2 mb-1">
+                                                    <%= first.name %>
+                                                </h3>
+                                                <% if (order.items.length> 1) { %>
+                                                    <p class="text-xs text-gray-500">
+                                                        +<%= order.items.length - 1 %> more item<%= order.items.length>
+                                                                2 ? 's' : '' %>
+                                                    </p>
+                                                    <% } %>
+                                            </div>
+                                        </div>
 
-      <% if (page > 1) { %>
-        <a href="/order-summary?page=<%= page - 1 %>&search=<%= search %>"
-           class="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300">
-          ‹
-        </a>
-      <% } %>
+                                        <!-- Order Details -->
+                                        <div class="p-4 space-y-2.5">
+                                            <!-- Status Badge -->
+                                            <div class="flex items-center justify-between">
+                                                <span class="text-xs text-gray-600">Status:</span>
+                                                <span class="px-2.5 py-1 rounded text-xs font-medium
+                                                <%= order.status === 'Delivered' ? 'bg-green-100 text-green-700'
+                                                    : order.status === 'Shipped' ? 'bg-blue-100 text-blue-700'
+                                                    : 'bg-yellow-100 text-yellow-700' %>">
+                                                    <%= order.status %>
+                                                </span>
+                                            </div>
 
-      <% for (let i = 1; i <= totalPages; i++) { %>
-        <a href="/order-summary?page=<%= i %>&search=<%= search %>"
-           class="px-3 py-1 rounded 
-           <%= page === i 
-              ? 'bg-indigo-600 text-white' 
-              : 'bg-gray-200 hover:bg-gray-300' %>">
-          <%= i %>
-        </a>
-      <% } %>
+                                            <!-- Quantity -->
+                                            <div class="flex items-center justify-between">
+                                                <span class="text-xs text-gray-600">Quantity:</span>
+                                                <span class="text-sm font-medium">
+                                                    <%= order.items.reduce((sum, item)=> sum + item.qty, 0) %>
+                                                </span>
+                                            </div>
 
-      <% if (page < totalPages) { %>
-        <a href="/order-summary?page=<%= page + 1 %>&search=<%= search %>"
-           class="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300">
-          ›
-        </a>
-      <% } %>
+                                            <!-- Total Price -->
+                                            <div class="flex items-center justify-between">
+                                                <span class="text-xs text-gray-600">Total Amount:</span>
+                                                <span class="text-base font-bold text-indigo-600">
+                                                    ₹<%= order.totalAmount %>
+                                                </span>
+                                            </div>
 
-    </nav>
-  </div>
-<% } %>
+                                            <!-- Ordered Date -->
+                                            <div class="flex items-center justify-between">
+                                                <span class="text-xs text-gray-600">Ordered On:</span>
+                                                <span class="text-sm">
+                                                    <%= order.orderedAt.toLocaleDateString('en-IN') %>
+                                                </span>
+                                            </div>
+
+                                            <!-- Delivered Date -->
+                                            <div class="flex items-center justify-between">
+                                                <span class="text-xs text-gray-600">Delivered On:</span>
+                                                <span class="text-sm">
+                                                    <%= order.deliveredAt ?
+                                                        order.deliveredAt.toLocaleDateString('en-IN') : 'Pending' %>
+                                                </span>
+                                            </div>
+                                        </div>
+
+                                        <!-- Action Button -->
+                                        <div class="p-4 pt-0">
+                                            <a href="/order/details/<%= order._id %>"
+                                                class="block w-full text-center px-4 py-2.5 bg-indigo-600 text-white rounded-lg text-sm font-medium hover:bg-indigo-700 transition">
+                                                View Order Details
+                                            </a>
+                                        </div>
+                                </div>
+                                <% }) %>
+                                    <% } else { %>
+                                        <div class="text-center py-12">
+                                            <i class="fas fa-shopping-bag text-5xl text-gray-300 mb-4"></i>
+                                            <p class="text-gray-500">No Orders Found</p>
+                                        </div>
+                                        <% } %>
+                    </div>
+
+                    <!-- PAGINATION -->
+                    <% if (totalPages> 1) { %>
+                        <div class="flex justify-center mt-6 sm:mt-8">
+                            <nav class="flex items-center gap-1 sm:gap-2">
+
+                                <% if (page> 1) { %>
+                                    <a href="/order-summary?page=<%= page - 1 %>&search=<%= search %>"
+                                        class="px-3 py-2 bg-gray-200 rounded-md hover:bg-gray-300 transition text-sm font-medium">
+                                        ‹
+                                    </a>
+                                    <% } %>
+
+                                        <% for (let i=1; i <=totalPages; i++) { %>
+                                            <a href="/order-summary?page=<%= i %>&search=<%= search %>" class="px-3 py-2 rounded-md transition text-sm font-medium
+                                       <%= page === i 
+                                          ? 'bg-indigo-600 text-white' 
+                                          : 'bg-gray-200 hover:bg-gray-300 text-gray-700' %>">
+                                                <%= i %>
+                                            </a>
+                                            <% } %>
+
+                                                <% if (page < totalPages) { %>
+                                                    <a href="/order-summary?page=<%= page + 1 %>&search=<%= search %>"
+                                                        class="px-3 py-2 bg-gray-200 rounded-md hover:bg-gray-300 transition text-sm font-medium">
+                                                        ›
+                                                    </a>
+                                                    <% } %>
+
+                            </nav>
+                        </div>
+                        <% } %>
 
 
                 </div>
@@ -239,33 +328,34 @@
         </div>
 
     </div>
-</div>
- <%-include("../../views/partials/user/footer")-%>
+    </div>
+    <%-include("../../views/partials/user/footer")-%>
 
 
- <script>
+        <script>
 
-const searchInput = document.getElementById("searchInput");
-const clearBtn = document.getElementById("clearSearchBtn");
+            const searchInput = document.getElementById("searchInput");
+            const clearBtn = document.getElementById("clearSearchBtn");
 
-if (searchInput && clearBtn) {
-  clearBtn.classList.toggle("hidden", !searchInput.value);
+            if (searchInput && clearBtn) {
+                clearBtn.classList.toggle("hidden", !searchInput.value);
 
-  searchInput.addEventListener("input", () => {
-    clearBtn.classList.toggle("hidden", !searchInput.value);
-  });
+                searchInput.addEventListener("input", () => {
+                    clearBtn.classList.toggle("hidden", !searchInput.value);
+                });
 
-  clearBtn.addEventListener("click", () => {
-    const params = new URLSearchParams(window.location.search);
-    params.delete("search");
-    params.delete("page"); // reset page only
+                clearBtn.addEventListener("click", () => {
+                    const params = new URLSearchParams(window.location.search);
+                    params.delete("search");
+                    params.delete("page"); // reset page only
 
-    window.location.href = `/order-summary?${params.toString()}`;
-  });
-}
+                    window.location.href = `/order-summary?${params.toString()}`;
+                });
+            }
 
 
-</script>
+        </script>
 
 </body>
+
 </html>

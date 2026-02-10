@@ -1,46 +1,143 @@
-    <!-- Footer -->
-    <footer class="bg-blue-900 text-white py-10 mt-8">
-        <div class="container mx-auto px-4">
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
-                <div>
-                    <h3 class="font-bold mb-4">INFORMATION</h3>
-                    <ul class="space-y-2 text-sm">
-                        <li>Home</li>
-                        <li>Products</li>
-                        <li>About us</li>
-                        <li>Login</li>
-                    </ul>
-                </div>
-                <div>
-                    <h3 class="font-bold mb-4">CUSTOMER SERVICE</h3> 
-                    <ul class="space-y-2 text-sm">
-                        <li>Door Delivery</li>
-                        <li>Shipping & Returns</li>
-                        <li>Support</li>
-                        <li>Track Order</li>
-                    </ul>
-                </div>
-                <div>
-                    <h3 class="font-bold mb-4">MY ACCOUNT</h3>
-                    <ul class="space-y-2 text-sm">
-                        <li>Login</li>
-                        <li>Register</li>
-                        <li>Order History</li>
-                        <li>Wishlist</li>
-                    </ul>
-                </div>
-                <div>
-                    <h3 class="font-bold mb-4">CONTACT US</h3>
-                    <ul class="space-y-2 text-sm">
-                        <li>Perinthalmanna,Malappuram.</li>
-                        <li>Kerala, India</li>
-                        <li>mambravilla@gmail.com</li>
-                        <li>+91-7603867852</li>
-                    </ul>
-                </div>
+<!-- Footer -->
+<footer class="bg-blue-900 text-white py-8 sm:py-10 lg:py-12 mt-8 sm:mt-10 lg:mt-12">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
+        
+        <!-- Footer Content Grid -->
+        <div class="grid grid-cols-1 xs:grid-cols-2 md:grid-cols-4 gap-6 sm:gap-8 lg:gap-10">
+            
+            <!-- Information Section -->
+            <div class="text-center xs:text-left">
+                <h3 class="font-bold text-base sm:text-lg mb-3 sm:mb-4 text-white uppercase tracking-wide">Information</h3>
+                <ul class="space-y-1.5 sm:space-y-2 text-sm sm:text-base text-blue-100">
+                    <li>
+                        <a href="/" class="hover:text-white hover:underline transition-colors inline-block py-1">Home</a>
+                    </li>
+                    <li>
+                        <a href="/products-user" class="hover:text-white hover:underline transition-colors inline-block py-1">Products</a>
+                    </li>
+                    <li>
+                        <a href="/aboutPage" class="hover:text-white hover:underline transition-colors inline-block py-1">About us</a>
+                    </li>
+                    <li>
+                        <a href="/login" class="hover:text-white hover:underline transition-colors inline-block py-1">Login</a>
+                    </li>
+                </ul>
             </div>
-            <div class="border-t border-blue-800 mt-8 pt-6 text-sm text-center">
-                © 2025 Mobile Store. All Rights Reserved.
+            
+            <!-- Customer Service Section -->
+            <div class="text-center xs:text-left">
+                <h3 class="font-bold text-base sm:text-lg mb-3 sm:mb-4 text-white uppercase tracking-wide">Customer Service</h3> 
+                <ul class="space-y-1.5 sm:space-y-2 text-sm sm:text-base text-blue-100">
+                    <li>
+                        <a href="#" class="hover:text-white hover:underline transition-colors inline-block py-1">Door Delivery</a>
+                    </li>
+                    <li>
+                        <a href="#" class="hover:text-white hover:underline transition-colors inline-block py-1">Shipping & Returns</a>
+                    </li>
+                    <li>
+                        <a href="#" class="hover:text-white hover:underline transition-colors inline-block py-1">Support</a>
+                    </li>
+                    <li>
+                        <a href="#" class="hover:text-white hover:underline transition-colors inline-block py-1">Track Order</a>
+                    </li>
+                </ul>
             </div>
+            
+            <!-- My Account Section -->
+            <div class="text-center xs:text-left">
+                <h3 class="font-bold text-base sm:text-lg mb-3 sm:mb-4 text-white uppercase tracking-wide">My Account</h3>
+                <ul class="space-y-1.5 sm:space-y-2 text-sm sm:text-base text-blue-100">
+                    <li>
+                        <a href="/login" class="hover:text-white hover:underline transition-colors inline-block py-1">Login</a>
+                    </li>
+                    <li>
+                        <a href="/signup" class="hover:text-white hover:underline transition-colors inline-block py-1">Register</a>
+                    </li>
+                    <li>
+                        <a href="/user-profile" class="hover:text-white hover:underline transition-colors inline-block py-1">Order History</a>
+                    </li>
+                    <li>
+                        <a href="/wishlist" class="hover:text-white hover:underline transition-colors inline-block py-1">Wishlist</a>
+                    </li>
+                </ul>
+            </div>
+            
+            <!-- Contact Us Section -->
+            <div class="text-center xs:text-left">
+                <h3 class="font-bold text-base sm:text-lg mb-3 sm:mb-4 text-white uppercase tracking-wide">Contact Us</h3>
+                <ul class="space-y-1.5 sm:space-y-2 text-sm sm:text-base text-blue-100">
+                    <li class="flex items-start justify-center xs:justify-start gap-2 py-1">
+                        <i class="fas fa-map-marker-alt text-blue-300 mt-1 flex-shrink-0"></i>
+                        <span>Perinthalmanna, Malappuram.</span>
+                    </li>
+                    <li class="flex items-start justify-center xs:justify-start gap-2 py-1">
+                        <i class="fas fa-map-pin text-blue-300 mt-1 flex-shrink-0"></i>
+                        <span>Kerala, India</span>
+                    </li>
+                    <li class="flex items-start justify-center xs:justify-start gap-2 py-1">
+                        <i class="fas fa-envelope text-blue-300 mt-1 flex-shrink-0"></i>
+                        <a href="mailto:mambravilla@gmail.com" class="hover:text-white hover:underline transition-colors break-all">mambravilla@gmail.com</a>
+                    </li>
+                    <li class="flex items-start justify-center xs:justify-start gap-2 py-1">
+                        <i class="fas fa-phone text-blue-300 mt-1 flex-shrink-0"></i>
+                        <a href="tel:+917603867852" class="hover:text-white hover:underline transition-colors">+91-7603867852</a>
+                    </li>
+                </ul>
+            </div>
+            
         </div>
-    </footer>
+        
+        <!-- Social Media Links (Optional - can be uncommented if needed) -->
+        <!-- <div class="flex justify-center space-x-6 mt-8 sm:mt-10">
+            <a href="#" class="text-blue-200 hover:text-white transition-colors" aria-label="Facebook">
+                <i class="fab fa-facebook-f text-xl sm:text-2xl"></i>
+            </a>
+            <a href="#" class="text-blue-200 hover:text-white transition-colors" aria-label="Twitter">
+                <i class="fab fa-twitter text-xl sm:text-2xl"></i>
+            </a>
+            <a href="#" class="text-blue-200 hover:text-white transition-colors" aria-label="Instagram">
+                <i class="fab fa-instagram text-xl sm:text-2xl"></i>
+            </a>
+            <a href="#" class="text-blue-200 hover:text-white transition-colors" aria-label="LinkedIn">
+                <i class="fab fa-linkedin-in text-xl sm:text-2xl"></i>
+            </a>
+        </div> -->
+        
+        <!-- Copyright Section -->
+        <div class="border-t border-blue-800 mt-6 sm:mt-8 lg:mt-10 pt-4 sm:pt-6 text-xs sm:text-sm text-center text-blue-200">
+            <p>© 2025 Mobile Store. All Rights Reserved.</p>
+            <p class="mt-1 sm:mt-2 text-blue-300">
+                <a href="#" class="hover:text-white hover:underline transition-colors">Privacy Policy</a>
+                <span class="mx-2">|</span>
+                <a href="#" class="hover:text-white hover:underline transition-colors">Terms of Service</a>
+            </p>
+        </div>
+        
+    </div>
+</footer>
+
+<style>
+    /* Smooth transitions for footer links */
+    footer a {
+        transition: all 0.2s ease;
+    }
+    
+    /* Better touch targets for mobile */
+    @media (max-width: 640px) {
+        footer a {
+            min-height: 44px;
+            display: inline-flex;
+            align-items: center;
+        }
+    }
+    
+    /* Ensure proper spacing on very small screens */
+    @media (max-width: 374px) {
+        footer h3 {
+            font-size: 0.9rem;
+        }
+        footer ul li {
+            font-size: 0.8rem;
+        }
+    }
+</style>

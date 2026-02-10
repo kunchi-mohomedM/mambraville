@@ -138,20 +138,9 @@ const loadUserProducts = async (req, res) => {
       return product;
     });
 
-    // Get cart and wishlist items
-    let cartItems = [];
-    if (req.session.user) {
-      const cart = await Cart.findOne({ userId: req.session.user });
-      cartItems = cart ? cart.items.map((i) => i.productId.toString()) : [];
-    }
-
-    let wishlistItems = [];
-    if (req.session.user) {
-      const wishlist = await Wishlist.findOne({ userId: req.session.user });
-      wishlistItems = wishlist
-        ? wishlist.items.map((i) => i.productId.toString())
-        : [];
-    }
+    // Get cart and wishlist items from middleware (res.locals)
+    const cartItems = res.locals.cartItems || [];
+    const wishlistItems = res.locals.wishlistItems || [];
 
     // Apply best discount and add cart/wishlist flags
     products = products.map(p => {
@@ -219,7 +208,6 @@ const loadproductdetails = async (req, res) => {
       return res.redirect("/products-user");
     }
 
-
     const now = new Date();
     const categoryOffers = await CategoryOffer.find({
       isActive: true,
@@ -234,17 +222,10 @@ const loadproductdetails = async (req, res) => {
     });
 
 
-    let cartItems = [];
-    let wishlistItems = [];
+    // Get cart and wishlist items from middleware (res.locals)
+    const cartItems = res.locals.cartItems || [];
+    const wishlistItems = res.locals.wishlistItems || [];
 
-    if (req.session.user) {
-      const cart = await Cart.findOne({ userId: req.session.user }).lean();
-      cartItems = cart ? cart.items.map(i => i.productId.toString()) : [];
-
-      const wishlist = await Wishlist.findOne({ userId: req.session.user }).lean();
-      wishlistItems = wishlist ? wishlist.items.map(i => i.productId.toString()) : [];
-
-    }
 
 
     let [product] = applyBestDiscount({
@@ -254,13 +235,10 @@ const loadproductdetails = async (req, res) => {
       wishlistItems
     });
 
-
     product.inCart = cartItems.includes(product._id.toString());
     product.inWishlist = wishlistItems.includes(product._id.toString());
 
-
     const category = await Category.findById(product.category).lean();
-
 
     let relatedDocs = await Products.find({
       category: product.category,
@@ -270,14 +248,12 @@ const loadproductdetails = async (req, res) => {
       .sort({ createdAt: -1 })
       .limit(4);
 
-
     const relatedProducts = applyBestDiscount({
       products: relatedDocs,
       categoryOfferMap,
       cartItems,
       wishlistItems: []
     });
-
 
     res.render("productdetails", {
       product,

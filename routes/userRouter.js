@@ -51,6 +51,7 @@ router.get("/aboutPage", checkUserBlocked, userController.loadAboutpage);
 
 //address operations
 router.post("/add-address", userAuth, addressController.addAddress);
+router.post("/checkout/add-address", userAuth, addressController.addAddressCheckout);
 router.post("/edit-address/:id", userAuth, addressController.editAddress);
 router.get("/delete-address/:id", userAuth, addressController.deleteAddress);
 router.get("/set-default-address/:id", userAuth, addressController.setDefaultAddress);
@@ -58,7 +59,7 @@ router.get("/edit-address-page/:id", userAuth, addressController.loadEditAddress
 
 
 router.get("/cart", userAuth, cartController.loadCart);
-router.get("/add-to-cart/:id", userAuth, cartController.addTocart);
+router.get("/add-to-cart/:id", cartController.addTocart);
 router.post("/cart/remove/:id", userAuth, cartController.removeItem);
 router.get("/cart/increase/:id", userAuth, cartController.increaseQty);
 router.get("/cart/decrease/:id", userAuth, cartController.decreaseqty);
@@ -85,7 +86,7 @@ router.post("/order/return-item/:orderId/:itemId", userAuth, orderController.ret
 
 
 router.get("/wishlist", userAuth, wishlistController.loadWishlist);
-router.get("/wishlist/toggle/:productId", userAuth, wishlistController.toggleWishlist);
+router.get("/wishlist/toggle/:productId", wishlistController.toggleWishlist);
 router.post("/wishlist/move-to-cart", userAuth, wishlistController.moveToCart);
 router.post('/wishlist/remove', userAuth, wishlistController.removeFromWishlist)
 

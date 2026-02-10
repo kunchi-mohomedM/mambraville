@@ -6,69 +6,133 @@
     <title>Order Details</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
+    <style>
+      /* Custom animations and styles */
+      @keyframes shimmer {
+        0% { background-position: -1000px 0; }
+        100% { background-position: 1000px 0; }
+      }
+      
+      .btn-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        transition: all 0.3s ease;
+      }
+      
+      .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px -5px rgba(102, 126, 234, 0.4);
+      }
+      
+      .btn-danger {
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        transition: all 0.3s ease;
+      }
+      
+      .btn-danger:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px -5px rgba(245, 87, 108, 0.4);
+      }
+      
+      .status-badge {
+        position: relative;
+        overflow: hidden;
+      }
+      
+      .status-badge::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+        transition: left 0.5s;
+      }
+      
+      .status-badge:hover::before {
+        left: 100%;
+      }
+    </style>
   </head>
 
-  <body class="bg-gray-100 min-h-screen">
+  <body class="bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen">
     <%- include("../../views/partials/user/header") %>
 
-    <div class="container mx-auto px-4 py-8 max-w-5xl">
-      <h1 class="text-3xl font-bold text-gray-800 mb-8">Order Details</h1>
+    <div class="container mx-auto px-4 py-8 max-w-6xl">
+      <div class="mb-8">
+        <h1 class="text-4xl font-bold text-gray-900 mb-2">Order Details</h1>
+        <p class="text-gray-600">Track and manage your order</p>
+      </div>
 
-      <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+      <div class="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100">
         <!-- Order Header Info -->
-        <div class="p-6 border-b border-gray-200">
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-            <div>
-              <p class="text-sm text-gray-600">Order ID</p>
-              <p class="font-semibold text-lg"><%= order.orderId %></p>
+        <div class="p-8 bg-gradient-to-r from-indigo-50 via-purple-50 to-pink-50 border-b border-gray-200">
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+              <p class="text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">Order ID</p>
+              <p class="font-bold text-xl text-gray-900"><%= order.orderId %></p>
             </div>
-            <div>
-              <p class="text-sm text-gray-600">Order Date</p>
-              <p class="font-semibold"><%= new Date(order.orderedAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'long', year: 'numeric' }) %></p>
+            <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+              <p class="text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">Order Date</p>
+              <p class="font-semibold text-gray-900"><%= new Date(order.orderedAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'long', year: 'numeric' }) %></p>
             </div>
-            <div>
-              <p class="text-sm text-gray-600">Delivery Date</p>
-              <p class="font-semibold"><%= order.deliveredAt ? new Date(order.deliveredAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'long', year: 'numeric' }) : 'Not Delivered Yet' %></p>
+            <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+              <p class="text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">Delivery Date</p>
+              <p class="font-semibold text-gray-900"><%= order.deliveredAt ? new Date(order.deliveredAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'long', year: 'numeric' }) : 'Not Delivered Yet' %></p>
             </div>
           </div>
 
           <!-- Status Badges -->
-          <div class="flex flex-wrap gap-6 text-sm">
-            <div class="flex items-center gap-3">
-              <span class="font-medium text-gray-700">Order Status:</span>
-              <span class="px-4 py-1.5 rounded-full text-white font-medium text-sm
-                <%= order.status === 'Delivered' ? 'bg-green-600' : 
-                    order.status === 'Cancelled' ? 'bg-red-600' : 
-                    order.status === 'Confirmed' ? 'bg-blue-600' : 
-                    'bg-orange-500' %>">
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+            <!-- Order Status -->
+            <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+              <p class="text-xs font-medium text-gray-500 uppercase tracking-wider mb-2">Order Status</p>
+              <span class="status-badge inline-flex items-center gap-2 px-4 py-2 rounded-lg font-semibold text-sm shadow-md
+                <%= order.status === 'Delivered' ? 'bg-gradient-to-r from-green-500 to-emerald-600 text-white' : 
+                    order.status === 'Cancelled' ? 'bg-gradient-to-r from-red-500 to-rose-600 text-white' : 
+                    order.status === 'Confirmed' ? 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white' : 
+                    'bg-gradient-to-r from-orange-500 to-amber-600 text-white' %>">
+                <i class="fas <%= order.status === 'Delivered' ? 'fa-check-circle' : 
+                                  order.status === 'Cancelled' ? 'fa-times-circle' : 
+                                  order.status === 'Confirmed' ? 'fa-box' : 
+                                  'fa-clock' %>"></i>
                 <%= order.status %>
               </span>
             </div>
 
-            <div class="flex items-center gap-3">
-              <span class="font-medium text-gray-700">Payment Status:</span>
-              <span class="px-4 py-1.5 rounded-full text-white font-medium text-sm
-                <%= order.paymentStatus === 'Paid' ? 'bg-green-600' : 
-                    order.paymentStatus === 'Failed' ? 'bg-red-600' : 
-                    'bg-orange-500' %>">
+            <!-- Payment Status -->
+            <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+              <p class="text-xs font-medium text-gray-500 uppercase tracking-wider mb-2">Payment Status</p>
+              <span class="status-badge inline-flex items-center gap-2 px-4 py-2 rounded-lg font-semibold text-sm shadow-md
+                <%= order.paymentStatus === 'Paid' ? 'bg-gradient-to-r from-green-500 to-emerald-600 text-white' : 
+                    order.paymentStatus === 'Failed' ? 'bg-gradient-to-r from-red-500 to-rose-600 text-white' : 
+                    'bg-gradient-to-r from-yellow-500 to-orange-600 text-white' %>">
+                <i class="fas <%= order.paymentStatus === 'Paid' ? 'fa-check-circle' : 
+                                  order.paymentStatus === 'Failed' ? 'fa-exclamation-circle' : 
+                                  'fa-hourglass-half' %>"></i>
                 <%= order.paymentStatus %>
               </span>
             </div>
 
-            <div class="flex items-center gap-3">
-              <span class="font-medium text-gray-700">Payment Method:</span>
-              <span class="px-4 py-1.5 rounded-full bg-gray-800 text-white font-medium text-sm">
+            <!-- Payment Method -->
+            <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+              <p class="text-xs font-medium text-gray-500 uppercase tracking-wider mb-2">Payment Method</p>
+              <span class="status-badge inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-slate-700 to-gray-900 text-white font-semibold text-sm shadow-md">
+                <i class="fas <%= order.paymentMethod === 'Razorpay' ? 'fa-credit-card' : 
+                                  order.paymentMethod === 'COD' ? 'fa-money-bill-wave' : 
+                                  'fa-wallet' %>"></i>
                 <%= order.paymentMethod %>
               </span>
             </div>
           </div>
 
           <!-- Action Buttons -->
-          <div class="mt-6 flex flex-wrap gap-4">
+          <div class="flex flex-wrap gap-4">
             <% if(order.status !== 'Delivered' && order.status !== 'Cancelled') { %>
               <button
                 onclick="openReasonModal('/order/cancel/<%= order._id %>', 'Cancel Entire Order')"
-                class="px-6 py-2.5 bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg transition shadow-md">
+                class="btn-danger inline-flex items-center gap-2 px-6 py-3 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transform transition-all duration-300">
+                <i class="fas fa-times-circle"></i>
                 Cancel Entire Order
               </button>
             <% } %>
@@ -76,88 +140,115 @@
             <% if (order.paymentMethod === "Razorpay" && order.paymentStatus === "Failed" && order.status === "Failed") { %>
               <button
                 id="retryPaymentBtn"
-                class="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-red-600 hover:bg-red-700 text-white font-semibold transition shadow-md">
-                <i class="fas fa-sync-alt"></i> Retry Payment
+                class="btn-primary inline-flex items-center gap-2 px-6 py-3 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transform transition-all duration-300">
+                <i class="fas fa-sync-alt"></i>
+                Retry Payment
               </button>
             <% } %>
           </div>
         </div>
 
         <!-- Delivery Address -->
-<div class="p-6 border-b border-gray-200 bg-gray-50">
-  <h3 class="text-lg font-semibold text-gray-800 mb-3">Delivery Address</h3>
-  
-  <div class="text-gray-700 leading-relaxed space-y-1">
-    <p class="font-medium"><%= order.address.fullname %></p>
-    <p><%= order.address.addressLine1 %></p>
-    <% if (order.address.addressLine2 && order.address.addressLine2.trim() !== '') { %>
-      <p><%= order.address.addressLine2 %></p>
-    <% } %>
-    <p>
-      <%= order.address.city %>, 
-      <%= order.address.state %> 
-      <% if (order.address.pincode) { %>- <%= order.address.pincode %><% } %>
-    </p>
-    <p class="mt-2">
-      <span class="font-medium">Phone:</span> <%= order.address.phone %>
-    </p>
-    <% if (order.address.landmark && order.address.landmark.trim() !== '') { %>
-      <p class="text-gray-600 text-sm mt-1">
-        Landmark: <%= order.address.landmark %>
-      </p>
-    <% } %>
-  </div>
-</div>
+        <div class="p-8 border-b border-gray-200 bg-gray-50">
+          <div class="flex items-center gap-3 mb-4">
+            <div class="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg flex items-center justify-center shadow-md">
+              <i class="fas fa-map-marker-alt text-white"></i>
+            </div>
+            <h3 class="text-xl font-bold text-gray-900">Delivery Address</h3>
+          </div>
+          
+          <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
+            <div class="text-gray-700 leading-relaxed space-y-2">
+              <p class="font-bold text-lg text-gray-900"><%= order.address.fullname %></p>
+              <p class="text-gray-600"><%= order.address.addressLine1 %></p>
+              <% if (order.address.addressLine2 && order.address.addressLine2.trim() !== '') { %>
+                <p class="text-gray-600"><%= order.address.addressLine2 %></p>
+              <% } %>
+              <p class="text-gray-600">
+                <%= order.address.city %>, 
+                <%= order.address.state %> 
+                <% if (order.address.pincode) { %>- <%= order.address.pincode %><% } %>
+              </p>
+              <div class="flex items-center gap-2 mt-3 pt-3 border-t border-gray-200">
+                <i class="fas fa-phone text-indigo-600"></i>
+                <span class="font-semibold text-gray-900"><%= order.address.phone %></span>
+              </div>
+              <% if (order.address.landmark && order.address.landmark.trim() !== '') { %>
+                <div class="flex items-start gap-2 mt-2">
+                  <i class="fas fa-location-dot text-gray-400 mt-1"></i>
+                  <p class="text-gray-600 text-sm">
+                    <span class="font-medium">Landmark:</span> <%= order.address.landmark %>
+                  </p>
+                </div>
+              <% } %>
+            </div>
+          </div>
+        </div>
 
         <!-- Order Items Table -->
-        <div class="p-6">
-          <h2 class="text-xl font-semibold mb-4 text-gray-800">Order Items</h2>
-          <div class="overflow-x-auto">
-            <table class="w-full border border-gray-300 rounded-lg overflow-hidden">
-              <thead class="bg-gray-50">
+        <div class="p-8">
+          <div class="flex items-center gap-3 mb-6">
+            <div class="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg flex items-center justify-center shadow-md">
+              <i class="fas fa-shopping-bag text-white"></i>
+            </div>
+            <h2 class="text-2xl font-bold text-gray-900">Order Items</h2>
+          </div>
+          
+          <div class="overflow-x-auto rounded-xl border border-gray-200 shadow-sm">
+            <table class="w-full">
+              <thead class="bg-gradient-to-r from-gray-50 to-gray-100">
                 <tr>
-                  <th class="text-left px-6 py-4 font-medium text-gray-700">Product</th>
-                  <th class="text-center px-6 py-4 font-medium text-gray-700">Quantity</th>
-                  <th class="text-center px-6 py-4 font-medium text-gray-700">Price</th>
-                  <th class="text-center px-6 py-4 font-medium text-gray-700">Status</th>
-                  <th class="text-center px-6 py-4 font-medium text-gray-700">Action</th>
+                  <th class="text-left px-6 py-4 font-semibold text-gray-700 uppercase text-xs tracking-wider">Product</th>
+                  <th class="text-center px-6 py-4 font-semibold text-gray-700 uppercase text-xs tracking-wider">Quantity</th>
+                  <th class="text-center px-6 py-4 font-semibold text-gray-700 uppercase text-xs tracking-wider">Price</th>
+                  <th class="text-center px-6 py-4 font-semibold text-gray-700 uppercase text-xs tracking-wider">Status</th>
+                  <th class="text-center px-6 py-4 font-semibold text-gray-700 uppercase text-xs tracking-wider">Action</th>
                 </tr>
               </thead>
-              <tbody class="divide-y divide-gray-200">
+              <tbody class="bg-white divide-y divide-gray-200">
                 <% order.items.forEach(item => { %>
-                  <tr class="hover:bg-gray-50 transition">
-                    <td class="px-6 py-4">
+                  <tr class="hover:bg-gray-50 transition-colors duration-200">
+                    <td class="px-6 py-5">
                       <div class="flex items-center gap-4">
-                        <img src="<%= item.image %>" alt="<%= item.name %>" class="w-16 h-16 object-cover rounded-lg shadow-sm" />
+                        <div class="w-20 h-20 rounded-xl overflow-hidden shadow-md border-2 border-gray-100">
+                          <img src="<%= item.image %>" alt="<%= item.name %>" class="w-full h-full object-cover" />
+                        </div>
                         <div>
-                          <p class="font-medium text-gray-800"><%= item.name %></p>
+                          <p class="font-semibold text-gray-900 text-base"><%= item.name %></p>
                         </div>
                       </div>
                     </td>
-                    <td class="px-6 py-4 text-center font-medium"><%= item.qty %></td>
-                    <td class="px-6 py-4 text-center font-semibold">₹<%= item.finalPrice.toLocaleString('en-IN') %></td>
-                    <td class="px-6 py-4 text-center">
-                      <span class="px-3 py-1 rounded-full text-xs font-medium text-white
-                        <%= (item.status || order.status) === 'Delivered' ? 'bg-green-600' :
-                            (item.status || order.status) === 'Cancelled' ? 'bg-red-600' :
-                            (item.status || order.status) === 'Returned' ? 'bg-purple-600' :
-                            'bg-blue-600' %>">
+                    <td class="px-6 py-5 text-center">
+                      <span class="inline-flex items-center justify-center w-10 h-10 bg-gray-100 rounded-lg font-bold text-gray-900">
+                        <%= item.qty %>
+                      </span>
+                    </td>
+                    <td class="px-6 py-5 text-center font-bold text-lg text-gray-900">₹<%= item.finalPrice.toLocaleString('en-IN') %></td>
+                    <td class="px-6 py-5 text-center">
+                      <span class="status-badge inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold shadow-sm
+                        <%= (item.status || order.status) === 'Delivered' ? 'bg-gradient-to-r from-green-500 to-emerald-600 text-white' :
+                            (item.status || order.status) === 'Cancelled' ? 'bg-gradient-to-r from-red-500 to-rose-600 text-white' :
+                            (item.status || order.status) === 'Returned' ? 'bg-gradient-to-r from-purple-500 to-indigo-600 text-white' :
+                            'bg-gradient-to-r from-blue-500 to-indigo-600 text-white' %>">
+                        <i class="fas fa-circle text-[6px]"></i>
                         <%= item.status || order.status %>
                       </span>
                     </td>
-                    <td class="px-6 py-4 text-center">
+                    <td class="px-6 py-5 text-center">
                       <div class="flex justify-center gap-2">
                         <% if((item.status || order.status) !== 'Delivered' && order.status !== 'Cancelled' && item.status !== 'Cancelled') { %>
                           <button
                             onclick="openReasonModal('/order/cancel-item/<%= order._id %>/<%= item._id %>', 'Cancel Item')"
-                            class="px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white text-xs font-medium rounded transition">
+                            class="inline-flex items-center gap-1.5 px-4 py-2 bg-gradient-to-r from-dark red-500 to-red-600 hover:from-red-600 hover:to-rose-700 text-white text-xs font-semibold rounded-lg transition-all duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-0.5">
+                            <i class="fas fa-times"></i>
                             Cancel
                           </button>
                         <% } %>
                         <% if((item.status || order.status) === 'Delivered' && order.status !== 'Returned') { %>
                           <button
                             onclick="openReasonModal('/order/return-item/<%= order._id %>/<%= item._id %>', 'Return Item')"
-                            class="px-3 py-1.5 bg-amber-600 hover:bg-amber-700 text-white text-xs font-medium rounded transition">
+                            class="inline-flex items-center gap-1.5 px-4 py-2 bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white text-xs font-semibold rounded-lg transition-all duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-0.5">
+                            <i class="fas fa-undo"></i>
                             Return
                           </button>
                         <% } %>
@@ -171,31 +262,42 @@
         </div>
 
         <!-- Payment Summary -->
-        <div class="bg-gray-50 p-6 border-t border-gray-200">
-          <h2 class="text-xl font-semibold mb-4 text-gray-800">Payment Summary</h2>
-          <div class="space-y-3 max-w-md ml-auto">
-            <div class="flex justify-between text-gray-700">
-              <span>Subtotal</span>
-              <span class="font-medium">₹<%= order.subtotalAmount.toLocaleString('en-IN') %></span>
+        <div class="bg-gradient-to-br from-gray-50 to-gray-100 p-8 border-t border-gray-200">
+          <div class="flex items-center gap-3 mb-6">
+            <div class="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg flex items-center justify-center shadow-md">
+              <i class="fas fa-receipt text-white"></i>
             </div>
-
-            <% if(order.coupon && order.coupon.discountAmount > 0) { %>
-              <div class="flex justify-between text-green-600 font-medium">
-                <span>Coupon Applied (<%= order.coupon.code %>)</span>
-                <span>- ₹<%= order.coupon.discountAmount.toLocaleString('en-IN') %></span>
+            <h2 class="text-2xl font-bold text-gray-900">Payment Summary</h2>
+          </div>
+          
+          <div class="bg-white rounded-xl p-6 shadow-lg border border-gray-200 max-w-md ml-auto">
+            <div class="space-y-4">
+              <div class="flex justify-between items-center text-gray-700">
+                <span class="font-medium">Subtotal</span>
+                <span class="font-semibold text-lg">₹<%= order.subtotalAmount.toLocaleString('en-IN') %></span>
               </div>
-            <% } else { %>
-              <div class="flex justify-between text-gray-500">
-                <span>No Coupon Applied</span>
-                <span>₹0</span>
+
+              <% if(order.coupon && order.coupon.discountAmount > 0) { %>
+                <div class="flex justify-between items-center bg-green-50 -mx-6 px-6 py-3 rounded-lg border border-green-200">
+                  <div class="flex items-center gap-2">
+                    <i class="fas fa-tag text-green-600"></i>
+                    <span class="font-semibold text-green-800">Coupon (<%= order.coupon.code %>)</span>
+                  </div>
+                  <span class="font-bold text-green-700">- ₹<%= order.coupon.discountAmount.toLocaleString('en-IN') %></span>
+                </div>
+              <% } else { %>
+                <div class="flex justify-between items-center text-gray-400">
+                  <span class="text-sm">No Coupon Applied</span>
+                  <span class="text-sm">₹0</span>
+                </div>
+              <% } %>
+
+              <div class="border-t-2 border-dashed border-gray-300 my-4"></div>
+
+              <div class="flex justify-between items-center bg-gradient-to-r from-indigo-50 to-purple-50 -mx-6 px-6 py-4 rounded-lg border-2 border-indigo-200">
+                <span class="text-xl font-bold text-gray-900">Total Amount</span>
+                <span class="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">₹<%= order.totalAmount.toLocaleString('en-IN') %></span>
               </div>
-            <% } %>
-
-            <hr class="border-gray-300" />
-
-            <div class="flex justify-between text-xl font-bold text-gray-800 pt-2">
-              <span>Total Amount</span>
-              <span>₹<%= order.totalAmount.toLocaleString('en-IN') %></span>
             </div>
           </div>
         </div>
@@ -203,29 +305,38 @@
     </div>
 
     <!-- Reason Modal -->
-    <div id="reasonModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50 px-4">
-      <div class="bg-white rounded-xl shadow-2xl w-full max-w-md">
-        <div class="p-6">
-          <h2 id="modalTitle" class="text-2xl font-bold text-gray-800 mb-4"></h2>
+    <div id="reasonModal" class="fixed inset-0 bg-black bg-opacity-60 backdrop-blur-sm hidden flex items-center justify-center z-50 px-4">
+      <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md transform transition-all">
+        <div class="p-8">
+          <div class="flex items-center gap-3 mb-6">
+            <div class="w-12 h-12 bg-gradient-to-br from-red-500 to-rose-600 rounded-xl flex items-center justify-center shadow-md">
+              <i class="fas fa-exclamation-circle text-white text-xl"></i>
+            </div>
+            <h2 id="modalTitle" class="text-2xl font-bold text-gray-900"></h2>
+          </div>
+          
           <form id="reasonForm" method="POST">
-            <textarea
-              name="reason"
-              required
-              rows="4"
-              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 resize-none"
-              placeholder="Please provide a reason for cancellation/return..."
-            ></textarea>
+            <div class="mb-6">
+              <label class="block text-sm font-semibold text-gray-700 mb-2">Reason</label>
+              <textarea
+                name="reason"
+                required
+                rows="4"
+                class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent resize-none transition-all"
+                placeholder="Please provide a reason for cancellation/return..."
+              ></textarea>
+            </div>
 
-            <div class="mt-6 flex justify-end gap-3">
+            <div class="flex gap-3">
               <button
                 type="button"
                 onclick="closeModal()"
-                class="px-6 py-2.5 bg-gray-300 hover:bg-gray-400 text-gray-800 font-medium rounded-lg transition">
+                class="flex-1 px-6 py-3 bg-gray-100 hover:bg-gray-200 text-gray-800 font-semibold rounded-xl transition-all duration-300">
                 Cancel
               </button>
               <button
                 type="submit"
-                class="px-6 py-2.5 bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg transition shadow-md">
+                class="flex-1 px-6 py-3 bg-gradient-to-r from-red-500 to-rose-600 hover:from-red-600 hover:to-rose-700 text-white font-semibold rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
                 Submit
               </button>
             </div>
@@ -308,7 +419,7 @@
                 name: "<%= order.address.fullname %>",
                 contact: "<%= order.address.phone %>",
               },
-              theme: { color: "#dc2626" },
+              theme: { color: "#6366f1" },
               modal: { ondismiss: handlePaymentFailure },
             };
 
