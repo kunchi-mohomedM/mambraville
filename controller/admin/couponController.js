@@ -32,82 +32,139 @@ const loadAddCoupon = async (req, res) => {
   }
 };
 
+
+
+
 const addCoupon = async (req, res) => {
   try {
-    const {
+    let {
       couponcode,
       discount,
-      minpurchaseamount,
-      maxdiscountamount,
-      expiredate,
+      minpurchaseamount = 0,
+      maxdiscountamount = 0,
       startdate,
+      expiredate,
       discountType,
     } = req.body;
 
-    if (!couponcode || discount === undefined || !expiredate || !discountType) {
-      return res
-        .status(400)
-        .json({ error: "All required fields must be filled" });
+    // Normalize coupon code
+    couponcode = String(couponcode || "").trim().toUpperCase();
+
+    // Required fields check
+    if (!couponcode || discount === undefined || !expiredate || !discountType || !startdate) {
+      return res.status(400).json({
+        success: false,
+        error: "All required fields must be provided (code, discount, type, start date, expiry date)"
+      });
     }
 
     const type = discountType.toLowerCase();
     if (!["percentage", "fixed"].includes(type)) {
-      return res.status(400).json({ error: "Invalid discount type" });
+      return res.status(400).json({
+        success: false,
+        error: "Discount type must be 'percentage' or 'fixed'"
+      });
     }
 
-    if (type === "percentage" && discount > 100) {
-      return res
-        .status(400)
-        .json({ error: "Percentage discount cannot exceed 100%" });
+    // Parse numbers safely
+    const discVal = Number(discount);
+    const minPur = Number(minpurchaseamount);
+    const maxDisc = Number(maxdiscountamount);
+
+    if (isNaN(discVal) || discVal <= 0) {
+      return res.status(400).json({
+        success: false,
+        error: "Discount value must be a positive number"
+      });
     }
 
+    // ── Strict business rules ───────────────────────────────────────
+    if (type === "fixed" && discVal >= minPur) {
+      return res.status(400).json({
+        success: false,
+        error: "Fixed discount amount must be strictly less than the minimum purchase amount"
+      });
+    }
+
+    if (type === "percentage" && maxDisc >= minPur) {
+      return res.status(400).json({
+        success: false,
+        error: "Maximum discount amount must be strictly less than the minimum purchase amount"
+      });
+    }
+    // ────────────────────────────────────────────────────────────────
+
+    // Additional percentage validation
+    if (type === "percentage" && discVal > 100) {
+      return res.status(400).json({
+        success: false,
+        error: "Percentage discount cannot exceed 100%"
+      });
+    }
+
+    // Date validation
     const start = new Date(startdate);
     const expiry = new Date(expiredate);
 
     if (isNaN(start.getTime()) || isNaN(expiry.getTime())) {
-      return res.status(400).json({ error: "Invalid date format" });
+      return res.status(400).json({
+        success: false,
+        error: "Invalid date format for start or expiry date"
+      });
     }
 
     if (start > expiry) {
-      return res
-        .status(400)
-        .json({ error: "Start date cannot be after expiry date" });
+      return res.status(400).json({
+        success: false,
+        error: "Start date cannot be later than expiry date"
+      });
     }
 
     if (expiry <= new Date()) {
-      return res
-        .status(400)
-        .json({ error: "Expiry date must be in the future" });
+      return res.status(400).json({
+        success: false,
+        error: "Expiry date must be in the future"
+      });
     }
 
+    // Check for duplicate code (case-insensitive)
     const existingCoupon = await Coupon.findOne({
-      code: { $regex: new RegExp(`^${couponcode.trim()}$`, "i") },
+      code: { $regex: new RegExp(`^${couponcode}$`, "i") }
     });
 
     if (existingCoupon) {
-      return res.status(400).json({ error: "Coupon already exists" });
+      return res.status(400).json({
+        success: false,
+        error: "A coupon with this code already exists"
+      });
     }
 
+    // Create new coupon
     const newCoupon = new Coupon({
-      code: couponcode.trim(),
+      code: couponcode,
       discountType: type,
-      discountValue: Number(discount),
-      minPurchase: Number(minpurchaseamount) || 0,
-      maxDiscount: type === "percentage" ? Number(maxdiscountamount) || 0 : 0,
+      discountValue: discVal,
+      minPurchase: minPur,
+      maxDiscount: type === "percentage" ? maxDisc : 0,
       startDate: start,
-      expiryDate: new Date(expiredate),
+      expiryDate: expiry,
       isActive: true,
     });
-    console.log(newCoupon.expiryDate);
 
     await newCoupon.save();
 
     return res.status(201).json({
-      message: "Coupon added successfully",
+      success: true,
+      message: "Coupon created successfully",
+      couponId: newCoupon._id
     });
+
   } catch (error) {
-    console.error(error);
-    return res.status(500).json({ error: "Internal server error" });
+    console.error("Add coupon error:", error);
+    return res.status(500).json({
+      success: false,
+      error: "Internal server error while creating coupon"
+    });
   }
 };
 
@@ -142,11 +199,15 @@ const loadEditcoupon = async (req, res) => {
     console.log(coupon);
     return res.render("editCoupon", {
       coupon: {
+        _id: coupon._id, // Added _id
         code: coupon.code,
         discountType: coupon.discountType,
         discountValue: coupon.discountValue,
         minPurchase: coupon.minPurchase,
         maxDiscount: coupon.maxDiscount,
+        startDate: coupon.startDate
+          ? coupon.startDate.toISOString().split("T")[0]
+          : "", // Added and formatted startDate
         expiryDate: coupon.expiryDate
           ? coupon.expiryDate.toISOString().split("T")[0]
           : "",
@@ -164,56 +225,159 @@ const editCoupon = async (req, res) => {
       code,
       discountType,
       discountValue,
-      minPurchase,
-      maxDiscount,
+      minPurchase = 0,
+      maxDiscount = 0,
+      startdate,
       expiryDate,
-      startdate
     } = req.body;
 
-    if (!couponId) {
-      return res.status(400).json({ error: "Coupon ID is required" });
+    if (!couponId || !code) {
+      return res.status(400).json({
+        success: false,
+        error: "Coupon ID and code are required"
+      });
     }
 
+    const type = discountType.toLowerCase();
+    if (!["percentage", "fixed"].includes(type)) {
+      return res.status(400).json({
+        success: false,
+        error: "Discount type must be 'percentage' or 'fixed'"
+      });
+    }
+
+    // Parse numbers
+    const discVal = Number(discountValue);
+    const minPur = Number(minPurchase);
+    const maxDisc = Number(maxDiscount);
+
+    if (isNaN(discVal) || discVal <= 0) {
+      return res.status(400).json({
+        success: false,
+        error: "Discount value must be a positive number"
+      });
+    }
+
+    // ── Same strict validation as addCoupon ─────────────────────────
+    if (type === "fixed" && minPur > 0 && discVal >= minPur) {
+      return res.status(400).json({
+        success: false,
+        error: "Fixed discount amount must be strictly less than the minimum purchase amount"
+      });
+    }
+
+    if (type === "percentage" && minPur > 0 && maxDisc >= minPur) {
+      return res.status(400).json({
+        success: false,
+        error: "Maximum discount amount must be strictly less than the minimum purchase amount"
+      });
+    }
+    // ────────────────────────────────────────────────────────────────
+
+    if (type === "percentage" && discVal > 100) {
+      return res.status(400).json({
+        success: false,
+        error: "Percentage discount cannot exceed 100%"
+      });
+    }
+
+    // Date validation
     const start = new Date(startdate);
     const expiry = new Date(expiryDate);
 
-    if (start > expiry) {
-      return res.status(400).json({ error: "Start date cannot be after expiry date" });
+    if (isNaN(start.getTime()) || isNaN(expiry.getTime())) {
+      return res.status(400).json({
+        success: false,
+        error: "Invalid date format for start or expiry date"
+      });
     }
 
-    const updateData = {
-      code: code.trim().toUpperCase(),
-      discountType: discountType.toLowerCase(),
-      discountValue: Number(discountValue),
-      minPurchase: Number(minPurchase),
-      maxDiscount: discountType.toLowerCase() === 'percentage' ? Number(maxDiscount) : 0,
-      startDate: start,
-      expiryDate: expiry
-    };
+    if (start > expiry) {
+      return res.status(400).json({
+        success: false,
+        error: "Start date cannot be later than expiry date"
+      });
+    }
 
-    const updatedCoupon = await Coupon.findByIdAndUpdate(couponId, updateData, {
-      new: true,
-      runValidators: true,
+    // Note: We allow editing to past expiry if needed (business decision)
+    // If you want to block it, uncomment next block:
+    /*
+    if (expiry <= new Date()) {
+      return res.status(400).json({
+        success: false,
+        error: "Expiry date must be in the future"
+      });
+    }
+    */
+
+    // Normalize code
+    const normalizedCode = String(code).trim().toUpperCase();
+
+    // Check for duplicate (exclude self)
+    const duplicate = await Coupon.findOne({
+      code: { $regex: new RegExp(`^${normalizedCode}$`, "i") },
+      _id: { $ne: couponId }
     });
 
-    if (!updatedCoupon) {
-      return res.status(404).json({ error: "Coupon not found" });
+    if (duplicate) {
+      return res.status(400).json({
+        success: false,
+        error: "Another coupon with this code already exists"
+      });
     }
 
-    res.json({ message: "Coupon updated successfully!" });
+    // Prepare update object
+    const updateData = {
+      code: normalizedCode,
+      discountType: type,
+      discountValue: discVal,
+      minPurchase: minPur,
+      maxDiscount: type === "percentage" ? maxDisc : 0,
+      startDate: start,
+      expiryDate: expiry,
+    };
+
+    const updatedCoupon = await Coupon.findByIdAndUpdate(
+      couponId,
+      updateData,
+      { new: true, runValidators: true }
+    );
+
+    if (!updatedCoupon) {
+      return res.status(404).json({
+        success: false,
+        error: "Coupon not found"
+      });
+    }
+
+    return res.json({
+      success: true,
+      message: "Coupon updated successfully",
+      coupon: updatedCoupon
+    });
+
   } catch (error) {
-    console.error("Error editing coupon:", error);
+    console.error("Edit coupon error:", error);
 
     if (error.code === 11000) {
-      return res.status(400).json({ error: "Coupon code already exists" });
+      return res.status(400).json({
+        success: false,
+        error: "Coupon code already exists"
+      });
     }
 
     if (error.name === "ValidationError") {
-      const messages = Object.values(error.errors).map((err) => err.message);
-      return res.status(400).json({ error: messages.join(", ") });
+      const messages = Object.values(error.errors).map(err => err.message);
+      return res.status(400).json({
+        success: false,
+        error: messages.join(", ")
+      });
     }
 
-    res.status(500).json({ error: "Internal server error" });
+    return res.status(500).json({
+      success: false,
+      error: "Internal server error while updating coupon"
+    });
   }
 };
 

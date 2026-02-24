@@ -1,155 +1,100 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Edit Brands | Mambraville Admin</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Edit Brands | Mambraville Admin</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
+
 <body class="bg-gray-100">
-    <div class="flex h-screen">
-        <!-- Sidebar (unchanged) -->
-        <div id="sidebar"
-      class="w-64 bg-gradient-to-b from-black to-purple-900 text-white fixed inset-y-0 left-0 transform -translate-x-full 
-             md:relative md:translate-x-0 transition-transform duration-300 ease-in-out z-20 h-screen">
+  <div class="flex h-screen">
+    <!-- Mobile Sidebar Toggle -->
 
-      <!-- LOGO BLOCK -->
-      <div class="p-6 flex items-center justify-center border-b border-purple-800/40">
-        <div class="text-center leading-tight select-none">
-          <h1 class="text-2xl font-extrabold tracking-tight">
-            <span class="text-blue-400">Gadgetr</span>
-            <span class="text-orange-400">y</span>
-          </h1>
-          <p class="text-[9px] font-semibold uppercase tracking-widest text-gray-300 mt-1">
-            powered by mambra home appliances — 2004
-          </p>
-        </div>
-      </div>
+    <!-- Sidebar -->
+    <%- include('../partials/admin/sidebar') %>
 
-      <!-- NAVIGATION -->
-      <nav class="mt-4 space-y-1">
-        <a href="/admin/dashboard" class="nav-link flex items-center px-6 py-3 hover:bg-purple-800/70 rounded-lg transition">
-          <i class="fas fa-home w-5 mr-3"></i><span>Dashboard</span>
-        </a>
-        <a href="/admin/products" class="nav-link flex items-center px-6 py-3 hover:bg-purple-800/70 rounded-lg transition">
-          <i class="fas fa-box w-5 mr-3"></i><span>Products</span>
-        </a>
-        <a href="/admin/users" class="nav-link flex items-center px-6 py-3 hover:bg-purple-800/70 rounded-lg transition">
-          <i class="fas fa-users w-5 mr-3"></i><span>Users</span>
-        </a>
-        <a href="/admin/orders" class="nav-link flex items-center px-6 py-3 hover:bg-purple-800/70 rounded-lg transition">
-          <i class="fas fa-shopping-cart w-5 mr-3"></i><span>Orders</span>
-        </a>
-        <a href="/admin/category" class="nav-link flex items-center px-6 py-3 hover:bg-purple-800/70 rounded-lg transition">
-          <i class="fas fa-tags w-5 mr-3"></i><span>Category</span>
-        </a>
-        <a href="/admin/coupon" class="nav-link flex items-center px-6 py-3 hover:bg-purple-800/70 rounded-lg transition">
-          <i class="fas fa-ticket-alt w-5 mr-3"></i><span>Coupons</span>
-        </a>
-        <a href="/admin/offers" class="nav-link flex items-center px-6 py-3 hover:bg-purple-800/70 rounded-lg transition">
-          <i class="fas fa-gift w-5 mr-3"></i><span>Offers</span>
-        </a>
-        <a href="/admin/brands" class="nav-link flex items-center px-6 py-3 hover:bg-purple-800/70 rounded-lg transition bg-purple-900 text-white font-semibold">
-          <i class="fas fa-copyright w-5 mr-3"></i><span>Brands</span>
-        </a>
-      </nav>
 
-      <!-- LOGOUT BUTTON -->
-      <div class="absolute bottom-5 left-0 w-full px-6">
-        <button onclick="logout()"
-          class="bg-white text-black py-2 px-4 rounded-full w-full font-semibold shadow-sm hover:bg-gray-200 transition">
-          Logout
-        </button>
-      </div>
-    </div>
+      <!-- Main Content -->
+      <div class="flex-1 flex flex-col overflow-hidden">
+        <!-- Header -->
+        <!-- Header -->
+        <%- include('../partials/admin/header', { pageTitle: 'Brands' }) %>
 
-        
-        <!-- Main Content -->
-        <div class="flex-1 flex flex-col overflow-hidden">
-            <!-- Header (unchanged) -->
-            <header class="bg-gradient-to-r from-black to-purple-900 text-white p-4 flex justify-between items-center">
-                <h1 class="text-2xl font-bold">Edit Brands</h1>
-                <!-- Header content -->
-            </header>
-            
-            <!-- Content with Add brand Form -->
-            <main class="flex-1 overflow-y-auto p-6 bg-white m-4 rounded-lg shadow">
-                <div class="max-w-2xl mx-auto">
-                    <h2 class="text-xl font-semibold mb-6">Edit Existing Brands</h2>
-                    <form id="brandForm" class="space-y-6" method="POST" action="/admin/editBrands">
-                    <input type="hidden" name="brandId" value="<%=brands._id%>">
-                        <!-- Category Name -->
-                        <div>
-                            <label for="brandname" class="block text-sm font-medium text-gray-700 mb-1">
-                                brand Name
-                            </label>
-                            <input 
-                                type="text" 
-                                id="brandname" 
-                                name="brandname"
-                                class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent"
-                                placeholder="Enter brand name"
-                                value=<%= brands.brandname  %>
-                               
-                            >
-                            <p id="name-error" class="text-red-500 text-sm mt-1 hidden">Brandname name is required</p>
-                        </div>
+          <!-- Content -->
+          <div class="flex-1 overflow-y-auto p-4 md:p-6">
+            <!-- Page Title and Actions -->
+            <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-6">
+              <div>
+                <h2 class="text-xl font-semibold text-gray-800">Edit Brand</h2>
+                <p class="text-gray-500 mt-1">Update brand details</p>
+              </div>
+            </div>
 
-                        <!-- Description -->
-                        <div>
-                            <label for="branddesc" class="block text-sm font-medium text-gray-700 mb-1">
-                                description
-                            </label>
-                            <textarea 
-                                id="description" 
-                                name="description" 
-                                rows="4"
-                                class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent"
-                                placeholder="Enter all products"
-                              
-                                
-                            ><%= brands.description  %></textarea>
-                        </div>
+            <!-- Form Container -->
+            <div class="bg-white p-6 rounded-xl shadow border border-gray-200">
+              <form id="brandForm" class="space-y-6" method="POST" action="/admin/editBrands">
+                <input type="hidden" name="brandId" value="<%=brands._id%>">
 
-                        <!-- Add Button -->
-                        <div class="flex justify-end">
-                            <button 
-                                type="submit"
-                                class="bg-purple-900 text-white px-6 py-2 rounded-md hover:bg-purple-800 focus:outline-none focus:ring-2 focus:ring-purple-600 focus:ring-offset-2"
-                            >
-                                Edit Brands
-                            </button>
-                        </div>
-                    </form>
+                <!-- Brand Name -->
+                <div>
+                  <label for="brandname" class="block text-sm font-medium text-gray-700 mb-1">
+                    Brand Name
+                  </label>
+                  <input type="text" id="brandname" name="brandname"
+                    class="w-full px-4 py-2.5 bg-gray-50 border border-gray-300 rounded-lg text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition"
+                    placeholder="Enter brand name" value="<%=brands.brandname %>">
+                  <p id="name-error" class="text-red-500 text-sm mt-1 hidden">Brand name is required</p>
                 </div>
-            </main>
-        </div>
-    </div>
-    
-    <script>
-       const form= document.getElementById('brandForm')
-        form.addEventListener('submit', async function (e) {
-            e.preventDefault(); // Prevent default form submission
-            const brandName = document.getElementById('brandname').value.trim();
-            const brandDesc = document.getElementById('description').value.trim();
-            const nameError = document.getElementById('name-error');
 
-            // Client-side validation
-            if (!brandName) {
-                nameError.classList.remove('hidden');
-                return;
-            } else {
-                nameError.classList.add('hidden');
-            }
+                <!-- Description -->
+                <div>
+                  <label for="description" class="block text-sm font-medium text-gray-700 mb-1">
+                    Description
+                  </label>
+                  <textarea id="description" name="description" rows="4"
+                    class="w-full px-4 py-2.5 bg-gray-50 border border-gray-300 rounded-lg text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition"
+                    placeholder="Enter brand description"><%= brands.description  %></textarea>
+                </div>
 
-            form.submit()
+                <!-- Submit Button -->
+                <div class="flex justify-end pt-4">
+                  <button type="submit"
+                    class="bg-purple-600 text-white px-6 py-2.5 rounded-lg hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 transition flex items-center">
+                    <i class="fas fa-save mr-2"></i>
+                    Save Changes
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+      </div>
+  </div>
 
-        });
+  <script>
 
-        function logout() {
-            window.location.href = '/admin/logout';
-        }
-    </script>
+    const form = document.getElementById('brandForm')
+    form.addEventListener('submit', async function (e) {
+      e.preventDefault(); // Prevent default form submission
+      const brandName = document.getElementById('brandname').value.trim();
+      const brandDesc = document.getElementById('description').value.trim();
+      const nameError = document.getElementById('name-error');
+
+      // Client-side validation
+      if (!brandName) {
+        nameError.classList.remove('hidden');
+        return;
+      } else {
+        nameError.classList.add('hidden');
+      }
+
+      form.submit()
+
+    });
+
+  </script>
 </body>
+
 </html>

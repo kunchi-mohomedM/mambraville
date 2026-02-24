@@ -20,11 +20,10 @@ router.get("/login", islogin, adminController.loadlogin)
 router.post("/login", islogin, adminController.login)
 router.get("/users", adminAuth, adminController.loaduser)
 router.post('/users/block/:userId', adminAuth, adminController.toggleBlockUser);
+router.get("/logout",adminController.logout);
 
 
 router.get('/dashboard', adminAuth, dashboardController.loadDashboard);
-
-
 
 router.get("/category", adminAuth, categoryController.categoryInfo);
 router.get("/addCategory", adminAuth, categoryController.loadaddCategory);

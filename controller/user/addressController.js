@@ -31,7 +31,7 @@ const addAddress = async (req, res) => {
     }
 };
 
-// Add address from checkout page (AJAX)
+
 const addAddressCheckout = async (req, res) => {
     try {
         const userId = req.session.user;
@@ -75,7 +75,7 @@ const addAddressCheckout = async (req, res) => {
             { new: true }
         );
 
-        // Get the newly added address (last one in array)
+       
         const newAddress = user.address[user.address.length - 1];
 
         return res.json({

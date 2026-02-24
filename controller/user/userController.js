@@ -423,7 +423,7 @@ const loadHomepage = async (req, res) => {
     });
 
 
-    // Cart and wishlist items are now available via res.locals from middleware
+   
     products = applyBestDiscount({
       products,
       categoryOfferMap,
@@ -438,9 +438,9 @@ const loadHomepage = async (req, res) => {
 
     let trendingProducts = [];
 
-    // Get top 8 most purchased product IDs + their total sold quantity
+    
     const topSold = await Order.aggregate([
-      { $match: { orderStatus: { $nin: ["Cancelled", "Returned"] } } }, // adjust statuses as per your logic
+      { $match: { orderStatus: { $nin: ["Cancelled", "Returned"] } } }, 
       { $unwind: "$items" },
       {
         $group: {

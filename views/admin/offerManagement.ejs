@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,522 +13,649 @@
 </head>
 
 <body class="bg-gray-100">
-<div class="flex h-screen">
+    <div class="flex h-screen">
 
-    <!-- Sidebar -->
-    <%- include('../partials/admin/sidebar') %>
+        <!-- Sidebar -->
+        <!-- Mobile Sidebar Toggle -->
 
-    <!-- Main Content -->
-    <div class="flex-1 flex flex-col overflow-hidden">
+        <!-- Sidebar -->
+        <%- include('../partials/admin/sidebar') %>
 
-        <!-- Header -->
-        <header class="bg-gradient-to-r from-black to-purple-900 text-white p-4 flex justify-between items-center">
-            <h1 class="text-2xl font-bold">Offer Management</h1>
-        </header>
+            <!-- Main Content -->
+            <div class="flex-1 flex flex-col overflow-hidden">
 
-        <!-- Page Content -->
-        <main class="flex-1 overflow-y-auto p-6 bg-white m-4 rounded-lg shadow">
+                <!-- Header -->
+                <!-- Header -->
+                <!-- Header -->
+                <%- include('../partials/admin/header', { pageTitle: 'Offer Management' }) %>
 
-            <!-- ================= Referral Offer Section ================= -->
-            <section class="mb-10">
-                <div class="flex justify-between items-center mb-4">
-                    <h2 class="text-xl font-bold text-gray-800">
-                        <i class="fas fa-user-friends mr-2 text-purple-600"></i>
-                        Referral Offer
-                    </h2>
-                </div>
+                    <!-- Page Content -->
+                    <main class="flex-1 overflow-y-auto p-4 md:p-6 bg-white m-2 md:m-4 rounded-lg shadow">
 
-                <div class="overflow-x-auto border rounded-lg">
-                    <table class="min-w-full text-sm text-left">
-                        <thead class="bg-gray-100 text-gray-700">
-                            <tr>
-                                <th class="px-4 py-3">Referral Bonus</th>
-                                <th class="px-4 py-3">Max Uses Per User</th>
-                                <th class="px-4 py-3">Status</th>
-                                <th class="px-4 py-3">Actions</th>
-                            </tr>
-                        </thead>
+                        <!-- ================= Referral Offer Section ================= -->
+                        <section class="mb-10">
+                            <div class="flex justify-between items-center mb-4">
+                                <h2 class="text-xl font-bold text-gray-800">
+                                    <i class="fas fa-user-friends mr-2 text-purple-600"></i>
+                                    Referral Offer
+                                </h2>
+                            </div>
 
-                        <tbody class="divide-y" id="referralTableBody">
-                            <% if(referralOffer) { %>
-                            <tr>
-                                <td class="px-4 py-3 font-medium"><%= referralOffer.refferalBonus %></td>
-                                <td class="px-4 py-3"><%= referralOffer.maxUsesPerUser %></td>
-                                <td class="px-4 py-3">
-                                    <span class="<%= referralOffer.isActive ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700' %> px-2 py-1 rounded text-xs">
-                                        <%= referralOffer.isActive ? 'Active' : 'Inactive' %>
-                                    </span>
-                                </td>
-                                <td class="px-4 py-3 space-x-2">
-                                    <button onclick="openEditReferralModal()" class="text-blue-600 hover:underline">
-                                        <i class="fas fa-edit"></i> Edit
-                                    </button>
-                                    <button onclick="toggleReferralStatus('<%= referralOffer.isActive %>')" 
-                                            class="<%= referralOffer.isActive ? 'text-red-600' : 'text-green-600' %> hover:underline">
-                                        <i class="fas fa-<%= referralOffer.isActive ? 'ban' : 'check' %>"></i>
-                                        <%= referralOffer.isActive ? 'Disable' : 'Enable' %>
-                                    </button>
-                                </td>
-                            </tr>
-                            <% } else { %>
-                            <tr>
-                                <td colspan="5" class="px-4 py-6 text-center text-gray-500">
-                                    No referral offer configured
-                                </td>
-                            </tr>
-                            <% } %>
-                        </tbody>
-                    </table>
-                </div>
-            </section>
+                            <div class="bg-white border rounded-lg overflow-hidden shadow-sm">
+                                <!-- Desktop Table -->
+                                <div class="hidden md:block overflow-x-auto">
+                                    <table class="min-w-full text-sm text-left">
+                                        <thead class="bg-gray-100 text-gray-700">
+                                            <tr>
+                                                <th class="px-4 py-3 font-medium uppercase tracking-wider">Referral
+                                                    Bonus
+                                                </th>
+                                                <th class="px-4 py-3 font-medium uppercase tracking-wider">Max Uses Per
+                                                    User
+                                                </th>
+                                                <th class="px-4 py-3 font-medium uppercase tracking-wider">Status</th>
+                                                <th class="px-4 py-3 font-medium uppercase tracking-wider">Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="divide-y" id="referralTableBody">
+                                            <% if(referralOffer) { %>
+                                                <tr>
+                                                    <td class="px-4 py-3 font-medium">₹<%= referralOffer.refferalBonus
+                                                            %>
+                                                    </td>
+                                                    <td class="px-4 py-3">
+                                                        <%= referralOffer.maxUsesPerUser %>
+                                                    </td>
+                                                    <td class="px-4 py-3">
+                                                        <span
+                                                            class="<%= referralOffer.isActive ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700' %> px-2 py-1 rounded-full text-xs font-semibold">
+                                                            <%= referralOffer.isActive ? 'Active' : 'Inactive' %>
+                                                        </span>
+                                                    </td>
+                                                    <td class="px-4 py-3 space-x-2">
+                                                        <button onclick="openEditReferralModal()"
+                                                            class="text-blue-600 hover:text-blue-800 bg-blue-50 px-3 py-1 rounded transition">
+                                                            <i class="fas fa-edit mr-1"></i> Edit
+                                                        </button>
+                                                        <button
+                                                            onclick="toggleReferralStatus('<%= referralOffer.isActive %>')"
+                                                            class="<%= referralOffer.isActive ? 'text-red-600 bg-red-50 hover:text-red-800' : 'text-green-600 bg-green-50 hover:text-green-800' %> px-3 py-1 rounded transition">
+                                                            <i
+                                                                class="fas fa-<%= referralOffer.isActive ? 'ban' : 'check' %> mr-1"></i>
+                                                            <%= referralOffer.isActive ? 'Disable' : 'Enable' %>
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                                <% } else { %>
+                                                    <tr>
+                                                        <td colspan="4" class="px-4 py-6 text-center text-gray-500">
+                                                            No referral offer configured
+                                                        </td>
+                                                    </tr>
+                                                    <% } %>
+                                        </tbody>
+                                    </table>
+                                </div>
 
-            <!-- ================= Category Offer Section ================= -->
-            <section>
-                <div class="flex justify-between items-center mb-4">
-                    <h2 class="text-xl font-bold text-gray-800">
-                        <i class="fas fa-tags mr-2 text-green-600"></i>
-                        Category Offers
-                    </h2>
+                                <!-- Mobile Cards -->
+                                <div class="md:hidden p-4 space-y-4">
+                                    <% if(referralOffer) { %>
+                                        <div class="border rounded-lg p-4 bg-gray-50">
+                                            <div class="flex justify-between items-start mb-2">
+                                                <div>
+                                                    <span class="text-xs text-gray-500 uppercase">Status</span>
+                                                    <div class="mt-1">
+                                                        <span
+                                                            class="<%= referralOffer.isActive ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700' %> px-2 py-1 rounded-full text-xs font-semibold">
+                                                            <%= referralOffer.isActive ? 'Active' : 'Inactive' %>
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                                <div class="flex space-x-2">
+                                                    <button onclick="openEditReferralModal()"
+                                                        class="text-blue-600 bg-blue-100 p-2 rounded-full">
+                                                        <i class="fas fa-edit"></i>
+                                                    </button>
+                                                    <button
+                                                        onclick="toggleReferralStatus('<%= referralOffer.isActive %>')"
+                                                        class="<%= referralOffer.isActive ? 'text-red-600 bg-red-100' : 'text-green-600 bg-green-100' %> p-2 rounded-full">
+                                                        <i
+                                                            class="fas fa-<%= referralOffer.isActive ? 'ban' : 'check' %>"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            <div class="grid grid-cols-2 gap-4 text-sm mt-3">
+                                                <div>
+                                                    <span class="block text-gray-500 text-xs uppercase">Bonus</span>
+                                                    <span class="font-bold text-lg">₹<%= referralOffer.refferalBonus %>
+                                                    </span>
+                                                </div>
+                                                <div>
+                                                    <span class="block text-gray-500 text-xs uppercase">Max Uses</span>
+                                                    <span class="font-bold text-lg">
+                                                        <%= referralOffer.maxUsesPerUser %>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <% } else { %>
+                                            <div class="text-center text-gray-500 py-4">No referral offer configured
+                                            </div>
+                                            <% } %>
+                                </div>
+                            </div>
+                        </section>
 
-                    <button onclick="openAddCategoryOfferModal()" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
-                        <i class="fas fa-plus mr-1"></i> Add Category Offer
-                    </button>
-                </div>
+                        <!-- ================= Category Offer Section ================= -->
+                        <section>
+                            <div class="flex justify-between items-center mb-4">
+                                <h2 class="text-xl font-bold text-gray-800">
+                                    <i class="fas fa-tags mr-2 text-green-600"></i>
+                                    Category Offers
+                                </h2>
 
-                <div class="overflow-x-auto border rounded-lg">
-                    <table class="min-w-full text-sm text-left">
-                        <thead class="bg-gray-100 text-gray-700">
-                            <tr>
-                                <th class="px-4 py-3">Category</th>
-                                <th class="px-4 py-3">Discount (%)</th>
-                                <th class="px-4 py-3">Start Date</th>
-                                <th class="px-4 py-3">End Date</th>
-                                <th class="px-4 py-3">Status</th>
-                                <th class="px-4 py-3">Actions</th>
-                            </tr>
-                        </thead>
+                                <button onclick="openAddCategoryOfferModal()"
+                                    class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
+                                    <i class="fas fa-plus mr-1"></i> Add Category Offer
+                                </button>
+                            </div>
 
-                        <tbody class="divide-y" id="categoryOffersTableBody">
-                            <% if(categoryOffers && categoryOffers.length > 0) { %>
-                                <% categoryOffers.forEach(offer => { %>
-                                <tr data-offer-id="<%= offer._id %>">
-                                    <td class="px-4 py-3 font-medium">
-                                        <%= offer.categoryId?.categoryname || 'N/A' %>
-                                    </td>
-                                    <td class="px-4 py-3"><%= offer.discountPercentage %>%</td>
-                                    <td class="px-4 py-3"><%= new Date(offer.startDate).toLocaleDateString() %></td>
-                                    <td class="px-4 py-3"><%= new Date(offer.endDate).toLocaleDateString() %></td>
-                                    <td class="px-4 py-3">
-                                        <span class="<%= offer.isActive ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700' %> px-2 py-1 rounded text-xs">
-                                            <%= offer.isActive ? 'Active' : 'Inactive' %>
-                                        </span>
-                                    </td>
-                                    <td class="px-4 py-3 space-x-2">
-                                        <button onclick='editCategoryOffer(<%=JSON.stringify(offer)%>)' class="text-blue-600 hover:underline">
-                                            <i class="fas fa-edit"></i> Edit
-                                        </button>
-                                        <button onclick="toggleCategoryOfferStatus('<%= offer._id %>', <%= offer.isActive %>)" 
-                                                class="<%= offer.isActive ? 'text-red-600' : 'text-green-600' %> hover:underline">
-                                            <i class="fas fa-<%= offer.isActive ? 'ban' : 'check' %>"></i>
-                                            <%= offer.isActive ? 'Disable' : 'Enable' %>
-                                        </button>
-                                    </td>
-                                </tr>
-                                <% }) %>
-                            <% } else { %>
-                            <tr>
-                                <td colspan="6" class="px-4 py-6 text-center text-gray-500">
-                                    No category offers available
-                                </td>
-                            </tr>
-                            <% } %>
-                        </tbody>
-                    </table>
-                </div>
-            </section>
+                            <div class="bg-white border rounded-lg overflow-hidden shadow-sm">
+                                <!-- Desktop Table -->
+                                <div class="hidden md:block overflow-x-auto">
+                                    <table class="min-w-full text-sm text-left">
+                                        <thead class="bg-gray-100 text-gray-700">
+                                            <tr>
+                                                <th class="px-4 py-3 font-medium uppercase tracking-wider">Category</th>
+                                                <th class="px-4 py-3 font-medium uppercase tracking-wider">Discount</th>
+                                                <th class="px-4 py-3 font-medium uppercase tracking-wider">Duration</th>
+                                                <th class="px-4 py-3 font-medium uppercase tracking-wider">Status</th>
+                                                <th class="px-4 py-3 font-medium uppercase tracking-wider">Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="divide-y" id="categoryOffersTableBody">
+                                            <% if(categoryOffers && categoryOffers.length> 0) { %>
+                                                <% categoryOffers.forEach(offer=> { %>
+                                                    <tr data-offer-id="<%= offer._id %>"
+                                                        class="hover:bg-gray-50 transition">
+                                                        <td class="px-4 py-3 font-medium">
+                                                            <%= offer.categoryId?.categoryname || 'N/A' %>
+                                                        </td>
+                                                        <td class="px-4 py-3 text-purple-700 font-bold">
+                                                            <%= offer.discountPercentage %>%
+                                                        </td>
+                                                        <td class="px-4 py-3 text-gray-600 text-xs">
+                                                            <%= new Date(offer.startDate).toLocaleDateString() %> - <%=
+                                                                    new Date(offer.endDate).toLocaleDateString() %>
+                                                        </td>
+                                                        <td class="px-4 py-3">
+                                                            <span
+                                                                class="<%= offer.isActive ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700' %> px-2 py-1 rounded-full text-xs font-semibold">
+                                                                <%= offer.isActive ? 'Active' : 'Inactive' %>
+                                                            </span>
+                                                        </td>
+                                                        <td class="px-4 py-3 space-x-2">
+                                                            <button
+                                                                onclick='editCategoryOffer(<%=JSON.stringify(offer)%>)'
+                                                                class="text-blue-600 hover:text-blue-800 bg-blue-50 px-2 py-1 rounded">
+                                                                <i class="fas fa-edit"></i>
+                                                            </button>
+                                                            <button
+                                                                onclick="toggleCategoryOfferStatus('<%= offer._id %>', <%= offer.isActive %>)"
+                                                                class="<%= offer.isActive ? 'text-red-600 bg-red-50 hover:text-red-800' : 'text-green-600 bg-green-50 hover:text-green-800' %> px-2 py-1 rounded">
+                                                                <i
+                                                                    class="fas fa-<%= offer.isActive ? 'ban' : 'check' %>"></i>
+                                                            </button>
+                                                        </td>
+                                                    </tr>
+                                                    <% }) %>
+                                                        <% } else { %>
+                                                            <tr>
+                                                                <td colspan="5"
+                                                                    class="px-4 py-6 text-center text-gray-500">
+                                                                    No category offers available</td>
+                                                            </tr>
+                                                            <% } %>
+                                        </tbody>
+                                    </table>
+                                </div>
 
-        </main>
-    </div>
-</div>
+                                <!-- Mobile Cards -->
+                                <div class="md:hidden grid grid-cols-1 divide-y divide-gray-200">
+                                    <% if(categoryOffers && categoryOffers.length> 0) { %>
+                                        <% categoryOffers.forEach(offer=> { %>
+                                            <div class="p-4 space-y-3">
+                                                <div class="flex justify-between items-start">
+                                                    <div>
+                                                        <h3 class="text-lg font-bold text-gray-900">
+                                                            <%= offer.categoryId?.categoryname || 'N/A' %>
+                                                        </h3>
+                                                        <div class="flex items-center gap-2 mt-1">
+                                                            <span class="text-lg font-bold text-purple-700">
+                                                                <%= offer.discountPercentage %>% OFF
+                                                            </span>
+                                                            <span
+                                                                class="<%= offer.isActive ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700' %> px-2 py-0.5 rounded-full text-xs font-semibold">
+                                                                <%= offer.isActive ? 'Active' : 'Inactive' %>
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="flex space-x-2">
+                                                        <button onclick='editCategoryOffer(<%=JSON.stringify(offer)%>)'
+                                                            class="text-blue-600 bg-blue-50 p-2 rounded-lg">
+                                                            <i class="fas fa-edit"></i>
+                                                        </button>
+                                                        <button
+                                                            onclick="toggleCategoryOfferStatus('<%= offer._id %>', <%= offer.isActive %>)"
+                                                            class="<%= offer.isActive ? 'text-red-600 bg-red-50' : 'text-green-600 bg-green-50' %> p-2 rounded-lg">
+                                                            <i
+                                                                class="fas fa-<%= offer.isActive ? 'ban' : 'check' %>"></i>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                                <div class="text-xs text-gray-500 bg-gray-50 p-2 rounded">
+                                                    <div class="flex justify-between">
+                                                        <span>Start: <%= new Date(offer.startDate).toLocaleDateString()
+                                                                %>
+                                                        </span>
+                                                        <span>End: <%= new Date(offer.endDate).toLocaleDateString() %>
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <% }) %>
+                                                <% } else { %>
+                                                    <div class="p-4 text-center text-gray-500">No category offers
+                                                        available
+                                                    </div>
+                                                    <% } %>
+                                </div>
+                            </div>
+                        </section>
 
-<!-- ================= Edit Referral Modal ================= -->
-<div id="editReferralModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-    <div class="bg-white rounded-lg p-6 w-full max-w-md">
-        <div class="flex justify-between items-center mb-4">
-            <h3 class="text-xl font-bold">Edit Referral Offer</h3>
-            <button onclick="closeEditReferralModal()" class="text-gray-500 hover:text-gray-700">
-                <i class="fas fa-times"></i>
-            </button>
-        </div>
-
-        <form id="editReferralForm">
-            <div class="space-y-4">
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Referral Bonus</label>
-                    <input type="text" name="bonus" value="<%= referralOffer?.refferalBonus || '' %>" 
-                           class="w-full border rounded px-3 py-2">
-                </div>
-
-
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Max Uses Per User</label>
-                    <input type="number" name="maxUsesPerUser" value="<%= referralOffer?.maxUsesPerUser || '' %>" 
-                           min="1" required
-                           class="w-full border rounded px-3 py-2">
-                </div>
-
-                <div class="flex gap-2 pt-4">
-                    <button type="submit" class="flex-1 bg-purple-600 text-white py-2 rounded hover:bg-purple-700">
-                        <i class="fas fa-save mr-1"></i> Update
-                    </button>
-                    <button type="button" onclick="closeEditReferralModal()" 
-                            class="flex-1 bg-gray-300 text-gray-700 py-2 rounded hover:bg-gray-400">
-                        Cancel
-                    </button>
-                </div>
+                    </main>
             </div>
-        </form>
     </div>
-</div>
 
-<!-- ================= Add/Edit Category Offer Modal ================= -->
-<div id="categoryOfferModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-    <div class="bg-white rounded-lg p-6 w-full max-w-md">
-        <div class="flex justify-between items-center mb-4">
-            <h3 class="text-xl font-bold" id="categoryModalTitle">Add Category Offer</h3>
-            <button onclick="closeCategoryOfferModal()" class="text-gray-500 hover:text-gray-700">
-                <i class="fas fa-times"></i>
-            </button>
-        </div>
+    <!-- ================= Edit Referral Modal ================= -->
+    <div id="editReferralModal"
+        class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white rounded-lg p-6 w-full max-w-md">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-bold">Edit Referral Offer</h3>
+                <button onclick="closeEditReferralModal()" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
 
-        <form id="categoryOfferForm">
-            <input type="hidden" name="offerId" id="editOfferId">
-            
-            <div class="space-y-4">
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Select Category</label>
-                    <select name="categoryId" id="categorySelect" required
+            <form id="editReferralForm">
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Referral Bonus</label>
+                        <input type="text" name="bonus" value="<%= referralOffer?.refferalBonus || '' %>"
                             class="w-full border rounded px-3 py-2">
-                        <option value="">-- Select Category --</option>
-                        <% if(categories && categories.length > 0) { %>
-                            <% categories.forEach(cat => { %>
-                            <option value="<%= cat._id %>"><%= cat.categoryname %></option>
-                            <% }) %>
-                        <% } %>
-                    </select>
-                </div>
+                    </div>
 
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Discount Percentage</label>
-                    <input type="number" name="discountPercentage" id="discountPercentage"
-                           min="1" max="100" required
-                           class="w-full border rounded px-3 py-2"
-                           placeholder="Enter discount %">
-                </div>
 
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Start Date</label>
-                    <input type="date" name="startDate" id="startDate" required
-                           class="w-full border rounded px-3 py-2">
-                </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Max Uses Per User</label>
+                        <input type="number" name="maxUsesPerUser" value="<%= referralOffer?.maxUsesPerUser || '' %>"
+                            min="1" required class="w-full border rounded px-3 py-2">
+                    </div>
 
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">End Date</label>
-                    <input type="date" name="endDate" id="endDate" required
-                           class="w-full border rounded px-3 py-2">
-                </div>
-
-                <div class="flex gap-2 pt-4">
-                    <button type="submit" id="categoryOfferSubmitBtn" 
-                            class="flex-1 bg-green-600 text-white py-2 rounded hover:bg-green-700">
-                        <i class="fas fa-save mr-1"></i> Save Offer
-                    </button>
-                    <button type="button" onclick="closeCategoryOfferModal()" 
+                    <div class="flex gap-2 pt-4">
+                        <button type="submit" class="flex-1 bg-purple-600 text-white py-2 rounded hover:bg-purple-700">
+                            <i class="fas fa-save mr-1"></i> Update
+                        </button>
+                        <button type="button" onclick="closeEditReferralModal()"
                             class="flex-1 bg-gray-300 text-gray-700 py-2 rounded hover:bg-gray-400">
-                        Cancel
-                    </button>
+                            Cancel
+                        </button>
+                    </div>
                 </div>
-            </div>
-        </form>
+            </form>
+        </div>
     </div>
-</div>
 
-<script>
-// ================= SweetAlert Helpers =================
-const Toast = Swal.mixin({
-    toast: true,
-    position: 'top-end',
-    showConfirmButton: false,
-    timer: 3000,
-    timerProgressBar: true,
-});
+    <!-- ================= Add/Edit Category Offer Modal ================= -->
+    <div id="categoryOfferModal"
+        class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white rounded-lg p-6 w-full max-w-md">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-bold" id="categoryModalTitle">Add Category Offer</h3>
+                <button onclick="closeCategoryOfferModal()" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
 
-// ================= Referral Offer Functions =================
+            <form id="categoryOfferForm">
+                <input type="hidden" name="offerId" id="editOfferId">
 
-function openEditReferralModal() {
-    document.getElementById('editReferralModal').classList.remove('hidden');
-}
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Select Category</label>
+                        <select name="categoryId" id="categorySelect" required class="w-full border rounded px-3 py-2">
+                            <option value="">-- Select Category --</option>
+                            <% if(categories && categories.length> 0) { %>
+                                <% categories.forEach(cat=> { %>
+                                    <option value="<%= cat._id %>">
+                                        <%= cat.categoryname %>
+                                    </option>
+                                    <% }) %>
+                                        <% } %>
+                        </select>
+                    </div>
 
-function closeEditReferralModal() {
-    document.getElementById('editReferralModal').classList.add('hidden');
-}
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Discount Percentage</label>
+                        <input type="number" name="discountPercentage" id="discountPercentage" min="1" max="100"
+                            required class="w-full border rounded px-3 py-2" placeholder="Enter discount %">
+                    </div>
 
-document.getElementById('editReferralForm').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    
-    const formData = new FormData(e.target);
-    const data = {
-        refferalBonus: parseInt(formData.get('bonus')),
-        maxUsesPerUser: parseInt(formData.get('maxUsesPerUser'))
-    };
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Start Date</label>
+                        <input type="date" name="startDate" id="startDate" required
+                            class="w-full border rounded px-3 py-2">
+                    </div>
 
-    try {
-        const response = await fetch('/admin/offers/referral/update', {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(data)
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">End Date</label>
+                        <input type="date" name="endDate" id="endDate" required class="w-full border rounded px-3 py-2">
+                    </div>
+
+                    <div class="flex gap-2 pt-4">
+                        <button type="submit" id="categoryOfferSubmitBtn"
+                            class="flex-1 bg-green-600 text-white py-2 rounded hover:bg-green-700">
+                            <i class="fas fa-save mr-1"></i> Save Offer
+                        </button>
+                        <button type="button" onclick="closeCategoryOfferModal()"
+                            class="flex-1 bg-gray-300 text-gray-700 py-2 rounded hover:bg-gray-400">
+                            Cancel
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+
+        // ================= SweetAlert Helpers =================
+        const Toast = Swal.mixin({
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true,
         });
 
-        const result = await response.json();
+        // ================= Referral Offer Functions =================
 
-        if (result.success) {
-            await Swal.fire({
-                icon: 'success',
-                title: 'Updated!',
-                text: 'Referral offer updated successfully',
-                confirmButtonColor: '#7c3aed', // purple-600
-                timer: 2000
-            });
-            location.reload();
-        } else {
-            await Swal.fire({
-                icon: 'error',
-                title: 'Failed',
-                text: result.message || 'Failed to update referral offer',
-                confirmButtonColor: '#7c3aed'
-            });
+        function openEditReferralModal() {
+            document.getElementById('editReferralModal').classList.remove('hidden');
         }
-    } catch (error) {
-        console.error('Error:', error);
-        await Swal.fire({
-            icon: 'error',
-            title: 'Error',
-            text: 'An error occurred while updating',
-            confirmButtonColor: '#7c3aed'
+
+        function closeEditReferralModal() {
+            document.getElementById('editReferralModal').classList.add('hidden');
+        }
+
+        document.getElementById('editReferralForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const formData = new FormData(e.target);
+            const data = {
+                refferalBonus: parseInt(formData.get('bonus')),
+                maxUsesPerUser: parseInt(formData.get('maxUsesPerUser'))
+            };
+
+            try {
+                const response = await fetch('/admin/offers/referral/update', {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    await Swal.fire({
+                        icon: 'success',
+                        title: 'Updated!',
+                        text: 'Referral offer updated successfully',
+                        confirmButtonColor: '#7c3aed', // purple-600
+                        timer: 2000
+                    });
+                    location.reload();
+                } else {
+                    await Swal.fire({
+                        icon: 'error',
+                        title: 'Failed',
+                        text: result.message || 'Failed to update referral offer',
+                        confirmButtonColor: '#7c3aed'
+                    });
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                await Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'An error occurred while updating',
+                    confirmButtonColor: '#7c3aed'
+                });
+            }
         });
-    }
-});
 
-async function toggleReferralStatus(currentStatus) {
-    const isActive = currentStatus === 'true';
-    const action = isActive ? 'disable' : 'enable';
-    const actionPast = isActive ? 'disabled' : 'enabled';
+        async function toggleReferralStatus(currentStatus) {
+            const isActive = currentStatus === 'true';
+            const action = isActive ? 'disable' : 'enable';
+            const actionPast = isActive ? 'disabled' : 'enabled';
 
-    const { isConfirmed } = await Swal.fire({
-        title: `Are you sure?`,
-        text: `You want to ${action} the referral offer.`,
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#7c3aed',
-        cancelButtonColor: '#d1d5db',
-        confirmButtonText: `Yes, ${action} it!`
-    });
-
-    if (!isConfirmed) return;
-
-    try {
-        const response = await fetch('/admin/offers/referral/toggle', {
-            method: 'PATCH',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ isActive: !isActive })
-        });
-
-        const result = await response.json();
-
-        if (result.success) {
-            await Swal.fire({
-                icon: 'success',
-                title: 'Success',
-                text: `Referral offer ${actionPast} successfully!`,
+            const { isConfirmed } = await Swal.fire({
+                title: `Are you sure?`,
+                text: `You want to ${action} the referral offer.`,
+                icon: 'warning',
+                showCancelButton: true,
                 confirmButtonColor: '#7c3aed',
-                timer: 2000
+                cancelButtonColor: '#d1d5db',
+                confirmButtonText: `Yes, ${action} it!`
             });
-            location.reload();
-        } else {
-            await Swal.fire({
-                icon: 'error',
-                title: 'Failed',
-                text: result.message || `Failed to ${action} referral offer`,
-                confirmButtonColor: '#7c3aed'
-            });
+
+            if (!isConfirmed) return;
+
+            try {
+                const response = await fetch('/admin/offers/referral/toggle', {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ isActive: !isActive })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    await Swal.fire({
+                        icon: 'success',
+                        title: 'Success',
+                        text: `Referral offer ${actionPast} successfully!`,
+                        confirmButtonColor: '#7c3aed',
+                        timer: 2000
+                    });
+                    location.reload();
+                } else {
+                    await Swal.fire({
+                        icon: 'error',
+                        title: 'Failed',
+                        text: result.message || `Failed to ${action} referral offer`,
+                        confirmButtonColor: '#7c3aed'
+                    });
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                await Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'An error occurred',
+                    confirmButtonColor: '#7c3aed'
+                });
+            }
         }
-    } catch (error) {
-        console.error('Error:', error);
-        await Swal.fire({
-            icon: 'error',
-            title: 'Error',
-            text: 'An error occurred',
-            confirmButtonColor: '#7c3aed'
-        });
-    }
-}
 
-// ================= Category Offer Functions =================
+        // ================= Category Offer Functions =================
 
-function openAddCategoryOfferModal() {
-    document.getElementById('categoryModalTitle').textContent = 'Add Category Offer';
-    document.getElementById('categoryOfferForm').reset();
-    document.getElementById('editOfferId').value = '';
-    document.getElementById('categorySelect').disabled = false;
-    document.getElementById('categoryOfferSubmitBtn').innerHTML = '<i class="fas fa-save mr-1"></i> Save Offer';
-    document.getElementById('categoryOfferModal').classList.remove('hidden');
-    
-    const today = new Date().toISOString().split('T')[0];
-    document.getElementById('startDate').min = today;
-    document.getElementById('endDate').min = today;
-}
+        function openAddCategoryOfferModal() {
+            document.getElementById('categoryModalTitle').textContent = 'Add Category Offer';
+            document.getElementById('categoryOfferForm').reset();
+            document.getElementById('editOfferId').value = '';
+            document.getElementById('categorySelect').disabled = false;
+            document.getElementById('categoryOfferSubmitBtn').innerHTML = '<i class="fas fa-save mr-1"></i> Save Offer';
+            document.getElementById('categoryOfferModal').classList.remove('hidden');
 
-function closeCategoryOfferModal() {
-    document.getElementById('categoryOfferModal').classList.add('hidden');
-}
-
-function editCategoryOffer(offer) {
-    document.getElementById('categoryModalTitle').textContent = 'Edit Category Offer';
-    document.getElementById('editOfferId').value = offer._id;
-    document.getElementById('categorySelect').value = offer.categoryId._id || offer.categoryId;
-    document.getElementById('categorySelect').disabled = true;
-    document.getElementById('discountPercentage').value = offer.discountPercentage;
-    document.getElementById('startDate').value = new Date(offer.startDate).toISOString().split('T')[0];
-    document.getElementById('endDate').value = new Date(offer.endDate).toISOString().split('T')[0];
-    document.getElementById('categoryOfferSubmitBtn').innerHTML = '<i class="fas fa-save mr-1"></i> Update Offer';
-    document.getElementById('categoryOfferModal').classList.remove('hidden');
-}
-
-document.getElementById('categoryOfferForm').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    
-    const formData = new FormData(e.target);
-    const offerId = formData.get('offerId');
-    
-    const data = {
-        categoryId: formData.get('categoryId'),
-        discountPercentage: parseInt(formData.get('discountPercentage')),
-        startDate: formData.get('startDate'),
-        endDate: formData.get('endDate')
-    };
-
-    if (new Date(data.endDate) <= new Date(data.startDate)) {
-        await Swal.fire({
-            icon: 'warning',
-            title: 'Invalid dates',
-            text: 'End date must be after start date',
-            confirmButtonColor: '#7c3aed'
-        });
-        return;
-    }
-
-    try {
-        const url = offerId 
-            ? `/admin/offers/category/${offerId}`
-            : '/admin/offers/category/create';
-        
-        const method = offerId ? 'PUT' : 'POST';
-
-        const response = await fetch(url, {
-            method: method,
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(data)
-        });
-
-        const result = await response.json();
-
-        if (result.success) {
-            await Swal.fire({
-                icon: 'success',
-                title: 'Success!',
-                text: offerId ? 'Category offer updated successfully!' : 'Category offer created successfully!',
-                confirmButtonColor: '#16a34a', // green-600
-                timer: 2000
-            });
-            location.reload();
-        } else {
-            await Swal.fire({
-                icon: 'error',
-                title: 'Failed',
-                text: result.message || 'Failed to save category offer',
-                confirmButtonColor: '#16a34a'
-            });
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('startDate').min = today;
+            document.getElementById('endDate').min = today;
         }
-    } catch (error) {
-        console.error('Error:', error);
-        await Swal.fire({
-            icon: 'error',
-            title: 'Error',
-            text: 'An error occurred while saving',
-            confirmButtonColor: '#16a34a'
+
+        function closeCategoryOfferModal() {
+            document.getElementById('categoryOfferModal').classList.add('hidden');
+        }
+
+        function editCategoryOffer(offer) {
+            document.getElementById('categoryModalTitle').textContent = 'Edit Category Offer';
+            document.getElementById('editOfferId').value = offer._id;
+            document.getElementById('categorySelect').value = offer.categoryId._id || offer.categoryId;
+            document.getElementById('categorySelect').disabled = true;
+            document.getElementById('discountPercentage').value = offer.discountPercentage;
+            document.getElementById('startDate').value = new Date(offer.startDate).toISOString().split('T')[0];
+            document.getElementById('endDate').value = new Date(offer.endDate).toISOString().split('T')[0];
+            document.getElementById('categoryOfferSubmitBtn').innerHTML = '<i class="fas fa-save mr-1"></i> Update Offer';
+            document.getElementById('categoryOfferModal').classList.remove('hidden');
+        }
+
+        document.getElementById('categoryOfferForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const formData = new FormData(e.target);
+            const offerId = formData.get('offerId');
+
+            const data = {
+                categoryId: formData.get('categoryId'),
+                discountPercentage: parseInt(formData.get('discountPercentage')),
+                startDate: formData.get('startDate'),
+                endDate: formData.get('endDate')
+            };
+
+            if (new Date(data.endDate) <= new Date(data.startDate)) {
+                await Swal.fire({
+                    icon: 'warning',
+                    title: 'Invalid dates',
+                    text: 'End date must be after start date',
+                    confirmButtonColor: '#7c3aed'
+                });
+                return;
+            }
+
+            try {
+                const url = offerId
+                    ? `/admin/offers/category/${offerId}`
+                    : '/admin/offers/category/create';
+
+                const method = offerId ? 'PUT' : 'POST';
+
+                const response = await fetch(url, {
+                    method: method,
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    await Swal.fire({
+                        icon: 'success',
+                        title: 'Success!',
+                        text: offerId ? 'Category offer updated successfully!' : 'Category offer created successfully!',
+                        confirmButtonColor: '#16a34a', // green-600
+                        timer: 2000
+                    });
+                    location.reload();
+                } else {
+                    await Swal.fire({
+                        icon: 'error',
+                        title: 'Failed',
+                        text: result.message || 'Failed to save category offer',
+                        confirmButtonColor: '#16a34a'
+                    });
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                await Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'An error occurred while saving',
+                    confirmButtonColor: '#16a34a'
+                });
+            }
         });
-    }
-});
 
-async function toggleCategoryOfferStatus(offerId, currentStatus) {
-    const isActive = !!currentStatus;
-    const action = isActive ? 'disable' : 'enable';
-    const actionPast = isActive ? 'disabled' : 'enabled';
+        async function toggleCategoryOfferStatus(offerId, currentStatus) {
+            const isActive = !!currentStatus;
+            const action = isActive ? 'disable' : 'enable';
+            const actionPast = isActive ? 'disabled' : 'enabled';
 
-    const { isConfirmed } = await Swal.fire({
-        title: 'Are you sure?',
-        text: `You want to ${action} this category offer.`,
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#16a34a',
-        cancelButtonColor: '#d1d5db',
-        confirmButtonText: `Yes, ${action} it!`
-    });
-
-    if (!isConfirmed) return;
-
-    try {
-        const response = await fetch(`/admin/offers/category/${offerId}/toggle`, {
-            method: 'PATCH',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ isActive: !isActive })
-        });
-
-        const result = await response.json();
-
-        if (result.success) {
-            await Swal.fire({
-                icon: 'success',
-                title: 'Success',
-                text: `Category offer ${actionPast} successfully!`,
+            const { isConfirmed } = await Swal.fire({
+                title: 'Are you sure?',
+                text: `You want to ${action} this category offer.`,
+                icon: 'warning',
+                showCancelButton: true,
                 confirmButtonColor: '#16a34a',
-                timer: 2000
+                cancelButtonColor: '#d1d5db',
+                confirmButtonText: `Yes, ${action} it!`
             });
-            location.reload();
-        } else {
-            await Swal.fire({
-                icon: 'error',
-                title: 'Failed',
-                text: result.message || `Failed to ${action} category offer`,
-                confirmButtonColor: '#16a34a'
-            });
-        }
-    } catch (error) {
-        console.error('Error:', error);
-        await Swal.fire({
-            icon: 'error',
-            title: 'Error',
-            text: 'An error occurred',
-            confirmButtonColor: '#16a34a'
-        });
-    }
-}
 
-// Auto-update end date min
-document.getElementById('startDate').addEventListener('change', function() {
-    document.getElementById('endDate').min = this.value;
-});
-</script>
+            if (!isConfirmed) return;
+
+            try {
+                const response = await fetch(`/admin/offers/category/${offerId}/toggle`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ isActive: !isActive })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    await Swal.fire({
+                        icon: 'success',
+                        title: 'Success',
+                        text: `Category offer ${actionPast} successfully!`,
+                        confirmButtonColor: '#16a34a',
+                        timer: 2000
+                    });
+                    location.reload();
+                } else {
+                    await Swal.fire({
+                        icon: 'error',
+                        title: 'Failed',
+                        text: result.message || `Failed to ${action} category offer`,
+                        confirmButtonColor: '#16a34a'
+                    });
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                await Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'An error occurred',
+                    confirmButtonColor: '#16a34a'
+                });
+            }
+        }
+
+        // Auto-update end date min
+        document.getElementById('startDate').addEventListener('change', function () {
+            document.getElementById('endDate').min = this.value;
+        });
+    </script>
 
 </body>
+
 </html>

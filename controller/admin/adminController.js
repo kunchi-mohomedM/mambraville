@@ -3,37 +3,60 @@ const bcrypt = require("bcryptjs");
 const Users = require('../../models/userSchema')
 
 
-const loadlogin = async (req, res) => {
-    try {
-        res.render("adminlogin")
-    } catch (error) {
-        console.log('error occured while login page rendering');
-    }
-}
+
 
 
 const login = async (req, res) => {
     try {
         const { email, password } = req.body;
-        console.log(email, password)
 
-        const admin = await Admin.findOne({ email })
-        console.log("Admin Found:", admin);
+        // Optional: keep this for security (timing attack prevention)
+        const dummyHash = "$2b$10$somefakehashthatwillnevermatch";
+        const admin = await Admin.findOne({ email });
 
         if (!admin) {
-            return res.render('adminlogin', { message: 'Invalid Email or Username' })
+            // still do dummy compare
+            await bcrypt.compare(password, dummyHash).catch(() => {});
+            return res.status(401).render('adminlogin', { 
+                message: 'Invalid email or password' 
+            });
         }
-        let status = await bcrypt.compare(password, admin.password)
-        if (!status) {
-            return res.render("adminlogin", { message: "Invalid Password" })
+
+        const passwordMatch = await bcrypt.compare(password, admin.password);
+
+        if (!passwordMatch) {
+            return res.status(401).render('adminlogin', { 
+                message: 'Invalid email or password' 
+            });
         }
+
         req.session.admin = true;
-        res.redirect("/admin/dashboard")
+        // Optional: regenerate session to prevent fixation
+        req.session.regenerate((err) => {
+            if (err) console.error("Session regenerate failed:", err);
+        });
+
+        return res.redirect("/admin/dashboard");
 
     } catch (error) {
-        console.log(error)
+        console.error("Login error:", error);
+        return res.status(500).render('adminlogin', { 
+            message: 'Something went wrong. Please try again later.' 
+        });
     }
-}
+};
+
+// Also update loadlogin (optional but cleaner)
+const loadlogin = async (req, res) => {
+    try {
+        res.render("adminlogin", { message: null });
+    } catch (err) {
+        console.error("Error rendering login page:", err);
+        res.status(500).render("adminlogin", { 
+            message: "Service unavailable – please try again later" 
+        });
+    }
+};
 
 
 const toggleBlockUser = async (req, res) => {
@@ -52,8 +75,7 @@ const toggleBlockUser = async (req, res) => {
         await user.save({ validateBeforeSave: false });
 
         if (user.isBlocked) {
-            // We don't destroy session here (hard without session store)
-            // → middleware will handle it on next request
+           
             console.log(`User ${userId} blocked → sessions will be cleared on next action`);
         }
 
@@ -140,7 +162,32 @@ const loaduser = async (req, res) => {
 
 
 
+const logout = async (req, res) => {
+    try {
+        // Most important line
+        req.session.destroy((err) => {
+            if (err) {
+                console.error("Session destroy error:", err);
+                return res.status(500).json({ 
+                    success: false, 
+                    message: "Logout failed. Please try again." 
+                });
+            }
 
+            // Optional: clear the cookie explicitly (good practice)
+            res.clearCookie('connect.sid'); // default name of express-session cookie
+
+            // Option A: JSON response (modern SPA / fetch/axios frontend)
+            // return res.status(200).json({ success: true, message: "Logged out successfully" });
+
+            // Option B: Traditional redirect (most common in EJS + form-based admin panels)
+            return res.redirect("/admin/login");
+        });
+    } catch (error) {
+        console.error("Logout error:", error);
+        res.redirect("/admin/login"); // fail-safe redirect
+    }
+};
 
 
 module.exports = {
@@ -148,5 +195,6 @@ module.exports = {
     login,
     loaduser,
     toggleBlockUser,
+    logout
 
 }

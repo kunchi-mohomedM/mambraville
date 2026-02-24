@@ -1,356 +1,209 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Add Coupon | Mambraville Admin</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
-    />
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-  </head>
 
-  <body class="bg-gray-100">
-    <div class="flex h-screen">
-      <!-- Sidebar (unchanged) -->
-      <div
-        id="sidebar"
-        class="w-64 bg-gradient-to-b from-black to-purple-900 text-white fixed inset-y-0 left-0 transform -translate-x-full md:relative md:translate-x-0 transition-transform duration-300 ease-in-out z-20 h-screen"
-      >
-        <!-- LOGO BLOCK -->
-        <div
-          class="p-6 flex items-center justify-center border-b border-purple-800/40"
-        >
-          <div class="text-center leading-tight select-none">
-            <h1 class="text-2xl font-extrabold tracking-tight">
-              <span class="text-blue-400">Gadgetr</span>
-              <span class="text-orange-400">y</span>
-            </h1>
-            <p
-              class="text-[9px] font-semibold uppercase tracking-widest text-gray-300 mt-1"
-            >
-              powered by mambra home appliances — 2004
-            </p>
-          </div>
-        </div>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Add Coupon | Mambraville Admin</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
 
-        <!-- NAVIGATION -->
-        <nav class="mt-4 space-y-1">
-          <a
-            href="/admin/dashboard"
-            class="nav-link flex items-center px-6 py-3 hover:bg-purple-800/70 rounded-lg transition"
-          >
-            <i class="fas fa-home w-5 mr-3"></i><span>Dashboard</span>
-          </a>
-          <a
-            href="/admin/products"
-            class="nav-link flex items-center px-6 py-3 hover:bg-purple-800/70 rounded-lg transition"
-          >
-            <i class="fas fa-box w-5 mr-3"></i><span>Products</span>
-          </a>
-          <a
-            href="/admin/users"
-            class="nav-link flex items-center px-6 py-3 hover:bg-purple-800/70 rounded-lg transition"
-          >
-            <i class="fas fa-users w-5 mr-3"></i><span>Users</span>
-          </a>
-          <a
-            href="/admin/orders"
-            class="nav-link flex items-center px-6 py-3 hover:bg-purple-800/70 rounded-lg transition"
-          >
-            <i class="fas fa-shopping-cart w-5 mr-3"></i><span>Orders</span>
-          </a>
-          <a
-            href="/admin/category"
-            class="nav-link flex items-center px-6 py-3 hover:bg-purple-800/70 rounded-lg transition"
-          >
-            <i class="fas fa-tags w-5 mr-3"></i><span>Category</span>
-          </a>
-          <a
-            href="/admin/coupon"
-            class="nav-link flex items-center px-6 py-3 hover:bg-purple-800/70 rounded-lg transition bg-purple-900 text-white font-semibold"
-          >
-            <i class="fas fa-ticket-alt w-5 mr-3"></i><span>Coupons</span>
-          </a>
-          <a
-            href="/admin/offers"
-            class="nav-link flex items-center px-6 py-3 hover:bg-purple-800/70 rounded-lg transition"
-          >
-            <i class="fas fa-gift w-5 mr-3"></i><span>Offers</span>
-          </a>
-          <a
-            href="/admin/brands"
-            class="nav-link flex items-center px-6 py-3 hover:bg-purple-800/70 rounded-lg transition"
-          >
-            <i class="fas fa-copyright w-5 mr-3"></i><span>Brands</span>
-          </a>
-        </nav>
+<body class="bg-gray-100">
 
-        <!-- LOGOUT BUTTON -->
-        <div class="absolute bottom-5 left-0 w-full px-6">
-          <button
-            onclick="logout()"
-            class="bg-white text-black py-2 px-4 rounded-full w-full font-semibold shadow-sm hover:bg-gray-200 transition"
-          >
-            Logout
-          </button>
-        </div>
-      </div>
+  <div class="flex h-screen">
+    <%- include('../partials/admin/sidebar') %>
 
-      <!-- Main Content -->
       <div class="flex-1 flex flex-col overflow-hidden">
-        <!-- Header (unchanged) -->
-        <header
-          class="bg-gradient-to-r from-black to-purple-900 text-white p-4 flex justify-between items-center"
-        >
-          <h1 class="text-2xl font-bold">Add Coupon</h1>
-          <!-- Header content -->
-        </header>
+        <%- include('../partials/admin/header', { pageTitle: 'Add New Coupon' }) %>
 
-        <!-- Content with Add Coupon Form -->
-        <main class="flex-1 overflow-y-auto p-6 bg-white m-4 rounded-lg shadow">
-          <div class="max-w-2xl mx-auto">
-            <h2 class="text-xl font-semibold mb-6">Create New Coupon</h2>
-            <form
-              id="couponForm"
-              class="space-y-6"
-              method="POST"
-              action="/addCoupon"
-            >
-              <!-- Coupon Code -->
-              <div>
-                <label
-                  for="coupon-code"
-                  class="block text-sm font-medium text-gray-700 mb-1"
-                >
-                  Coupon Code
-                </label>
-                <input
-                  type="text"
-                  id="coupon-code"
-                  name="couponcode"
-                  class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent"
-                  placeholder="Enter coupon code"
-                />
-                <p id="code-error" class="text-red-500 text-sm mt-1 hidden">
-                  Coupon code is required
-                </p>
-              </div>
+          <main class="flex-1 overflow-y-auto p-4 md:p-6 bg-white m-2 md:m-4 rounded-lg shadow">
+            <div class="max-w-2xl mx-auto">
+              <h2 class="text-2xl font-bold mb-6 text-purple-900">Create New Coupon</h2>
 
-              <!-- Discount type-->
-              <!-- Discount type -->
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">
-                  Discount Type
-                </label>
-                <select
-                  id="discount-type"
-                  class="w-full px-4 py-2 border rounded"
-                >
-                  <option value="percentage">Percentage</option>
-                  <option value="fixed">Fixed</option>
-                </select>
-              </div>
+              <form id="couponForm" class="space-y-6">
 
-              <!-- Discount -->
-              <div id="discount-field">
-                <label class="block text-sm font-medium text-gray-700 mb-1">
-                  Discount Amount
-                </label>
-                <input
-                  type="number"
-                  id="discount"
-                  name="discount"
-                  class="w-full px-4 py-2 border rounded"
-                />
-              </div>
+                <!-- Coupon Code -->
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Coupon Code *</label>
+                  <input type="text" id="coupon-code" name="couponcode" required
+                    class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-600"
+                    placeholder="e.g. SUMMER25" maxlength="10" />
+                  <p id="code-error" class="text-red-600 text-sm mt-1 hidden"></p>
+                </div>
 
-              <!-- Minimum Purchase -->
-              <div id="min-purchase-field">
-                <label class="block text-sm font-medium text-gray-700 mb-1">
-                  Minimum Purchase Amount
-                </label>
-                <input
-                  type="number"
-                  id="min-purchase"
-                  name="minpurchaseamount"
-                  class="w-full px-4 py-2 border rounded"
-                />
-              </div>
+                <!-- Discount Type -->
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Discount Type *</label>
+                  <select id="discount-type" name="discountType" required
+                    class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-600">
+                    <option value="percentage">Percentage</option>
+                    <option value="fixed">Fixed Amount</option>
+                  </select>
+                </div>
 
-              <!-- Maximum Discount -->
-              <div id="max-discount-field">
-                <label class="block text-sm font-medium text-gray-700 mb-1">
-                  Maximum Discount Amount
-                </label>
-                <input
-                  type="number"
-                  id="max-discount"
-                  name="maxdiscountamount"
-                  class="w-full px-4 py-2 border rounded"
-                />
-              </div>
+                <!-- Discount Value -->
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Discount Value *</label>
+                  <input type="number" id="discount" name="discount" required min="1" step="0.01"
+                    class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-600"
+                    placeholder="e.g. 25 or 150" />
+                  <p id="discount-error" class="text-red-600 text-sm mt-1 hidden"></p>
+                </div>
 
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">
-                  Start Date
-                </label>
-                <input
-                  type="date"
-                  name="startdate"
-                  id="start-date"
-                  class="w-full px-4 py-2 border rounded"
-                  required
-                />
-              </div>
+                <!-- Minimum Purchase -->
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Minimum Purchase Amount</label>
+                  <input type="number" id="min-purchase" name="minpurchaseamount" min="0" step="0.01"
+                    class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-600"
+                    placeholder="0 = no minimum" />
+                  <p id="minpurchase-error" class="text-red-600 text-sm mt-1 hidden"></p>
+                </div>
 
-              <!-- Expiry Date -->
-              <div id="expire-date-field">
-                <label class="block text-sm font-medium text-gray-700 mb-1">
-                  Expiry Date
-                </label>
-                <input
-                  type="date"
-                  id="expire-date"
-                  name="expiredate"
-                  class="w-full px-4 py-2 border rounded"
-                />
-              </div>
+                <!-- Max Discount (only for percentage) -->
+                <div id="max-discount-field">
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Maximum Discount Amount</label>
+                  <input type="number" id="max-discount" name="maxdiscountamount" min="0" step="0.01"
+                    class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-600"
+                    placeholder="Only for percentage type" />
+                  <p id="maxdiscount-error" class="text-red-600 text-sm mt-1 hidden"></p>
+                </div>
 
-              <!-- Add Button -->
-              <div class="flex justify-end">
-                <button
-                  type="submit"
-                  class="bg-purple-900 text-white px-6 py-2 rounded-md hover:bg-purple-800 focus:outline-none focus:ring-2 focus:ring-purple-600 focus:ring-offset-2"
-                >
-                  Add Coupon
-                </button>
-              </div>
-            </form>
-          </div>
-        </main>
+                <!-- Start Date -->
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Start Date *</label>
+                  <input type="date" name="startdate" id="start-date" required
+                    class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-600" />
+                </div>
+
+                <!-- Expiry Date -->
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Expiry Date *</label>
+                  <input type="date" id="expire-date" name="expiredate" required
+                    class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-600" />
+                  <p id="expiry-error" class="text-red-600 text-sm mt-1 hidden"></p>
+                </div>
+
+                <div class="flex justify-end pt-4">
+                  <button type="submit"
+                    class="bg-purple-900 hover:bg-purple-800 text-white px-8 py-3 rounded-md font-medium focus:outline-none focus:ring-2 focus:ring-purple-600 focus:ring-offset-2">
+                    Create Coupon
+                  </button>
+                </div>
+              </form>
+            </div>
+          </main>
       </div>
-    </div>
+  </div>
 
-    <script>
-      const discountTypeSelect = document.getElementById("discount-type");
-      const maxDiscountField = document.getElementById("max-discount-field");
+  <script>
+    const discountTypeSelect = document.getElementById("discount-type");
+    const maxDiscountField = document.getElementById("max-discount-field");
 
-      function toggleDiscountFields() {
-        const type = discountTypeSelect.value;
+    function toggleMaxDiscountField() {
+      if (discountTypeSelect.value === "fixed") {
+        maxDiscountField.classList.add("hidden");
+        document.getElementById("max-discount").value = "";
+        document.getElementById("maxdiscount-error").classList.add("hidden");
+      } else {
+        maxDiscountField.classList.remove("hidden");
+      }
+    }
 
-        if (type === "fixed") {
-          // Hide max discount for fixed
-          maxDiscountField.classList.add("hidden");
-          document.getElementById("max-discount").value = "";
-        } else {
-          // Show max discount for percentage
-          maxDiscountField.classList.remove("hidden");
-        }
+    discountTypeSelect.addEventListener("change", toggleMaxDiscountField);
+    toggleMaxDiscountField(); // initial state
+
+    // ── Form submission + validation ───────────────────────────────────────
+    document.getElementById("couponForm").addEventListener("submit", async function (e) {
+      e.preventDefault();
+
+      // Clear previous errors
+      document.querySelectorAll('[id$="-error"]').forEach(el => el.classList.add("hidden"));
+
+      const formData = new FormData(e.target);
+      const data = Object.fromEntries(formData);
+
+      let hasError = false;
+
+      // Basic required checks
+      if (!data.couponcode.trim()) {
+        document.getElementById("code-error").textContent = "Coupon code is required";
+        document.getElementById("code-error").classList.remove("hidden");
+        hasError = true;
       }
 
-      // Run on change
-      discountTypeSelect.addEventListener("change", toggleDiscountFields);
+      if (!data.discount || Number(data.discount) <= 0) {
+        document.getElementById("discount-error").textContent = "Discount must be greater than 0";
+        document.getElementById("discount-error").classList.remove("hidden");
+        hasError = true;
+      }
 
-      // Run on page load (default)
-      toggleDiscountFields();
+      if (!data.startdate || !data.expiredate) {
+        document.getElementById("expiry-error").textContent = "Both start and expiry dates are required";
+        document.getElementById("expiry-error").classList.remove("hidden");
+        hasError = true;
+      }
 
-     document
-  .getElementById("couponForm")
-  .addEventListener("submit", async function (e) {
-    e.preventDefault();
+      // Strict min purchase relation check
+      const discType = data.discountType;
+      const discVal = Number(data.discount) || 0;
+      const minPur = Number(data.minpurchaseamount) || 0;
+      const maxDisc = Number(data.maxdiscountamount) || 0;
 
-    // Read ALL fields
-    const couponCode    = document.getElementById("coupon-code").value.trim();
-    const discountType  = document.getElementById("discount-type").value;
-    const discount      = document.getElementById("discount").value.trim();
-    const minPurchase   = document.getElementById("min-purchase").value.trim();
-    const maxDiscount   = document.getElementById("max-discount").value.trim();
-    const startDateVal  = document.getElementById("start-date").value;     // ← added
-    const expireDate    = document.getElementById("expire-date").value;
-
-    const codeError = document.getElementById("code-error");
-
-    // Basic validation
-    if (!couponCode) {
-      codeError.classList.remove("hidden");
-      return;
-    } else {
-      codeError.classList.add("hidden");
-    }
-
-    if (!startDateVal) {
-      alert("Please select a start date");
-      return;
-    }
-
-    if (!expireDate) {
-      alert("Please select an expiry date");
-      return;
-    }
-
-    // Optional: client-side date range check
-    const startD = new Date(startDateVal);
-    const expD   = new Date(expireDate);
-    if (startD > expD) {
-      alert("Start date cannot be after expiry date");
-      return;
-    }
-
-    // Prepare data
-    const formData = {
-      couponcode: couponCode.toUpperCase(),   // good practice
-      discountType,
-      discount,
-      minpurchaseamount: minPurchase || 0,
-      maxdiscountamount: maxDiscount || 0,
-      startdate: startDateVal,                // ← very important!
-      expiredate: expireDate,
-    };
-
-    try {
-      const response = await fetch("/admin/addCoupon", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      });
-
-      const result = await response.json();
-
-      if (response.ok) {
-        Swal.fire({
-          icon: "success",
-          title: "Coupon Added!",
-          text: result.message,
-          confirmButtonText: "Go to Coupon Management",
-          confirmButtonColor: "#6b21a8",
-        }).then(() => {
-          window.location.href = "/admin/coupon";
-        });
-      } else {
+      if (discType === "fixed" && discVal >= minPur && minPur > 0) {
         Swal.fire({
           icon: "error",
-          title: "Error",
-          text: result.error || "Could not add coupon",
+          title: "Invalid Discount Rule",
+          text: "Fixed discount must be less than minimum purchase amount",
+          confirmButtonColor: "#dc2626"
         });
+        hasError = true;
       }
-    } catch (error) {
-      console.error("Error submitting form:", error);
-      Swal.fire({
-        icon: "error",
-        title: "Network Error",
-        text: "An error occurred while adding the coupon",
-      });
-    }
-  });
 
-function logout() {
-  window.location.href = "/admin/logout";
-}
-    </script>
-  </body>
+      if (discType === "percentage" && maxDisc >= minPur && minPur > 0) {
+        Swal.fire({
+          icon: "error",
+          title: "Invalid Discount Rule",
+          text: "Maximum discount must be less than minimum purchase amount",
+          confirmButtonColor: "#dc2626"
+        });
+        hasError = true;
+      }
+
+      if (hasError) return;
+
+      // Submit
+      try {
+        const response = await fetch("/admin/addCoupon", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data)
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+          Swal.fire({
+            icon: "success",
+            title: "Success",
+            text: result.message || "Coupon created successfully",
+            confirmButtonColor: "#6b21a8"
+          }).then(() => {
+            window.location.href = "/admin/coupon";
+          });
+        } else {
+          Swal.fire({
+            icon: "error",
+            title: "Error",
+            text: result.error || "Failed to create coupon"
+          });
+        }
+      } catch (err) {
+        Swal.fire("Error", "Network error - please try again", "error");
+      }
+    });
+  </script>
+</body>
+
 </html>

@@ -90,7 +90,7 @@ const loadUserProducts = async (req, res) => {
       }
     ];
 
-    // Price filter - apply AFTER calculating effective price
+    
     if (req.query.minPrice || req.query.maxPrice) {
       const priceFilter = {};
       if (req.query.minPrice) priceFilter.$gte = Number(req.query.minPrice);
@@ -138,11 +138,11 @@ const loadUserProducts = async (req, res) => {
       return product;
     });
 
-    // Get cart and wishlist items from middleware (res.locals)
+    
     const cartItems = res.locals.cartItems || [];
     const wishlistItems = res.locals.wishlistItems || [];
 
-    // Apply best discount and add cart/wishlist flags
+   
     products = products.map(p => {
       const productDiscount = p.discount || 0;
       const categoryDiscount = p.categoryDiscount || 0;
@@ -222,7 +222,7 @@ const loadproductdetails = async (req, res) => {
     });
 
 
-    // Get cart and wishlist items from middleware (res.locals)
+    
     const cartItems = res.locals.cartItems || [];
     const wishlistItems = res.locals.wishlistItems || [];
 

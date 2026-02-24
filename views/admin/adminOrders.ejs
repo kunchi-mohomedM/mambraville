@@ -14,176 +14,231 @@
     <div class="flex h-screen">
 
         <!-- Sidebar -->
+        <!-- Mobile Sidebar Toggle -->
+
+        <!-- Sidebar -->
         <%- include('../partials/admin/sidebar') %>
 
             <!-- Main content -->
             <div class="flex-1 flex flex-col overflow-hidden">
 
                 <!-- Header -->
-                <header
-                    class="bg-gradient-to-r from-black to-purple-900 text-white p-4 flex justify-between items-center">
-                    <h1 class="text-2xl font-bold">Order Management</h1>
+                <!-- Header -->
+                <%- include('../partials/admin/header', { pageTitle: 'Order Management' }) %>
 
-                        
-                    </form>
-                </header>
+                    <main class="flex-1 overflow-y-auto p-4 md:p-6 bg-white m-2 md:m-4 rounded-lg shadow">
 
-                <main class="flex-1 overflow-y-auto p-6 bg-white m-4 rounded-lg shadow">
+                        <!-- Filter & Sort Section -->
+                        <div class="flex justify-between mb-5 flex-wrap gap-3">
 
-                    <!-- Filter & Sort Section -->
-                    <div class="flex justify-between mb-5 flex-wrap gap-3">
+                            <!-- Status Filter -->
+                            <form method="GET" action="/admin/orders" class="flex items-center gap-3">
+                                <div class="relative">
+                                    <input type="text" id="searchInput" name="search" value="<%= queryParams.search %>"
+                                        placeholder="Search Order / User" class="border p-2 pr-10 rounded w-64" />
 
-                        <!-- Status Filter -->
-                        <form method="GET" action="/admin/orders" class="flex items-center gap-3">
-                            <div class="relative">
-  <input
-    type="text"
-    id="searchInput"
-    name="search"
-    value="<%= queryParams.search %>"
-    placeholder="Search Order / User"
-    class="border p-2 pr-10 rounded w-64"
-  />
-
-  <!-- Clear Button -->
-  <button
-    type="button"
-    id="clearSearchBtn"
-    class="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 hover:text-red-600 hidden"
-  >
-    <i class="fas fa-times-circle"></i>
-  </button>
-</div>
+                                    <!-- Clear Button -->
+                                    <button type="button" id="clearSearchBtn"
+                                        class="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 hover:text-red-600 hidden">
+                                        <i class="fas fa-times-circle"></i>
+                                    </button>
+                                </div>
 
 
-                            <select name="status" class="border p-2 rounded">
-                                <option value="">All Status</option>
-                                <option value="Pending" <%=queryParams.status==='Pending' ? 'selected' : '' %>>Pending
-                                </option>
-                                <option value="Shipped" <%=queryParams.status==='Shipped' ? 'selected' : '' %>>Shipped
-                                </option>
-                                <option value="Delivered" <%=queryParams.status==='Delivered' ? 'selected' : '' %>
-                                    >Delivered
-                                </option>
-                                <option value="Returned" <%=queryParams.status==='Returned' ? 'selected' : '' %>
-                                    >Returned
-                                </option>
-                                <option value="Paid" <%=queryParams.status==='Paid' ? 'selected' : '' %>>Paid
-                                </option>
-                                ...
-                            </select>
+                                <select name="status" class="border p-2 rounded">
+                                    <option value="">All Status</option>
+                                    <option value="Pending" <%=queryParams.status==='Pending' ? 'selected' : '' %>
+                                        >Pending
+                                    </option>
+                                    <option value="Shipped" <%=queryParams.status==='Shipped' ? 'selected' : '' %>
+                                        >Shipped
+                                    </option>
+                                    <option value="Delivered" <%=queryParams.status==='Delivered' ? 'selected' : '' %>
+                                        >Delivered
+                                    </option>
+                                    <option value="Returned" <%=queryParams.status==='Returned' ? 'selected' : '' %>
+                                        >Returned
+                                    </option>
+                                    <option value="Paid" <%=queryParams.status==='Paid' ? 'selected' : '' %>>Paid
+                                    </option>
+                                    ...
+                                </select>
 
-                            <select name="sort" class="border p-2 rounded">
-                                <option value="latest" <%=queryParams.sort==='latest' ? 'selected' : '' %>>Latest First
-                                </option>
-                                <option value="oldest" <%=queryParams.sort==='oldest' ? 'selected' : '' %>>Oldest First
-                                </option>
-                                <option value="highAmount" <%=queryParams.sort==='highAmount' ? 'selected' : '' %>>High
-                                    Amount</option>
-                                <option value="lowAmount" <%=queryParams.sort==='lowAmount' ? 'selected' : '' %>>Low
-                                    Amount</option>
-                            </select>
+                                <select name="sort" class="border p-2 rounded">
+                                    <option value="latest" <%=queryParams.sort==='latest' ? 'selected' : '' %>>Latest
+                                        First
+                                    </option>
+                                    <option value="oldest" <%=queryParams.sort==='oldest' ? 'selected' : '' %>>Oldest
+                                        First
+                                    </option>
+                                    <option value="highAmount" <%=queryParams.sort==='highAmount' ? 'selected' : '' %>
+                                        >High
+                                        Amount</option>
+                                    <option value="lowAmount" <%=queryParams.sort==='lowAmount' ? 'selected' : '' %>>Low
+                                        Amount</option>
+                                </select>
 
-                            <button type="submit" class="px-4 py-2 bg-purple-700 text-white rounded">Apply</button>
-                        </form>
+                                <button type="submit" class="px-4 py-2 bg-purple-700 text-white rounded">Apply</button>
+                            </form>
 
-                        <a href="/admin/orders/returns"
-                            class="flex items-center gap-2 px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-black font-semibold rounded shadow">
-                            <i class="fas fa-rotate-left"></i>
-                            Return Requests
-                        </a>
+                            <a href="/admin/orders/returns"
+                                class="flex items-center gap-2 px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-black font-semibold rounded shadow">
+                                <i class="fas fa-rotate-left"></i>
+                                Return Requests
+                            </a>
 
-                    </div>
+                        </div>
 
-                    <!-- Orders Table -->
-                    <div class="overflow-x-auto">
-                        <table class="min-w-full bg-white border">
-                            <thead class="bg-gray-100">
-                                <tr>
-                                    <th class="p-3 border">Order ID</th>
-                                    <th class="p-3 border">User</th>
-                                    <th class="p-3 border">Date</th>
-                                    <th class="p-3 border">Amount</th>
-                                    <th class="p-3 border">Status</th>
-                                    <th class="p-3 border">Action</th>
-                                </tr>
-                            </thead>
+                        <!-- Orders Table / Cards -->
+                        <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+                            <!-- Desktop Table -->
+                            <div class="hidden md:block overflow-x-auto">
+                                <table class="min-w-full bg-white">
+                                    <thead class="bg-gray-50 border-b">
+                                        <tr>
+                                            <th
+                                                class="p-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                Order ID</th>
+                                            <th
+                                                class="p-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                User</th>
+                                            <th
+                                                class="p-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                Date</th>
+                                            <th
+                                                class="p-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                Amount</th>
+                                            <th
+                                                class="p-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                Status</th>
+                                            <th
+                                                class="p-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-gray-200">
+                                        <% orders.forEach(order=> { %>
+                                            <tr class="hover:bg-gray-50 transition">
+                                                <td class="p-3 whitespace-nowrap text-sm font-medium text-gray-900">
+                                                    <%= order.orderId %>
+                                                </td>
+                                                <td class="p-3 whitespace-nowrap text-sm text-gray-600">
+                                                    <%= order.userId ? order.userId.fullname : "User Deleted" %>
+                                                </td>
+                                                <td class="p-3 whitespace-nowrap text-sm text-gray-600">
+                                                    <%= new Date(order.orderedAt).toLocaleDateString() %>
+                                                </td>
+                                                <td class="p-3 whitespace-nowrap text-sm text-gray-900 font-semibold">₹
+                                                    <%= order.totalAmount %>
+                                                </td>
+                                                <td class="p-3 whitespace-nowrap">
+                                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                                                    <%= order.status === 'Delivered' ? 'bg-green-100 text-green-800' : 
+                                                       order.status === 'Cancelled' ? 'bg-red-100 text-red-800' : 
+                                                       order.status === 'Shipped' ? 'bg-blue-100 text-blue-800' : 
+                                                       'bg-yellow-100 text-yellow-800' %>">
+                                                        <%= order.status %>
+                                                    </span>
+                                                </td>
+                                                <td class="p-3 whitespace-nowrap text-sm font-medium">
+                                                    <a href="/admin/order/<%= order._id %>"
+                                                        class="text-blue-600 hover:text-blue-900 bg-blue-50 px-3 py-1 rounded transition">View</a>
+                                                </td>
+                                            </tr>
+                                            <% }) %>
+                                    </tbody>
+                                </table>
+                            </div>
 
-                            <tbody>
+                            <!-- Mobile Cards -->
+                            <div class="md:hidden grid grid-cols-1 divide-y divide-gray-200">
                                 <% orders.forEach(order=> { %>
-                                    <tr class="border-b hover:bg-gray-50">
-                                        <td class="p-3 border">
-                                            <%= order.orderId %>
-                                        </td>
-                                        <td class="p-3 border">
-                                            <%= order.userId ? order.userId.fullname : "User Deleted" %>
-                                        </td>
-                                        <td class="p-3 border">
-                                            <%= new Date(order.orderedAt).toLocaleDateString() %>
-                                        </td>
-                                        <td class="p-3 border">₹<%= order.totalAmount %>
-                                        </td>
-
-                                        <td class="p-3 border font-semibold text-purple-700">
-                                            <%= order.status %>
-                                        </td>
-                                        <td class="p-3 border flex gap-2">
-
-                                            <!-- View -->
+                                    <div class="p-4 space-y-3">
+                                        <div class="flex justify-between items-start">
+                                            <div>
+                                                <h3 class="text-sm font-bold text-gray-900">#<%= order.orderId %>
+                                                </h3>
+                                                <p class="text-xs text-gray-500">
+                                                    <%= new Date(order.orderedAt).toLocaleDateString() %>
+                                                </p>
+                                            </div>
+                                            <span class="px-2 py-1 text-xs font-semibold rounded-full 
+                                            <%= order.status === 'Delivered' ? 'bg-green-100 text-green-800' : 
+                                               order.status === 'Cancelled' ? 'bg-red-100 text-red-800' : 
+                                               order.status === 'Shipped' ? 'bg-blue-100 text-blue-800' : 
+                                               'bg-yellow-100 text-yellow-800' %>">
+                                                <%= order.status %>
+                                            </span>
+                                        </div>
+                                        <div class="flex justify-between items-center text-sm">
+                                            <div class="flex flex-col">
+                                                <span class="text-gray-500 text-xs">User</span>
+                                                <span class="font-medium text-gray-900">
+                                                    <%= order.userId ? order.userId.fullname : "User Deleted" %>
+                                                </span>
+                                            </div>
+                                            <div class="flex flex-col text-right">
+                                                <span class="text-gray-500 text-xs">Amount</span>
+                                                <span class="font-bold text-gray-900">₹<%= order.totalAmount %></span>
+                                            </div>
+                                        </div>
+                                        <div class="pt-2">
                                             <a href="/admin/order/<%= order._id %>"
-                                                class="px-3 py-1 bg-blue-600 text-white rounded">
-                                                View
+                                                class="block w-full text-center text-blue-600 bg-blue-50 hover:bg-blue-100 py-2 rounded transition font-medium text-sm">
+                                                View Details
                                             </a>
-                                        </td>
-                                    </tr>
+                                        </div>
+                                    </div>
                                     <% }) %>
-                            </tbody>
-                        </table>
-                    </div>
+                            </div>
+                        </div>
 
-                    <!-- Pagination -->
-                  <!-- Pagination -->
-<div class="mt-8 flex items-center justify-between gap-4 px-4 py-3 bg-white rounded-lg shadow-sm border border-gray-200">
-  <!-- Previous Button -->
-  <a
-    href="<%= page > 1 ? `/admin/orders?page=${page-1}&status=${queryParams.status}&search=${queryParams.search}&sort=${queryParams.sort}` : '#' %>"
-    class="inline-flex items-center px-5 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 hover:text-purple-700 transition-colors
+                        <!-- Pagination -->
+                        <!-- Pagination -->
+                        <div
+                            class="mt-8 flex items-center justify-between gap-4 px-4 py-3 bg-white rounded-lg shadow-sm border border-gray-200">
+                            <!-- Previous Button -->
+                            <a href="<%= page > 1 ? `/admin/orders?page=${page-1}&status=${queryParams.status}&search=${queryParams.search}&sort=${queryParams.sort}` : '#' %>"
+                                class="inline-flex items-center px-5 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 hover:text-purple-700 transition-colors
       <%= page === 1 ? 'opacity-50 cursor-not-allowed pointer-events-none' : '' %>">
-    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-    </svg>
-    Previous
-  </a>
+                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M15 19l-7-7 7-7" />
+                                </svg>
+                                Previous
+                            </a>
 
-  <!-- Current Page Indicator -->
-  <div class="text-sm font-medium text-gray-700">
-    Page <span class="text-purple-700 font-bold text-base"><%= page %></span> of <%= totalPages %>
-  </div>
+                            <!-- Current Page Indicator -->
+                            <div class="text-sm font-medium text-gray-700">
+                                Page <span class="text-purple-700 font-bold text-base">
+                                    <%= page %>
+                                </span> of <%= totalPages %>
+                            </div>
 
-  <!-- Next Button -->
-  <a
-    href="<%= page < totalPages ? `/admin/orders?page=${page+1}&status=${queryParams.status}&search=${queryParams.search}&sort=${queryParams.sort}` : '#' %>"
-    class="inline-flex items-center px-5 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 hover:text-purple-700 transition-colors
+                            <!-- Next Button -->
+                            <a href="<%= page < totalPages ? `/admin/orders?page=${page+1}&status=${queryParams.status}&search=${queryParams.search}&sort=${queryParams.sort}` : '#' %>"
+                                class="inline-flex items-center px-5 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 hover:text-purple-700 transition-colors
       <%= page === totalPages ? 'opacity-50 cursor-not-allowed pointer-events-none' : '' %>">
-    Next
-    <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-    </svg>
-  </a>
-</div>
+                                Next
+                                <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M9 5l7 7-7 7" />
+                                </svg>
+                            </a>
+                        </div>
 
 
-                </main>
+                    </main>
             </div>
     </div>
 
-    <!-- Status Modal -->
-    <div id="statusModal" class="fixed inset-0 bg-black bg-opacity-40 hidden justify-center items-center">
-        <div class="bg-white p-6 rounded w-96 shadow-lg">
-            <h2 class="text-xl font-bold mb-4">Update Order Status</h2>
+    <div id="statusModal" class="fixed inset-0 bg-black bg-opacity-40 hidden z-50 flex justify-center items-center">
+        <div class="bg-white p-6 rounded-lg w-full max-w-sm mx-4 shadow-xl">
+            <h2 class="text-xl font-bold mb-4 text-gray-800">Update Order Status</h2>
 
             <form id="statusForm" method="POST">
-                <select name="status" id="statusSelect" class="w-full p-2 border rounded">
+                <select name="status" id="statusSelect"
+                    class="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none">
                     <option value="Pending">Pending</option>
                     <option value="Shipped">Shipped</option>
                     <option value="Out for Delivery">Out for Delivery</option>
@@ -191,16 +246,19 @@
                     <option value="Cancelled">Cancelled</option>
                 </select>
 
-                <div class="mt-4 flex justify-end gap-2">
+                <div class="mt-6 flex justify-end gap-3">
                     <button type="button" onclick="closeStatusModal()"
-                        class="px-4 py-2 bg-gray-400 text-white rounded">Close</button>
-                    <button class="px-4 py-2 bg-purple-700 text-white rounded">Update</button>
+                        class="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 transition">Close</button>
+                    <button
+                        class="px-4 py-2 bg-purple-700 text-white rounded hover:bg-purple-800 transition">Update</button>
                 </div>
             </form>
         </div>
     </div>
 
     <script>
+        // Toggle sidebar
+
         function openStatusModal(orderId, currentStatus) {
             document.getElementById("statusForm").action = `/admin/order/status/${orderId}`;
             document.getElementById("statusSelect").value = currentStatus;
@@ -211,23 +269,23 @@
             document.getElementById("statusModal").classList.add("hidden");
         }
 
-  const searchInput = document.getElementById("searchInput");
-  const clearBtn = document.getElementById("clearSearchBtn");
+        const searchInput = document.getElementById("searchInput");
+        const clearBtn = document.getElementById("clearSearchBtn");
 
-  if (searchInput && clearBtn) {
-   
-    clearBtn.classList.toggle("hidden", !searchInput.value);
+        if (searchInput && clearBtn) {
 
-    // Toggle while typing
-    searchInput.addEventListener("input", () => {
-      clearBtn.classList.toggle("hidden", !searchInput.value);
-    });
+            clearBtn.classList.toggle("hidden", !searchInput.value);
 
-    // Clear search (keep filters clean)
-    clearBtn.addEventListener("click", () => {
-      window.location.href = "/admin/orders";
-    });
-  }
+            // Toggle while typing
+            searchInput.addEventListener("input", () => {
+                clearBtn.classList.toggle("hidden", !searchInput.value);
+            });
+
+            // Clear search (keep filters clean)
+            clearBtn.addEventListener("click", () => {
+                window.location.href = "/admin/orders";
+            });
+        }
 
 
 

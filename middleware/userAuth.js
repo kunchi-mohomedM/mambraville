@@ -15,11 +15,11 @@ const userAuth = async (req, res, next) => {
 
         if (user.isBlocked) {
             req.session.destroy(() => { });
-            // You can add ?blocked=true to show message on login page
+           
             return res.redirect("/login?blocked=true");
         }
 
-        // Optional: make user data available in views
+       
         res.locals.userData = user;
         next();
     } catch (error) {

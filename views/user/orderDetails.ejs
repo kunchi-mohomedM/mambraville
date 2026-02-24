@@ -6,6 +6,11 @@
     <title>Order Details</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
+    
+    <!-- SweetAlert2 CDN -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <style>
       /* Custom animations and styles */
       @keyframes shimmer {
@@ -56,6 +61,7 @@
   </head>
 
   <body class="bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen">
+
     <%- include("../../views/partials/user/header") %>
 
     <div class="container mx-auto px-4 py-8 max-w-6xl">
@@ -65,6 +71,7 @@
       </div>
 
       <div class="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100">
+
         <!-- Order Header Info -->
         <div class="p-8 bg-gradient-to-r from-indigo-50 via-purple-50 to-pink-50 border-b border-gray-200">
           <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
@@ -84,7 +91,6 @@
 
           <!-- Status Badges -->
           <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-            <!-- Order Status -->
             <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
               <p class="text-xs font-medium text-gray-500 uppercase tracking-wider mb-2">Order Status</p>
               <span class="status-badge inline-flex items-center gap-2 px-4 py-2 rounded-lg font-semibold text-sm shadow-md
@@ -100,7 +106,6 @@
               </span>
             </div>
 
-            <!-- Payment Status -->
             <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
               <p class="text-xs font-medium text-gray-500 uppercase tracking-wider mb-2">Payment Status</p>
               <span class="status-badge inline-flex items-center gap-2 px-4 py-2 rounded-lg font-semibold text-sm shadow-md
@@ -114,7 +119,6 @@
               </span>
             </div>
 
-            <!-- Payment Method -->
             <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
               <p class="text-xs font-medium text-gray-500 uppercase tracking-wider mb-2">Payment Method</p>
               <span class="status-badge inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-slate-700 to-gray-900 text-white font-semibold text-sm shadow-md">
@@ -239,7 +243,7 @@
                         <% if((item.status || order.status) !== 'Delivered' && order.status !== 'Cancelled' && item.status !== 'Cancelled') { %>
                           <button
                             onclick="openReasonModal('/order/cancel-item/<%= order._id %>/<%= item._id %>', 'Cancel Item')"
-                            class="inline-flex items-center gap-1.5 px-4 py-2 bg-gradient-to-r from-dark red-500 to-red-600 hover:from-red-600 hover:to-rose-700 text-white text-xs font-semibold rounded-lg transition-all duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-0.5">
+                            class="inline-flex items-center gap-1.5 px-4 py-2 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-rose-700 text-white text-xs font-semibold rounded-lg transition-all duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-0.5">
                             <i class="fas fa-times"></i>
                             Cancel
                           </button>
@@ -301,6 +305,7 @@
             </div>
           </div>
         </div>
+
       </div>
     </div>
 
@@ -359,7 +364,6 @@
         document.getElementById("reasonForm").reset();
       }
 
-      // Close modal when clicking outside
       document.getElementById("reasonModal").addEventListener("click", function(e) {
         if (e.target === this) closeModal();
       });
@@ -368,6 +372,7 @@
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
     <script>
       const retryBtn = document.getElementById("retryPaymentBtn");
+
       if (retryBtn) {
         retryBtn.addEventListener("click", async function () {
           retryBtn.disabled = true;
@@ -382,7 +387,12 @@
             const data = await response.json();
 
             if (!data.success) {
-              alert(data.message || "Failed to initiate payment.");
+              Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: data.message || "Failed to initiate payment.",
+                confirmButtonColor: "#d33",
+              });
               resetButton();
               return;
             }
@@ -396,6 +406,14 @@
               order_id: data.order_id,
               retry: false,
               handler: async function (response) {
+                Swal.fire({
+                  title: "Verifying Payment...",
+                  allowOutsideClick: false,
+                  didOpen: () => {
+                    Swal.showLoading();
+                  },
+                });
+
                 const verifyRes = await fetch("/order/verify-payment", {
                   method: "POST",
                   headers: { "Content-Type": "application/json" },
@@ -408,10 +426,25 @@
                 });
 
                 const verifyData = await verifyRes.json();
+                Swal.close();
+
                 if (verifyData.success) {
-                  window.location.href = verifyData.redirect;
+                  Swal.fire({
+                    icon: "success",
+                    title: "Payment Successful!",
+                    text: "Your payment has been verified.",
+                    timer: 2500,
+                    showConfirmButton: false,
+                  }).then(() => {
+                    window.location.href = verifyData.redirect;
+                  });
                 } else {
-                  alert("Payment verification failed.");
+                  Swal.fire({
+                    icon: "error",
+                    title: "Verification Failed",
+                    text: verifyData.message || "Payment could not be verified. Please contact support.",
+                    confirmButtonColor: "#d33",
+                  });
                   window.location.reload();
                 }
               },
@@ -425,14 +458,25 @@
 
             const razorpay = new Razorpay(options);
             razorpay.open();
+
             razorpay.on("payment.failed", function () {
-              alert("Payment failed. Please try again.");
+              Swal.fire({
+                icon: "error",
+                title: "Payment Failed",
+                text: "The payment attempt was unsuccessful. Please try again.",
+                confirmButtonColor: "#d33",
+              });
               handlePaymentFailure();
             });
 
           } catch (error) {
             console.error(error);
-            alert("Something went wrong. Please try again.");
+            Swal.fire({
+              icon: "error",
+              title: "Something went wrong",
+              text: "An unexpected error occurred. Please try again later.",
+              confirmButtonColor: "#d33",
+            });
             resetButton();
           }
 
@@ -452,5 +496,6 @@
         });
       }
     </script>
+
   </body>
 </html>

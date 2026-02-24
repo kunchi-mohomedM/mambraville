@@ -134,7 +134,7 @@ const toggleWishlist = async (req, res) => {
 
     // Check authentication and return appropriate response
     if (!userId) {
-      // Check if it's an AJAX request
+      
       if (req.headers['accept']?.includes('application/json') || req.xhr) {
         return res.status(401).json({
           success: false,

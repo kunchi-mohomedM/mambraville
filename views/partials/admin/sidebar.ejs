@@ -1,60 +1,70 @@
-<div id="sidebar"
-  class="w-64 bg-gradient-to-b from-black to-purple-900 text-white fixed inset-y-0 left-0 transform -translate-x-full 
-         md:relative md:translate-x-0 transition-transform duration-300 ease-in-out z-20">
+<div id="sidebar-overlay"
+    class="fixed inset-0 bg-black opacity-50 z-30 hidden md:hidden transition-opacity duration-300"></div>
+
+<div id="sidebar" class="w-64 bg-gradient-to-b from-black to-purple-900 text-white fixed inset-y-0 left-0 transform -translate-x-full 
+         md:relative md:translate-x-0 transition-transform duration-300 ease-in-out z-40 overflow-y-auto">
 
     <!-- LOGO BLOCK -->
-    <div class="p-6 flex items-center justify-center border-b border-purple-800/40">
+    <div class="p-4 md:p-6 flex items-center justify-center border-b border-purple-800/40">
         <div class="text-center leading-tight select-none">
-            <h1 class="text-2xl font-extrabold tracking-tight">
+            <h1 class="text-xl md:text-2xl font-extrabold tracking-tight">
                 <span class="text-blue-400">Gadgetr</span>
                 <span class="text-orange-400">y</span>
             </h1>
 
-            <p class="text-[9px] font-semibold uppercase tracking-widest text-gray-300 mt-1">
+            <p class="text-[8px] md:text-[9px] font-semibold uppercase tracking-widest text-gray-300 mt-1">
                 powered by mambra home appliances — 2004
             </p>
         </div>
     </div>
 
     <!-- NAVIGATION -->
-    <nav class="mt-4 space-y-1">
-        <a href="/admin/dashboard" class="nav-link flex items-center px-6 py-3 hover:bg-purple-800/70 rounded-lg transition">
+    <nav class="mt-4 space-y-1 px-2 md:px-0">
+        <a href="/admin/dashboard"
+            class="nav-link flex items-center px-4 md:px-6 py-3 hover:bg-purple-800/70 rounded-lg transition">
             <i class="fas fa-home w-5 mr-3"></i><span>Dashboard</span>
         </a>
 
-        <a href="/admin/products" class="nav-link flex items-center px-6 py-3 hover:bg-purple-800/70 rounded-lg transition">
+        <a href="/admin/products"
+            class="nav-link flex items-center px-4 md:px-6 py-3 hover:bg-purple-800/70 rounded-lg transition">
             <i class="fas fa-box w-5 mr-3"></i><span>Products</span>
         </a>
 
-        <a href="/admin/users" class="nav-link flex items-center px-6 py-3 hover:bg-purple-800/70 rounded-lg transition">
+        <a href="/admin/users"
+            class="nav-link flex items-center px-4 md:px-6 py-3 hover:bg-purple-800/70 rounded-lg transition">
             <i class="fas fa-users w-5 mr-3"></i><span>Users</span>
         </a>
 
-        <a href="/admin/orders" class="nav-link flex items-center px-6 py-3 hover:bg-purple-800/70 rounded-lg transition">
+        <a href="/admin/orders"
+            class="nav-link flex items-center px-4 md:px-6 py-3 hover:bg-purple-800/70 rounded-lg transition">
             <i class="fas fa-shopping-cart w-5 mr-3"></i><span>Orders</span>
         </a>
 
-        <a href="/admin/category" class="nav-link flex items-center px-6 py-3 hover:bg-purple-800/70 rounded-lg transition">
+        <a href="/admin/category"
+            class="nav-link flex items-center px-4 md:px-6 py-3 hover:bg-purple-800/70 rounded-lg transition">
             <i class="fas fa-tags w-5 mr-3"></i><span>Category</span>
         </a>
 
-        <a href="/admin/coupon" class="nav-link flex items-center px-6 py-3 hover:bg-purple-800/70 rounded-lg transition">
+        <a href="/admin/coupon"
+            class="nav-link flex items-center px-4 md:px-6 py-3 hover:bg-purple-800/70 rounded-lg transition">
             <i class="fas fa-ticket-alt w-5 mr-3"></i><span>Coupons</span>
         </a>
 
-        <a href="/admin/offers" class="nav-link flex items-center px-6 py-3 hover:bg-purple-800/70 rounded-lg transition">
+        <a href="/admin/offers"
+            class="nav-link flex items-center px-4 md:px-6 py-3 hover:bg-purple-800/70 rounded-lg transition">
             <i class="fas fa-gift w-5 mr-3"></i><span>Offers</span>
         </a>
 
-        <a href="/admin/brands" class="nav-link flex items-center px-6 py-3 hover:bg-purple-800/70 rounded-lg transition">
+        <a href="/admin/brands"
+            class="nav-link flex items-center px-4 md:px-6 py-3 hover:bg-purple-800/70 rounded-lg transition">
             <i class="fas fa-copyright w-5 mr-3"></i><span>Brands</span>
         </a>
     </nav>
 
     <!-- LOGOUT BUTTON -->
-    <div class="absolute bottom-5 left-0 w-full px-6">
+    <div class="absolute bottom-5 left-0 w-full px-4 md:px-6">
         <button onclick="logout()"
-            class="bg-white text-black py-2 px-4 rounded-full w-full font-semibold shadow-sm hover:bg-gray-200 transition">
+            class="bg-white text-black py-2 px-4 rounded-full w-full font-semibold shadow-sm hover:bg-gray-200 transition text-center block">
             Logout
         </button>
     </div>
@@ -62,13 +72,46 @@
 
 <script>
     document.addEventListener("DOMContentLoaded", function () {
+        // Active Link Highlighting
         const links = document.querySelectorAll(".nav-link");
         const currentPath = window.location.pathname;
 
         links.forEach(link => {
-            if (link.getAttribute("href") === currentPath) {
+            if (link.getAttribute("href") === currentPath || (currentPath.includes(link.getAttribute("href")) && link.getAttribute("href") !== '/admin/dashboard')) {
                 link.classList.add("bg-purple-900", "text-white", "font-semibold");
             }
         });
+
+        // Sidebar Toggling Logic
+        const sidebar = document.getElementById('sidebar');
+        const sidebarOverlay = document.getElementById('sidebar-overlay');
+        const toggleButtons = document.querySelectorAll('#toggle-sidebar, .sidebar-toggle'); // Support multiple/class-based
+
+        function toggleSidebar() {
+            sidebar.classList.toggle('-translate-x-full');
+            sidebarOverlay.classList.toggle('hidden');
+        }
+
+        toggleButtons.forEach(btn => btn.addEventListener('click', toggleSidebar));
+
+        if (sidebarOverlay) {
+            sidebarOverlay.addEventListener('click', toggleSidebar);
+        }
     });
+
+    function logout() {
+        Swal.fire({
+            title: "Are you sure?",
+            text: "You will be logged out of your account!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Yes, logout"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = '/admin/logout';
+            }
+        });
+    }
 </script>

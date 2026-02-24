@@ -100,12 +100,12 @@ const loadCheckout = async (req, res) => {
 
     const now = new Date();
 
-const coupons = await Coupon.find({
-  isActive: true,
-  startDate: { $lte: now },           // ← has already started
-  expiryDate: { $gte: now },          // ← not yet expired
-  usedBy: { $ne: userId },
-}).lean();
+    const coupons = await Coupon.find({
+      isActive: true,
+      startDate: { $lte: now },
+      expiryDate: { $gte: now },
+      usedBy: { $ne: userId },
+    }).lean();
 
     const applicableCoupons = coupons.filter(
       (coupon) => cartTotal >= coupon.minPurchase
@@ -224,20 +224,20 @@ const placeOrder = async (req, res) => {
     }
 
     if (couponCode) {
-  const coupon = await Coupon.findOne({
-    code: couponCode,
-    isActive: true,
-    startDate: { $lte: new Date() },     // ← important
-    expiryDate: { $gte: new Date() },
-    usedBy: { $ne: userId },
-  });
+      const coupon = await Coupon.findOne({
+        code: couponCode,
+        isActive: true,
+        startDate: { $lte: new Date() },
+        expiryDate: { $gte: new Date() },
+        usedBy: { $ne: userId },
+      });
 
-  if (!coupon) {
-    return res.json({
-      success: false,
-      message: "Invalid, expired, or not yet active coupon",
-    });
-  }
+      if (!coupon) {
+        return res.json({
+          success: false,
+          message: "Invalid, expired, or not yet active coupon",
+        });
+      }
 
       if (subtotalAmount < coupon.minPurchase) {
         return res.json({
@@ -495,6 +495,27 @@ const verifyPayment = async (req, res) => {
       });
     }
 
+    // Validate stock availability before confirming payment (important for retry scenarios)
+    for (const item of order.items) {
+      const product = await Product.findById(item.productId);
+
+      if (!product || product.isDeleted || product.status !== "Available") {
+        return res.json({
+          success: false,
+          message: `${item.name || "Product"} is no longer available`,
+          redirect: `/order/payment-failed/${order._id}`,
+        });
+      }
+
+      if (product.quantity < item.qty) {
+        return res.json({
+          success: false,
+          message: `${item.name} has only ${product.quantity} left. Cannot complete order.`,
+          redirect: `/order/payment-failed/${order._id}`,
+        });
+      }
+    }
+
     order.paymentStatus = "Paid";
     order.status = "Confirmed";
     order.razorpayOrderId = razorpay_order_id;
@@ -582,13 +603,17 @@ const cancelOrder = async (req, res) => {
       return res.redirect("/order-summary");
     }
 
+    const shouldRestoreStock = ["Confirmed", "Processing", "Shipped", "Delivered"].includes(order.status);
+
     order.cancelReason = reason;
     order.status = "Cancelled";
 
     for (let item of order.items) {
-      await Product.findByIdAndUpdate(item.productId, {
-        $inc: { quantity: item.qty },
-      });
+      if (shouldRestoreStock) {
+        await Product.findByIdAndUpdate(item.productId, {
+          $inc: { quantity: item.qty },
+        });
+      }
       item.status = "Cancelled";
     }
 
@@ -684,6 +709,8 @@ const cancelItem = async (req, res) => {
       return res.redirect("/order-summary");
     }
 
+    const shouldRestoreStock = ["Confirmed", "Processing", "Shipped", "Delivered"].includes(item.status);
+
     const itemAmount = item.subtotal;
     let refundAmount = itemAmount;
 
@@ -709,9 +736,11 @@ const cancelItem = async (req, res) => {
     item.status = "Cancelled";
     item.cancelReason = reason || "No reason provided";
 
-    await Product.findByIdAndUpdate(item.productId, {
-      $inc: { quantity: item.qty },
-    });
+    if (shouldRestoreStock) {
+      await Product.findByIdAndUpdate(item.productId, {
+        $inc: { quantity: item.qty },
+      });
+    }
 
     order.subtotalAmount = newSubtotal;
 
@@ -861,6 +890,8 @@ const loadOrderFailure = async (req, res) => {
   }
 };
 
+
+
 const markPaymentFailed = async (req, res) => {
   try {
     const { orderId } = req.body;
@@ -918,6 +949,27 @@ const retrypayment = async (req, res) => {
       return res.redirect(`/order/details/${orderId}`);
     }
 
+    // Validate stock availability before allowing retry payment
+    for (const item of order.items) {
+      const product = await Product.findById(item.productId);
+
+      if (!product || product.isDeleted || product.status !== "Available") {
+        return res.redirect(
+          `/order/payment-failed/${orderId}?error=${encodeURIComponent(
+            `${item.name || "Product"} is no longer available. Cannot retry payment.`
+          )}`
+        );
+      }
+
+      if (product.quantity < item.qty) {
+        return res.redirect(
+          `/order/payment-failed/${orderId}?error=${encodeURIComponent(
+            `${item.name} has only ${product.quantity} left. Cannot retry payment.`
+          )}`
+        );
+      }
+    }
+
     const razorpayOrder = await razorpay.orders.create({
       amount: order.totalAmount * 100,
       currency: "INR",
@@ -967,6 +1019,25 @@ const retryPaymentCreate = async (req, res) => {
         success: false,
         message: "This order cannot be retried",
       });
+    }
+
+    // Validate stock availability before allowing retry payment
+    for (const item of order.items) {
+      const product = await Product.findById(item.productId);
+
+      if (!product || product.isDeleted || product.status !== "Available") {
+        return res.json({
+          success: false,
+          message: `${item.name || "Product"} is no longer available. Cannot retry payment.`,
+        });
+      }
+
+      if (product.quantity < item.qty) {
+        return res.json({
+          success: false,
+          message: `${item.name} has only ${product.quantity} left. Cannot retry payment.`,
+        });
+      }
     }
 
     const razorpayOrder = await razorpay.orders.create({

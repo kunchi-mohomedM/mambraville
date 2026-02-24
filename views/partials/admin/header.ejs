@@ -1,0 +1,20 @@
+<header
+    class="bg-gradient-to-r from-black to-purple-900 text-white p-4 flex justify-between items-center sticky top-0 z-10 shadow-md">
+    <div class="flex items-center">
+        <button id="toggle-sidebar" class="mr-3 text-white md:hidden hover:text-gray-200 transition">
+            <i class="fas fa-bars text-xl"></i>
+        </button>
+        <h1 class="text-xl md:text-2xl font-bold">
+            <%= typeof pageTitle !=='undefined' ? pageTitle : 'Admin Panel' %>
+        </h1>
+    </div>
+
+    <div class="flex items-center gap-4">
+        <!-- Can add user profile or notifications here later -->
+        <% if (typeof breadcrumbs !=='undefined' ) { %>
+            <nav class="hidden md:block text-sm text-gray-300">
+                <!-- Breadcrumb implementation can go here -->
+            </nav>
+            <% } %>
+    </div>
+</header>

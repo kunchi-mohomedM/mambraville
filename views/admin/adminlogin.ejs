@@ -1,86 +1,139 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Login - Mambraville</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        :root {
-            --primary-color: #1E3A8A;
-            --secondary-color: #9333EA;
-            --bg-color: #F3F4F6;
-        }
-    </style>
+   <style>
+    :root {
+        --primary-color: #581c87;       /* purple-900 */
+        --secondary-color: #9333EA;
+        --bg-color: #F3F4F6;
+    }
+</style>
 </head>
+
 <body class="flex flex-col items-center justify-center min-h-screen bg-[var(--bg-color)]">
+
     <!-- Header -->
-    <header class="w-full max-w-4xl p-4 text-center bg-white shadow-md rounded-t-2xl">
-        <h1 class="text-3xl font-bold text-[var(--primary-color)]">Mambraville Admin</h1>
-        <p class="text-gray-500">Manage your electronics & furniture store with ease</p>
+    <!-- Header -->
+    <header
+        class="w-full max-w-md p-4 text-center bg-gradient-to-r from-black to-purple-900 shadow-md rounded-t-2xl text-white">
+        <h1 class="text-3xl font-bold">Mambraville Admin</h1>
+        <p class="text-gray-300">Manage your electronics & furniture store with ease</p>
     </header>
-    
+
     <!-- Admin Login Card -->
-    <div class="w-full max-w-md p-8 mt-6 bg-white shadow-lg rounded-2xl">
-        <div class="flex justify-center mb-4">
-            <div class="p-6 flex items-center justify-center border-b border-purple-800/40">
-        <div class="text-center leading-tight select-none">
-            <h1 class="text-2xl font-extrabold tracking-tight">
-                <span class="text-blue-400">Gadgetr</span>
-                <span class="text-orange-400">y</span>
-            </h1>
+   <!-- Admin Login Card -->
+<div class="w-full max-w-md p-8 bg-white shadow-lg rounded-b-2xl">
 
-            <p class="text-[9px] font-semibold uppercase tracking-widest text-gray-300 mt-1">
-                powered by mambra home appliances — 2004
-            </p>
+    <h2 class="text-2xl font-semibold text-center text-[var(--primary-color)]">Admin Login</h2>
+
+    <!-- Server-side message (from backend) -->
+    <% if (message) { %>
+        <div class="mt-4 p-4 bg-red-50 border border-red-400 text-red-700 rounded-lg text-center">
+            <strong>Error:</strong> <%= message %>
         </div>
+    <% } %>
+
+    <!-- Client-side validation messages will appear here -->
+    <div id="clientError" class="hidden mt-4 p-4 bg-red-50 border border-red-400 text-red-700 rounded-lg text-center">
+        <!-- message inserted by JS -->
     </div>
+
+    <form class="mt-6" id="adminloginform" action="/admin/login" method="post">
+        <div class="mb-4">
+            <label class="block text-gray-600">Email</label>
+            <input type="email" id="email" name="email" placeholder="Enter Email"
+                   class="w-full px-4 py-2 mt-1 border rounded-lg focus:ring-2 focus:ring-[var(--secondary-color)]">
         </div>
-        <h2 class="text-2xl font-semibold text-center text-[var(--primary-color)]">Admin Login</h2>
-        <form class="mt-6" id="adminloginform" action="/admin/login"  method="post">
-            <div class="mb-4">
-                <label class="block text-gray-600">Email</label>
-                <input type="email" id="email" name="email" placeholder="Enter Email" class="w-full px-4 py-2 mt-1 border rounded-lg focus:ring-2 focus:ring-[var(--secondary-color)]">
-            </div>
-            <div class="mb-4">
-                <label class="block text-gray-600">Password</label>
-                <input type="password" name="password" id="password" placeholder="Enter password" class="w-full px-4 py-2 mt-1 border rounded-lg focus:ring-2 focus:ring-[var(--secondary-color)]">
-            </div>
-            <button type="submit" class="w-full py-2 text-white bg-[var(--primary-color)] rounded-lg hover:bg-[var(--secondary-color)]">Login</button>
-        </form>
-        <p class="mt-4 text-sm text-center text-gray-500">Forgot password? <a href="#" class="text-[var(--secondary-color)]">Reset here</a></p>
-    </div>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.js"></script>
-    <script>
-        document.getElementById("adminloginform").addEventListener("submit",function(event){
-            event.preventDefault()
-            const form = document.getElementById("adminloginform")
-            const email=document.getElementById("email").value.trim()
-            const password=document.getElementById("password").value.trim()
+        <div class="mb-4">
+            <label class="block text-gray-600">Password</label>
+            <input type="password" name="password" id="password" placeholder="Enter password"
+                   class="w-full px-4 py-2 mt-1 border rounded-lg focus:ring-2 focus:ring-[var(--secondary-color)]">
+        </div>
+        <button type="submit"
+                class="w-full py-2 text-white bg-[var(--primary-color)] rounded-lg hover:bg-[var(--secondary-color)]">
+            Login
+        </button>
+    </form>
 
-            const emailRegex=/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-            const passwordRegex=/^[A-Za-z0-9]{8,}$/;
+    <p class="mt-4 text-sm text-center text-gray-500">
+        Forgot password? <a href="#" class="text-[var(--secondary-color)]">Reset here</a>
+    </p>
+</div>
 
+<!-- Remove SweetAlert CDN if no longer needed -->
+<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.js"></script> -->
 
-            if(!email){
-                swal({title:"Error",text:"email is required",icon:"error"})
-                return;
-            }else if(!emailRegex.test(email)){
-                Swal({title:"Error",text:"Enter a valid email address.",icon:"error"})
-                return;
-            }
+<script>
+    const form = document.getElementById("adminloginform");
+    const errorDiv = document.getElementById("clientError");
 
+    function showError(message) {
+        errorDiv.textContent = message;
+        errorDiv.classList.remove("hidden");
+        // Optional: scroll to error
+        errorDiv.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
 
-            if(!password){
-                Swal({title:"Error",text:"Password is required.",icon:"error"})
-                return;
-            }else if(!passwordRegex.test(password)){
-                Swal({title:"Error",text:"Password must be 8 characters long and contain only letters and numbers.",icon:"error"})
-                return;
-            }
-            
-            form.submit()
-        })
-    </script>
+    function clearError() {
+        errorDiv.textContent = "";
+        errorDiv.classList.add("hidden");
+    }
+
+    form.addEventListener("submit", function (event) {
+        clearError(); // reset previous errors
+
+        const email = document.getElementById("email").value.trim();
+        const password = document.getElementById("password").value.trim();
+
+        const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
+        if (!email) {
+            event.preventDefault();
+            showError("Email is required");
+            return;
+        }
+
+        if (!emailRegex.test(email)) {
+            event.preventDefault();
+            showError("Please enter a valid email address");
+            return;
+        }
+
+        if (!password) {
+            event.preventDefault();
+            showError("Password is required");
+            return;
+        }
+
+        if (password.length < 8) {
+            event.preventDefault();
+            showError("Password must be at least 8 characters long");
+            return;
+        }
+
+        const uppercaseCount = (password.match(/[A-Z]/g) || []).length;
+        const numberCount = (password.match(/[0-9]/g) || []).length;
+
+        if (uppercaseCount < 4) {
+            event.preventDefault();
+            showError("Password must contain at least 4 uppercase letters");
+            return;
+        }
+
+        if (numberCount < 4) {
+            event.preventDefault();
+            showError("Password must contain at least 4 numbers");
+            return;
+        }
+
+        // All good → let form submit normally
+    });
+</script>
 </body>
+
 </html>
