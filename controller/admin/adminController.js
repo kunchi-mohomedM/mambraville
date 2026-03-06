@@ -10,12 +10,12 @@ const login = async (req, res) => {
     try {
         const { email, password } = req.body;
 
-        // Optional: keep this for security (timing attack prevention)
+       
         const dummyHash = "$2b$10$somefakehashthatwillnevermatch";
         const admin = await Admin.findOne({ email });
 
         if (!admin) {
-            // still do dummy compare
+           
             await bcrypt.compare(password, dummyHash).catch(() => {});
             return res.status(401).render('adminlogin', { 
                 message: 'Invalid email or password' 
@@ -31,7 +31,7 @@ const login = async (req, res) => {
         }
 
         req.session.admin = true;
-        // Optional: regenerate session to prevent fixation
+        
         req.session.regenerate((err) => {
             if (err) console.error("Session regenerate failed:", err);
         });
@@ -46,7 +46,7 @@ const login = async (req, res) => {
     }
 };
 
-// Also update loadlogin (optional but cleaner)
+
 const loadlogin = async (req, res) => {
     try {
         res.render("adminlogin", { message: null });
@@ -164,7 +164,7 @@ const loaduser = async (req, res) => {
 
 const logout = async (req, res) => {
     try {
-        // Most important line
+       
         req.session.destroy((err) => {
             if (err) {
                 console.error("Session destroy error:", err);
@@ -174,18 +174,15 @@ const logout = async (req, res) => {
                 });
             }
 
-            // Optional: clear the cookie explicitly (good practice)
-            res.clearCookie('connect.sid'); // default name of express-session cookie
+            
+            res.clearCookie('connect.sid'); 
 
-            // Option A: JSON response (modern SPA / fetch/axios frontend)
-            // return res.status(200).json({ success: true, message: "Logged out successfully" });
-
-            // Option B: Traditional redirect (most common in EJS + form-based admin panels)
+            
             return res.redirect("/admin/login");
         });
     } catch (error) {
         console.error("Logout error:", error);
-        res.redirect("/admin/login"); // fail-safe redirect
+        res.redirect("/admin/login"); 
     }
 };
 

@@ -40,7 +40,7 @@ const addBrands = async (req, res) => {
     }
 
     try {
-        // Check for existing brand (case-insensitive)
+        // Check for existing brand 
         const existingBrand = await brand.findOne({ 
             brandname: { $regex: new RegExp(`^${brandname.trim()}$`, 'i') }
         });

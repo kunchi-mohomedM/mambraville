@@ -495,7 +495,7 @@ const verifyPayment = async (req, res) => {
       });
     }
 
-    // Validate stock availability before confirming payment (important for retry scenarios)
+  
     for (const item of order.items) {
       const product = await Product.findById(item.productId);
 

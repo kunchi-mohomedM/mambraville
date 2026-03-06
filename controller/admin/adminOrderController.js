@@ -205,9 +205,7 @@ const cancelOrderByAdmin = async (req, res) => {
 
 
     if (["Delivered", "Cancelled", "Returned"].includes(order.status)) {
-      // Logic to handle if already in a final state, usually just redirect back
-      // Using the existing pattern but expanding the check
-      // Originally: if (order.status === "Delivered")
+      
       return res.redirect("/admin/orders");
     }
 
@@ -402,7 +400,7 @@ const cancelOrderItem = async (req, res) => {
 
     // Refund logic if paid
     if (order.paymentStatus === 'Paid') {
-      const refundAmount = (item.finalPrice * item.qty); // assuming finalPrice is unit price after discount
+      const refundAmount = (item.finalPrice * item.qty); 
 
       if (refundAmount > 0) {
         await Wallet.findOneAndUpdate(

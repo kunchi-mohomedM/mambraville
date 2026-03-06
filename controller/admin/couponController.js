@@ -78,7 +78,7 @@ const addCoupon = async (req, res) => {
       });
     }
 
-    // ── Strict business rules ───────────────────────────────────────
+    
     if (type === "fixed" && discVal >= minPur) {
       return res.status(400).json({
         success: false,
@@ -92,7 +92,7 @@ const addCoupon = async (req, res) => {
         error: "Maximum discount amount must be strictly less than the minimum purchase amount"
       });
     }
-    // ────────────────────────────────────────────────────────────────
+   
 
     // Additional percentage validation
     if (type === "percentage" && discVal > 100) {
@@ -127,7 +127,7 @@ const addCoupon = async (req, res) => {
       });
     }
 
-    // Check for duplicate code (case-insensitive)
+    // Check for duplicate code 
     const existingCoupon = await Coupon.findOne({
       code: { $regex: new RegExp(`^${couponcode}$`, "i") }
     });
@@ -199,7 +199,7 @@ const loadEditcoupon = async (req, res) => {
     console.log(coupon);
     return res.render("editCoupon", {
       coupon: {
-        _id: coupon._id, // Added _id
+        _id: coupon._id, 
         code: coupon.code,
         discountType: coupon.discountType,
         discountValue: coupon.discountValue,
@@ -207,7 +207,7 @@ const loadEditcoupon = async (req, res) => {
         maxDiscount: coupon.maxDiscount,
         startDate: coupon.startDate
           ? coupon.startDate.toISOString().split("T")[0]
-          : "", // Added and formatted startDate
+          : "", 
         expiryDate: coupon.expiryDate
           ? coupon.expiryDate.toISOString().split("T")[0]
           : "",
@@ -258,7 +258,7 @@ const editCoupon = async (req, res) => {
       });
     }
 
-    // ── Same strict validation as addCoupon ─────────────────────────
+   
     if (type === "fixed" && minPur > 0 && discVal >= minPur) {
       return res.status(400).json({
         success: false,
@@ -272,7 +272,7 @@ const editCoupon = async (req, res) => {
         error: "Maximum discount amount must be strictly less than the minimum purchase amount"
       });
     }
-    // ────────────────────────────────────────────────────────────────
+  
 
     if (type === "percentage" && discVal > 100) {
       return res.status(400).json({
@@ -299,21 +299,10 @@ const editCoupon = async (req, res) => {
       });
     }
 
-    // Note: We allow editing to past expiry if needed (business decision)
-    // If you want to block it, uncomment next block:
-    /*
-    if (expiry <= new Date()) {
-      return res.status(400).json({
-        success: false,
-        error: "Expiry date must be in the future"
-      });
-    }
-    */
-
-    // Normalize code
+   
     const normalizedCode = String(code).trim().toUpperCase();
 
-    // Check for duplicate (exclude self)
+    
     const duplicate = await Coupon.findOne({
       code: { $regex: new RegExp(`^${normalizedCode}$`, "i") },
       _id: { $ne: couponId }

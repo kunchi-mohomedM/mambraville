@@ -7,7 +7,7 @@ const adminAuth = (req, res, next) => {
         return next();
     }
 
-    // ── Important: detect AJAX / API-style requests ───────────────────────
+    
     const isAjax = 
         req.xhr || 
         req.headers['x-requested-with'] === 'XMLHttpRequest' ||
@@ -18,11 +18,11 @@ const adminAuth = (req, res, next) => {
         return res.status(401).json({
             success: false,
             message: "Unauthorized – please log in as admin",
-            redirectTo: "/admin/login"   // optional – frontend can use it
+            redirectTo: "/admin/login"   
         });
     }
 
-    // Traditional browser navigation → redirect
+   
     return res.redirect("/admin/login");
 };
 
